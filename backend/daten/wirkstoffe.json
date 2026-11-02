@@ -1,0 +1,497 @@
+{
+  "version": 1,
+  "stand": "2026-10-02",
+  "hinweis": "Allgemeine Informationen aus frei zugänglichen Quellen. Ersetzt keine ärztliche oder pharmazeutische Beratung. Dosis und Häufigkeit gibt immer der Nutzer ein (Packungsbeilage / Arzt).",
+
+  "slots": [
+    { "id": "nuechtern", "name": "Morgens nüchtern", "standardZeit": "07:00", "mahlzeit": false },
+    { "id": "fruehstueck", "name": "Frühstück", "standardZeit": "07:30", "mahlzeit": true },
+    {
+      "id": "vormittag",
+      "name": "Vormittag (zwischen den Mahlzeiten)",
+      "standardZeit": "10:00",
+      "mahlzeit": false
+    },
+    { "id": "mittag", "name": "Mittagessen", "standardZeit": "12:30", "mahlzeit": true },
+    { "id": "abendessen", "name": "Abendessen", "standardZeit": "18:30", "mahlzeit": true },
+    { "id": "schlafen", "name": "Vor dem Schlafen", "standardZeit": "22:00", "mahlzeit": false }
+  ],
+
+  "wirkstoffe": [
+    {
+      "id": "vitamin-d",
+      "name": "Vitamin D",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag"],
+      "hinweise": [
+        "Fettlöslich – zu einer fetthaltigen Mahlzeit einnehmen.",
+        "Eher morgens/mittags; abends evtl. Einfluss auf den Schlaf."
+      ],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "vitamin-k2",
+      "name": "Vitamin K2",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag"],
+      "hinweise": ["Fettlöslich – zur Mahlzeit, gern zusammen mit Vitamin D."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "vitamin-b12",
+      "name": "Vitamin B12",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag"],
+      "hinweise": ["Zeitpunkt ist weniger wichtig."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "vitamin-b-komplex",
+      "name": "Vitamin-B-Komplex",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag"],
+      "hinweise": ["Morgens zum Frühstück – abends kann es den Schlaf stören."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "vitamin-c",
+      "name": "Vitamin C",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag", "abendessen"],
+      "hinweise": [
+        "Größere Mengen besser auf mehrere kleine Portionen verteilen.",
+        "Verbessert die Aufnahme von Eisen."
+      ],
+      "quellen": ["wunderlichs", "vz-wechselwirkungen"]
+    },
+    {
+      "id": "folsaeure",
+      "name": "Folsäure",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag", "abendessen"],
+      "hinweise": ["Nicht mit Schwarz- oder Grüntee einnehmen – senkt die Aufnahme."],
+      "quellen": ["vz-wechselwirkungen"]
+    },
+    {
+      "id": "eisen",
+      "name": "Eisen",
+      "kategorie": "nem",
+      "slots": ["nuechtern", "vormittag"],
+      "hinweise": [
+        "Am besten nüchtern, ca. 1 Stunde vor dem Frühstück.",
+        "1–2 Stunden Abstand zu Kaffee, Tee, Milch und Milchprodukten.",
+        "Mit Wasser oder Orangensaft (Vitamin C) einnehmen."
+      ],
+      "quellen": ["apotheken-umschau-eisen", "vz-wechselwirkungen"]
+    },
+    {
+      "id": "calcium",
+      "name": "Calcium",
+      "kategorie": "nem",
+      "slots": ["mittag", "abendessen", "fruehstueck"],
+      "hinweise": [
+        "Höchstens ca. 500 mg pro Portion – größere Mengen aufteilen.",
+        "Zwei Stunden Abstand zu oxalsäure- und phytinsäurereichen Lebensmitteln (z. B. Spinat, Vollkorn)."
+      ],
+      "quellen": ["wunderlichs", "vz-wechselwirkungen"]
+    },
+    {
+      "id": "magnesium",
+      "name": "Magnesium",
+      "kategorie": "nem",
+      "slots": ["schlafen", "abendessen"],
+      "hinweise": [
+        "Abends, 1–2 Stunden vor dem Schlafen (z. B. bei nächtlichen Wadenkrämpfen).",
+        "Größere Tagesmengen auf 2–3 Portionen verteilen."
+      ],
+      "quellen": ["apotheke-adhoc-magnesium", "wunderlichs"]
+    },
+    {
+      "id": "zink",
+      "name": "Zink",
+      "kategorie": "nem",
+      "slots": ["abendessen", "vormittag"],
+      "hinweise": ["Abends zur Mahlzeit."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "omega-3",
+      "name": "Omega-3 (Fischöl/Algenöl)",
+      "kategorie": "nem",
+      "slots": ["mittag", "abendessen", "fruehstueck"],
+      "hinweise": ["Zur Hauptmahlzeit des Tages."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "probiotika",
+      "name": "Probiotika",
+      "kategorie": "nem",
+      "slots": ["nuechtern", "vormittag"],
+      "hinweise": ["Nüchtern oder ca. 30 Minuten vor dem Essen."],
+      "quellen": ["wunderlichs"]
+    },
+    {
+      "id": "biotin",
+      "name": "Biotin",
+      "kategorie": "nem",
+      "slots": ["fruehstueck", "mittag"],
+      "hinweise": ["Vor Blutuntersuchungen 2–3 Tage pausieren – Biotin kann Laborwerte verfälschen."],
+      "quellen": ["vz-wechselwirkungen"]
+    },
+
+    {
+      "id": "l-thyroxin",
+      "name": "L-Thyroxin (Schilddrüsenhormon)",
+      "kategorie": "medikament",
+      "slots": ["nuechtern", "schlafen"],
+      "hinweise": [
+        "Mindestens 30 Minuten vor dem Frühstück nüchtern mit Leitungswasser.",
+        "Auch abends nüchtern möglich – wichtig ist, immer zur gleichen Zeit.",
+        "Schon Milch im Kaffee kann die Aufnahme stören."
+      ],
+      "quellen": ["ptaheute-thyroxin"]
+    },
+    {
+      "id": "alendronsaeure",
+      "name": "Alendronsäure (Osteoporose)",
+      "kategorie": "medikament",
+      "slots": ["nuechtern"],
+      "hinweise": [
+        "Morgens mindestens 30 Minuten vor dem ersten Essen, Getränk und anderen Arzneimitteln.",
+        "Nur mit Leitungswasser, unzerkaut.",
+        "Danach mindestens 30 Minuten aufrecht bleiben, nicht hinlegen.",
+        "Wird oft nur einmal pro Woche eingenommen."
+      ],
+      "quellen": ["gelbe-liste-alendron"]
+    },
+    {
+      "id": "doxycyclin",
+      "name": "Doxycyclin (Antibiotikum)",
+      "kategorie": "medikament",
+      "slots": ["fruehstueck", "abendessen"],
+      "hinweise": [
+        "Mit Leitungswasser statt Mineralwasser einnehmen.",
+        "Mindestens 3 Stunden vorher und nachher keine Milchprodukte."
+      ],
+      "quellen": ["aknr-antibiotika"]
+    },
+    {
+      "id": "ciprofloxacin",
+      "name": "Ciprofloxacin (Antibiotikum)",
+      "kategorie": "medikament",
+      "slots": ["fruehstueck", "abendessen"],
+      "hinweise": [
+        "Mit Leitungswasser statt Mineralwasser einnehmen.",
+        "Mindestens 3 Stunden vorher und nachher keine Milchprodukte."
+      ],
+      "quellen": ["aknr-antibiotika"]
+    },
+    {
+      "id": "pantoprazol",
+      "name": "Pantoprazol (Magenschutz)",
+      "kategorie": "medikament",
+      "slots": ["nuechtern"],
+      "hinweise": ["Morgens 30–60 Minuten vor dem Frühstück."],
+      "quellen": ["doccheck-pantoprazol"]
+    },
+    {
+      "id": "phenprocoumon",
+      "name": "Phenprocoumon (Marcumar, Blutverdünner)",
+      "kategorie": "medikament",
+      "slots": ["fruehstueck", "mittag", "abendessen"],
+      "hinweise": [
+        "Zeitpunkt nach ärztlicher Vorgabe, aber immer gleich.",
+        "Inhaltsstoffe von Nahrungsergänzungsmitteln auf Vitamin K prüfen."
+      ],
+      "quellen": ["apotheken-umschau-vitamin-k"]
+    }
+  ],
+
+  "regeln": [
+    {
+      "a": "eisen",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Calcium hemmt die Eisenaufnahme.",
+      "quelle": "vz-wechselwirkungen"
+    },
+    {
+      "a": "eisen",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe konkurrieren um die Aufnahme.",
+      "quelle": "vz-wechselwirkungen"
+    },
+    {
+      "a": "eisen",
+      "b": "magnesium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe konkurrieren um die Aufnahme.",
+      "quelle": "apotheke-adhoc-magnesium"
+    },
+    {
+      "a": "magnesium",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe konkurrieren um die Aufnahme.",
+      "quelle": "apotheke-adhoc-magnesium"
+    },
+    {
+      "a": "magnesium",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe konkurrieren um die Aufnahme.",
+      "quelle": "apotheke-adhoc-magnesium"
+    },
+    {
+      "a": "calcium",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Calcium hemmt die Zinkaufnahme.",
+      "quelle": "wunderlichs"
+    },
+
+    {
+      "a": "l-thyroxin",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Bildet schwer lösliche Komplexe – Hormon wird schlechter aufgenommen.",
+      "quelle": "ptaheute-thyroxin"
+    },
+    {
+      "a": "l-thyroxin",
+      "b": "eisen",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Bildet schwer lösliche Komplexe – Hormon wird schlechter aufgenommen.",
+      "quelle": "ptaheute-thyroxin"
+    },
+    {
+      "a": "l-thyroxin",
+      "b": "magnesium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Bildet schwer lösliche Komplexe – Hormon wird schlechter aufgenommen.",
+      "quelle": "ptaheute-thyroxin"
+    },
+    {
+      "a": "l-thyroxin",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mehrwertige Mineralstoffe stören die Aufnahme.",
+      "quelle": "ptaheute-thyroxin"
+    },
+
+    {
+      "a": "alendronsaeure",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Calcium verringert die Aufnahme stark.",
+      "quelle": "vz-wechselwirkungen"
+    },
+    {
+      "a": "alendronsaeure",
+      "b": "eisen",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe verringern die Aufnahme.",
+      "quelle": "vz-wechselwirkungen"
+    },
+    {
+      "a": "alendronsaeure",
+      "b": "magnesium",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Mineralstoffe verringern die Aufnahme.",
+      "quelle": "gelbe-liste-alendron"
+    },
+
+    {
+      "a": "doxycyclin",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "doxycyclin",
+      "b": "magnesium",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "doxycyclin",
+      "b": "eisen",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "doxycyclin",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "ciprofloxacin",
+      "b": "calcium",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "ciprofloxacin",
+      "b": "magnesium",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "ciprofloxacin",
+      "b": "eisen",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+    {
+      "a": "ciprofloxacin",
+      "b": "zink",
+      "typ": "abstand",
+      "stunden": 3,
+      "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
+      "quelle": "aknr-antibiotika"
+    },
+
+    {
+      "a": "probiotika",
+      "b": "doxycyclin",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Das Antibiotikum würde die Bakterien abtöten.",
+      "quelle": "ptaheute-probiotika"
+    },
+    {
+      "a": "probiotika",
+      "b": "ciprofloxacin",
+      "typ": "abstand",
+      "stunden": 2,
+      "grund": "Das Antibiotikum würde die Bakterien abtöten.",
+      "quelle": "ptaheute-probiotika"
+    },
+
+    {
+      "a": "eisen",
+      "b": "vitamin-c",
+      "typ": "zusammen",
+      "grund": "Vitamin C verbessert die Eisenaufnahme.",
+      "quelle": "apotheken-umschau-eisen"
+    },
+    {
+      "a": "vitamin-d",
+      "b": "vitamin-k2",
+      "typ": "zusammen",
+      "grund": "Werden oft gemeinsam eingenommen, beide fettlöslich.",
+      "quelle": "wunderlichs"
+    },
+
+    {
+      "a": "vitamin-k2",
+      "b": "phenprocoumon",
+      "typ": "warnung",
+      "grund": "Vitamin K schwächt die Wirkung von Marcumar ab. Nur nach Rücksprache mit dem Arzt.",
+      "quelle": "apotheken-umschau-vitamin-k"
+    },
+    {
+      "a": "biotin",
+      "b": "l-thyroxin",
+      "typ": "warnung",
+      "grund": "Biotin kann Schilddrüsen-Laborwerte verfälschen. Vorher in der Apotheke beraten lassen.",
+      "quelle": "vz-wechselwirkungen"
+    },
+    {
+      "a": "pantoprazol",
+      "b": "vitamin-b12",
+      "typ": "warnung",
+      "grund": "Bei Langzeiteinnahme kann die B12-Aufnahme gestört sein – Werte ärztlich prüfen lassen.",
+      "quelle": "doccheck-pantoprazol"
+    },
+    {
+      "a": "pantoprazol",
+      "b": "magnesium",
+      "typ": "warnung",
+      "grund": "Bei Langzeiteinnahme kann die Magnesium-Aufnahme gestört sein – Werte ärztlich prüfen lassen.",
+      "quelle": "doccheck-pantoprazol"
+    }
+  ],
+
+  "quellen": [
+    {
+      "id": "vz-wechselwirkungen",
+      "titel": "Verbraucherzentrale – Wechselwirkungen, Nebenwirkungen, Gegenanzeigen von Nahrungsergänzungen",
+      "url": "https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/wechselwirkungen-nebenwirkungen-gegenanzeigen-von-nahrungsergaenzungen-50991"
+    },
+    {
+      "id": "apotheken-umschau-eisen",
+      "titel": "Apotheken Umschau – Eisen richtig einnehmen",
+      "url": "https://www.apotheken-umschau.de/medikamente/basiswissen/eisen-richtig-einnehmen-719457.html"
+    },
+    {
+      "id": "apotheken-umschau-vitamin-k",
+      "titel": "Apotheken Umschau – Blutgerinnungshemmer: Vorsicht bei Vitamin K",
+      "url": "https://www.apotheken-umschau.de/medikamente/blutgerinnungshemmer-bei-manchen-lebensmitteln-mit-vitamin-k-ist-vorsicht-geboten-1226265.html"
+    },
+    {
+      "id": "apotheke-adhoc-magnesium",
+      "titel": "APOTHEKE ADHOC – Fünf Tipps zur Magnesium-Einnahme",
+      "url": "https://www.apotheke-adhoc.de/nachrichten/detail/pta-live/fuenf-tipps-zur-magnesium-einnahme-mineralstoffe/"
+    },
+    {
+      "id": "ptaheute-thyroxin",
+      "titel": "PTAheute – Muss L-Thyroxin immer morgens nüchtern eingenommen werden?",
+      "url": "https://www.ptaheute.de/aktuelles/2018/04/03/muss-l-thyroxin-immer-morgens-nuechtern-eingenommen-werden"
+    },
+    {
+      "id": "ptaheute-probiotika",
+      "titel": "PTAheute – Antibiotikatherapie: Wann sind Probiotika indiziert?",
+      "url": "https://www.ptaheute.de/wissen-am-hv/darmgesundheit/antibiotikatherapie-wann-sind-probiotika-indiziert"
+    },
+    {
+      "id": "aknr-antibiotika",
+      "titel": "Apothekerkammer Nordrhein – Antibiotika richtig einnehmen",
+      "url": "https://www.aknr.de/presse/pressemitteilungen/antibiotika-richtig-einnehmen"
+    },
+    {
+      "id": "gelbe-liste-alendron",
+      "titel": "Gelbe Liste – Alendronsäure",
+      "url": "https://www.gelbe-liste.de/wirkstoffe/Alendronsaeure_26144"
+    },
+    {
+      "id": "doccheck-pantoprazol",
+      "titel": "DocCheck Flexikon – Pantoprazol",
+      "url": "https://flexikon.doccheck.com/de/Pantoprazol"
+    },
+    {
+      "id": "wunderlichs",
+      "titel": "Wunderlichs Apotheke – Nahrungsergänzungsmittel richtig einnehmen: Der Timing-Guide",
+      "url": "https://wunderlichs-apotheke.de/ratgeber/nahrungsergaenzungsmittel-richtig-einnehmen/"
+    }
+  ]
+}

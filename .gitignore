@@ -1,0 +1,21 @@
+# Abhaengigkeiten (werden mit "npm install" neu erzeugt)
+node_modules/
+
+# Build-Ergebnis
+frontend/dist/
+
+# Logs
+*.log
+
+# Lokale Datenbank des Backends (Deno KV)
+backend/data/
+
+# Editor / Betriebssystem
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Reste vom Einrichten (nicht Teil des Projekts)
+einnahmeplaner.tgz
+/daten/
