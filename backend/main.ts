@@ -9,7 +9,7 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
 import { einnahmeSchema, KATALOG, praeparatSchema, tagesablaufSchema } from "./modell.ts";
-import { planeTag } from "./planer.ts";
+import { planeTag, praeparateAm } from "./planer.ts";
 import * as db from "./datenbank.ts";
 import { BEISPIELDATEN } from "./beispieldaten.ts";
 
@@ -72,10 +72,15 @@ app.put("/api/tagesablauf", async (c) => {
   return c.json(pruefung.data);
 });
 
-// ---- Plan: wird jedes Mal neu berechnet ----
+// ---- Plan für einen Tag: wird jedes Mal neu berechnet ----
+// z. B. /api/plan?datum=2026-11-09 – nur Präparate, die an diesem Wochentag dran sind
 
 app.get("/api/plan", async (c) => {
-  const plan = planeTag(await db.allePraeparate(), await db.holeTagesablauf());
+  const datum = c.req.query("datum") ?? "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return c.json({ fehler: "Datum fehlt" }, 400);
+
+  const praeparate = praeparateAm(await db.allePraeparate(), datum);
+  const plan = planeTag(praeparate, await db.holeTagesablauf());
   return c.json(plan);
 });
 

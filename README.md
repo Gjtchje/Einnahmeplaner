@@ -37,7 +37,7 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 | DELETE | `/api/praeparate/:id` | Präparat löschen |
 | GET | `/api/tagesablauf` | Uhrzeiten der Zeitfenster |
 | PUT | `/api/tagesablauf` | Uhrzeiten speichern |
-| GET | `/api/plan` | berechneter Tagesplan mit Hinweisen |
+| GET | `/api/plan?datum=JJJJ-MM-TT` | berechneter Plan für diesen Tag (nur Präparate, die an dem Wochentag dran sind) |
 | GET | `/api/einnahmen?datum=JJJJ-MM-TT` | abgehakte Einnahmen eines Tages |
 | POST | `/api/einnahmen/umschalten` | Haken setzen oder entfernen (Vorrat ±1) |
 

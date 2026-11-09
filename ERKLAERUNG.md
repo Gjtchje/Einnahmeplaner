@@ -49,7 +49,7 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 | `modell.ts` | Wie die Daten aussehen + Prüfregeln (Zod). Lädt den Katalog. |
 | `datenbank.ts` | Speichern und Laden mit Deno KV. |
 | `beispieldaten.ts` | 7 Präparate für den ersten Start. |
-| `planer_test.ts` | 6 Tests für den Planer. |
+| `planer_test.ts` | 7 Tests für den Planer. |
 | `daten/wirkstoffe.json` | Der **Katalog**: 19 Wirkstoffe, ihre besten Zeitfenster, 29 Regeln, Quellen. |
 
 ### Frontend (`frontend/src/`)
@@ -60,7 +60,7 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 | `App.vue` | Der Rahmen: Navigation oben, Seite in der Mitte, Hinweis unten. |
 | `router.ts` | Welche Adresse zeigt welche Seite (`/`, `/praeparate`, `/tagesablauf`). |
 | `api.ts` | Alle Anfragen ans Backend + die Typen der Daten. |
-| `views/HeuteView.vue` | Startseite: Plan zum Abhaken, Hinweise, Nachkaufen, Erinnerungen. |
+| `views/HeuteView.vue` | Startseite: Plan zum Abhaken, Tages-Knöpfe Mo–So, Hinweise, Nachkaufen, Erinnerungen. |
 | `views/PraeparateView.vue` | Präparate anlegen, ändern, löschen. |
 | `views/TagesablaufView.vue` | Uhrzeiten der Zeitfenster einstellen. |
 | `components/ZeitfensterKarte.vue` | Ein Kasten auf „Heute“, z. B. „07:30 Frühstück“ mit Checkboxen. |
@@ -107,6 +107,18 @@ Uhrzeiten: nüchtern 07:00 · Frühstück 07:30 · Vormittag 10:00 · Mittag 12:
 | Calcium | Mittagessen – 2,5 Std. nach Eisen ✓ | **12:30** |
 
 **Zum Vorführen:** Unter „Tagesablauf“ den Vormittag auf 08:00 stellen. Dann liegt Eisen nur 1 Stunde nach Thyroxin, und auf „Heute“ erscheint ein Konflikt.
+
+---
+
+## 4b. Wochenplan und Erinnerungen
+
+**Wochentage:** Jedes Präparat hat eine Liste `tage`, z. B. `[1, 3, 5]` = Montag, Mittwoch, Freitag (wie in JavaScript: 0 = Sonntag, 1 = Montag … 6 = Samstag).
+Oben auf „Heute“ gibt es Knöpfe für Montag bis Sonntag. Klickt man einen Tag an, fragt das Frontend `GET /api/plan?datum=2026-11-11`.
+Das Backend nimmt dann nur die Präparate, die an diesem Wochentag dran sind (Funktion `praeparateAm` in `planer.ts`), und gibt sie an den Planer.
+Der Planer selbst musste dafür nicht geändert werden.
+
+**Erinnerungen:** Alle 30 Sekunden prüft die Heute-Seite: Ist die Uhrzeit eines Zeitfensters erreicht (höchstens 30 Minuten her) und ist darin noch etwas offen? Dann zeigt der Browser eine Benachrichtigung (`new Notification(...)`), pro Zeitfenster nur einmal.
+Mit „Test-Benachrichtigung“ kann man ausprobieren, ob Benachrichtigungen überhaupt ankommen. Falls nicht, sind sie im Browser oder in Windows ausgeschaltet.
 
 ---
 
@@ -171,9 +183,8 @@ Uhrzeiten: nüchtern 07:00 · Frühstück 07:30 · Vormittag 10:00 · Mittag 12:
 
 ## 8. Grenzen und was man noch machen könnte
 
-- Erinnerungen kommen nur, solange die Seite „Heute“ offen ist. → Ausbau zur **PWA** (Service Worker + Push-Nachrichten)
+- Erinnerungen kommen nur, solange die App offen ist. → Ausbau zur **PWA** (Service Worker + Push-Nachrichten)
 - Kein Login → für mehrere Personen bräuchte man Benutzerkonten
-- Gleicher Plan für jeden Tag → z. B. „nur montags“ wäre eine Erweiterung
 - Bei einer echten Veröffentlichung: Eine App, die über Medikamente entscheidet, kann als **Medizinprodukt** gelten (EU-MDR), und Gesundheitsdaten sind nach **DSGVO** besonders geschützt.
 
 ---
@@ -254,7 +265,7 @@ Aus den Folien „Das Prüfungsprojekt“ und „Technische Mindestanforderungen
 | Fehlerbehandlung | 400 / 404 / 500 in `main.ts`, Fehlermeldungen im Frontend |
 | **Projekt:** Git | GitHub: Gjtchje/Einnahmeplaner |
 | Vite für das Frontend | `frontend/vite.config.ts` |
-| Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (6 Tests) |
+| Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (7 Tests) |
 | Dokumentation + Begründungen | `README.md`, diese Datei (Abschnitt 7 = Entscheidungen) |
 | Klein. Vollständig. Entkoppelt. Begründbar. | 4 Datenarten, alle Funktionen fertig, Frontend und Backend nur über die API verbunden |
 

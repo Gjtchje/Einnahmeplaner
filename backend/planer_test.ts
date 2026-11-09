@@ -4,7 +4,7 @@
 // und prüft, in welchem Zeitfenster sie gelandet sind.
 
 import { deepStrictEqual as gleich, ok as stimmt } from "node:assert/strict";
-import { type Plan, planeTag } from "./planer.ts";
+import { type Plan, planeTag, praeparateAm } from "./planer.ts";
 import type { Praeparat } from "./modell.ts";
 
 // Standard-Tagesablauf
@@ -19,7 +19,15 @@ const ZEITEN = {
 
 // Hilfsfunktion: ein Präparat zum Testen erzeugen
 function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
-  return { id: wirkstoffId, name: wirkstoffId, wirkstoffId, dosis: "1 Tablette", proTag, vorrat: null };
+  return {
+    id: wirkstoffId,
+    name: wirkstoffId,
+    wirkstoffId,
+    dosis: "1 Tablette",
+    proTag,
+    vorrat: null,
+    tage: [0, 1, 2, 3, 4, 5, 6],
+  };
 }
 
 // Hilfsfunktion: In welchen Zeitfenstern liegt ein Präparat?
@@ -68,3 +76,10 @@ Deno.test("Warnung bei Vitamin K2 und Marcumar", () => {
   const plan = planeTag([praeparat("vitamin-k2"), praeparat("phenprocoumon")], ZEITEN);
   stimmt(plan.hinweise.some((h) => h.startsWith("Warnung")));
 });
+
+Deno.test("Wochentage: Zink nur montags – am Montag dabei, am Dienstag nicht", () => {
+  const zink = { ...praeparat("zink"), tage: [1] }; // 1 = Montag
+  gleich(praeparateAm([zink], "2026-11-09").length, 1); // 09.11.2026 ist ein Montag
+  gleich(praeparateAm([zink], "2026-11-10").length, 0); // Dienstag
+});
+

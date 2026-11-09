@@ -9,8 +9,10 @@ const wirkstoffe = ref<api.Wirkstoff[]>([])
 const fehler = ref('')
 
 // Das Formular. bearbeiteId = null heißt: neues Präparat anlegen.
-const leer: api.NeuesPraeparat = { name: '', wirkstoffId: '', dosis: '1 Tablette', proTag: 1, vorrat: null }
-const formular = ref<api.NeuesPraeparat>({ ...leer })
+const leer: api.NeuesPraeparat = {
+  name: '', wirkstoffId: '', dosis: '1 Tablette', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
+}
+const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] }) // Kopie, damit leer unverändert bleibt
 const bearbeiteId = ref<string | null>(null)
 
 // Hinweise zum gewählten Wirkstoff, die unter dem Auswahlfeld erscheinen
@@ -45,13 +47,16 @@ async function speichern() {
 
 function bearbeiten(p: api.Praeparat) {
   bearbeiteId.value = p.id
-  formular.value = { name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, proTag: p.proTag, vorrat: p.vorrat }
+  formular.value = {
+    name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, proTag: p.proTag, vorrat: p.vorrat,
+    tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6], // ältere Präparate ohne Wochentage = täglich
+  }
   window.scrollTo({ top: 0 })
 }
 
 function abbrechen() {
   bearbeiteId.value = null
-  formular.value = { ...leer }
+  formular.value = { ...leer, tage: [...leer.tage] }
   fehler.value = ''
 }
 
@@ -111,6 +116,14 @@ onMounted(laden)
         </label>
       </div>
 
+      <!-- Wochentage: v-model mit einer Liste – angehakte Tage landen in formular.tage -->
+      <fieldset class="tage">
+        <legend>An welchen Tagen?</legend>
+        <label v-for="t in api.WOCHENTAGE" :key="t.nr">
+          <input v-model="formular.tage" type="checkbox" :value="t.nr"> {{ t.kurz }}
+        </label>
+      </fieldset>
+
       <p v-if="fehler" class="fehler">{{ fehler }}</p>
 
       <button type="submit" class="haupt">Speichern</button>
@@ -134,6 +147,9 @@ h2 { font-size: 1.2rem; margin-bottom: 1rem; }
 .reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
 .hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
 form button { margin-right: 0.5rem; }
+.tage { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border: none; padding: 0; margin: 0 0 1rem; }
+.tage legend { font-size: 0.85rem; color: var(--leise); margin-bottom: 0.25rem; }
+.tage label { display: flex; align-items: center; gap: 0.3rem; margin: 0; font-size: 1rem; color: var(--text); }
 
 @media (max-width: 520px) {
   .reihe { grid-template-columns: 1fr; gap: 0; }

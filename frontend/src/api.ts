@@ -25,7 +25,19 @@ export interface Praeparat {
   dosis: string
   proTag: number
   vorrat: number | null
+  tage: number[] // Wochentage: 0 = Sonntag, 1 = Montag, ... 6 = Samstag
 }
+
+// Wochentage in der Reihenfolge Montag bis Sonntag (für Anzeige und Formular)
+export const WOCHENTAGE = [
+  { nr: 1, kurz: 'Mo', lang: 'Montag' },
+  { nr: 2, kurz: 'Di', lang: 'Dienstag' },
+  { nr: 3, kurz: 'Mi', lang: 'Mittwoch' },
+  { nr: 4, kurz: 'Do', lang: 'Donnerstag' },
+  { nr: 5, kurz: 'Fr', lang: 'Freitag' },
+  { nr: 6, kurz: 'Sa', lang: 'Samstag' },
+  { nr: 0, kurz: 'So', lang: 'Sonntag' },
+]
 
 // Beim Anlegen gibt es noch keine id – die vergibt der Server
 export type NeuesPraeparat = Omit<Praeparat, 'id'>
@@ -76,6 +88,6 @@ export const loeschePraeparat = (id: string) => anfrage(`/api/praeparate/${id}`,
 export const ladeTagesablauf = (): Promise<Tagesablauf> => anfrage('/api/tagesablauf')
 export const speichereTagesablauf = (t: Tagesablauf) => anfrage('/api/tagesablauf', 'PUT', t)
 
-export const ladePlan = (): Promise<Plan> => anfrage('/api/plan')
+export const ladePlan = (datum: string): Promise<Plan> => anfrage(`/api/plan?datum=${datum}`)
 export const ladeEinnahmen = (datum: string): Promise<Einnahme[]> => anfrage(`/api/einnahmen?datum=${datum}`)
 export const umschalten = (e: Einnahme) => anfrage('/api/einnahmen/umschalten', 'POST', e)

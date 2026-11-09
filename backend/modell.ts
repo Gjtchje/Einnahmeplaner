@@ -49,6 +49,8 @@ export const praeparatSchema = z.object({
   dosis: z.string().trim().min(1, "Bitte eine Dosis angeben, z. B. 1 Tablette"),
   proTag: z.number().int().min(1, "Mindestens 1-mal").max(3, "Höchstens 3-mal"),
   vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = nicht zählen
+  // An welchen Wochentagen? Wie in JavaScript: 0 = Sonntag, 1 = Montag, ... 6 = Samstag
+  tage: z.array(z.number().int().min(0).max(6)).min(1, "Bitte mindestens einen Wochentag wählen"),
 });
 
 // Aus dem Schema macht TypeScript automatisch einen Typ. Der Server ergänzt die id.

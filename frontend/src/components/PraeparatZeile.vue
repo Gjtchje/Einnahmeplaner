@@ -1,14 +1,21 @@
 <!-- PraeparatZeile.vue – Eine Zeile in der Präparate-Liste mit "Ändern" und "Löschen".
      Bekommt das Präparat von außen (props) und meldet Klicks nach außen (emit). -->
 <script setup lang="ts">
-import type { Praeparat } from '../api'
+import { type Praeparat, WOCHENTAGE } from '../api'
 
-defineProps<{
+const props = defineProps<{
   praeparat: Praeparat
   wirkstoffName: string
 }>()
 
 const emit = defineEmits<{ aendern: [], loeschen: [] }>()
+
+// "täglich" oder z. B. "Mo, Mi, Fr" (ältere Präparate ohne Wochentage gelten als täglich)
+function tageText(): string {
+  const tage = props.praeparat.tage ?? []
+  if (tage.length === 0 || tage.length === 7) return 'täglich'
+  return WOCHENTAGE.filter((t) => tage.includes(t.nr)).map((t) => t.kurz).join(', ')
+}
 </script>
 
 <template>
@@ -16,7 +23,7 @@ const emit = defineEmits<{ aendern: [], loeschen: [] }>()
     <div>
       <strong>{{ praeparat.name }}</strong><br>
       <span class="klein">
-        {{ wirkstoffName }} · {{ praeparat.dosis }}, {{ praeparat.proTag }}-mal täglich
+        {{ wirkstoffName }} · {{ praeparat.dosis }}, {{ praeparat.proTag }}-mal am Tag, {{ tageText() }}
         · {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${praeparat.vorrat} Stück` }}
       </span>
     </div>

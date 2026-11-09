@@ -100,6 +100,13 @@ export function findeKonflikt(wirkstoff: Wirkstoff, slot: string, eintraege: Ein
   return null;
 }
 
+// Welche Präparate werden an diesem Tag genommen? datum z. B. "2026-11-09"
+// Präparate aus älteren Versionen ohne "tage" gelten als täglich.
+export function praeparateAm(praeparate: Praeparat[], datum: string): Praeparat[] {
+  const wochentag = new Date(datum + "T12:00:00").getDay(); // 0 = Sonntag ... 6 = Samstag
+  return praeparate.filter((p) => (p.tage ?? [0, 1, 2, 3, 4, 5, 6]).includes(wochentag));
+}
+
 export function findeWirkstoff(id: string): Wirkstoff {
   return KATALOG.wirkstoffe.find((w) => w.id === id)!;
 }
