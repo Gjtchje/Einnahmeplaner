@@ -48,4 +48,4 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 
 Fehler kommen als `{ "fehler": "…" }` mit Status 400 oder 404.
 
-Eine ausführliche Erklärung steht in **ERKLAERUNG.md**.
+Eine ausführliche Erklärung steht in **ERKLAERUNG.md**, die Architekturbeschreibung (Steckbrief + ADRs) in **ARCHITEKTUR.md**.

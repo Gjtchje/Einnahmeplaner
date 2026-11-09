@@ -37,7 +37,7 @@ function nochOffen(): boolean {
         >
         <span>
           <span :class="{ durch: abgehakt.includes(e.praeparat.id) }">{{ e.praeparat.name }}</span>
-          <span class="klein"> · {{ e.praeparat.dosis }}</span><br>
+          <span class="klein"> · {{ e.praeparat.dosis }}{{ e.praeparat.staerke ? ` à ${e.praeparat.staerke}` : '' }}</span><br>
           <span class="tipp">{{ e.wirkstoff.hinweise[0] }}</span>
         </span>
       </label>

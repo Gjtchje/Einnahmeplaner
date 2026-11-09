@@ -49,8 +49,8 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 | `modell.ts` | Wie die Daten aussehen + Prüfregeln (Zod). Lädt den Katalog. |
 | `datenbank.ts` | Speichern und Laden mit Deno KV. |
 | `beispieldaten.ts` | 7 Präparate für den ersten Start. |
-| `planer_test.ts` | 7 Tests für den Planer. |
-| `daten/wirkstoffe.json` | Der **Katalog**: 19 Wirkstoffe, ihre besten Zeitfenster, 29 Regeln, Quellen. |
+| `planer_test.ts` | 8 Tests für den Planer. |
+| `daten/wirkstoffe.json` | Der **Katalog**: 30 Wirkstoffe (inkl. Protein), ihre besten Zeitfenster, 36 Regeln, 20 Quellen. |
 
 ### Frontend (`frontend/src/`)
 
@@ -76,7 +76,7 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 |---|---|---|---|
 | **Wirkstoff** | z. B. Eisen: beste Zeitfenster + Hinweise | `wirkstoffe.json` (fest) | niemand – nur ich als Entwickler |
 | **Regel** | Beziehung zwischen zwei Wirkstoffen: `abstand`, `zusammen` oder `warnung` | `wirkstoffe.json` (fest) | niemand |
-| **Präparat** | ein Mittel des Nutzers: Name, Wirkstoff, Dosis, wie oft am Tag, Wochentage, Vorrat | Deno KV `["praeparate", id]` | Nutzer (Seite „Präparate“) |
+| **Präparat** | ein Mittel des Nutzers: Name, Wirkstoff, Dosis, Stärke (z. B. 500 mg, optional), wie oft am Tag, Wochentage, Vorrat | Deno KV `["praeparate", id]` | Nutzer (Seite „Präparate“) |
 | **Tagesablauf** | Uhrzeit für jedes der 6 Zeitfenster | Deno KV `["tagesablauf"]` | Nutzer (Seite „Tagesablauf“) |
 | **Einnahme** | ein Haken: „Präparat X am Tag Y im Zeitfenster Z genommen“ | Deno KV `["einnahmen", datum, praeparatId, slot]` | Nutzer (Checkbox auf „Heute“) |
 
@@ -200,6 +200,11 @@ Mit „Test-Benachrichtigung“ kann man ausprobieren, ob Benachrichtigungen üb
 
 ---
 
+Die ausführliche Fassung dieser Entscheidungen steht in **`ARCHITEKTUR.md`** – im Format, das Dr. Mester im Begleitdokument vorschlägt (Architektur-Steckbrief + ADRs).
+Dort steht auch, warum die App bewusst **keine Dosis aus Körpergewicht oder Laborwerten** empfiehlt (ADR-008).
+
+---
+
 ## 8. Grenzen und was man noch machen könnte
 
 - Erinnerungen kommen nur, solange die App offen ist. → Ausbau zur **PWA** (Service Worker + Push-Nachrichten)
@@ -284,8 +289,8 @@ Aus den Folien „Das Prüfungsprojekt“ und „Technische Mindestanforderungen
 | Fehlerbehandlung | 400 / 404 / 500 in `main.ts`, Fehlermeldungen im Frontend |
 | **Projekt:** Git | GitHub: Gjtchje/Einnahmeplaner |
 | Vite für das Frontend | `frontend/vite.config.ts` |
-| Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (7 Tests) |
-| Dokumentation + Begründungen | `README.md`, diese Datei (Abschnitt 7 = Entscheidungen) |
+| Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (8 Tests) |
+| Dokumentation + Begründungen | `README.md`, diese Datei, `ARCHITEKTUR.md` (Steckbrief + ADRs) |
 | Klein. Vollständig. Entkoppelt. Begründbar. | 4 Datenarten, alle Funktionen fertig, Frontend und Backend nur über die API verbunden |
 
 ---

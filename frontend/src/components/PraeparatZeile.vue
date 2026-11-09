@@ -29,7 +29,7 @@ function istKnapp(): boolean {
     <div>
       <strong>{{ praeparat.name }}</strong><br>
       <span class="klein">
-        {{ wirkstoffName }} · {{ praeparat.dosis }}, {{ praeparat.proTag }}-mal am Tag, {{ tageText() }}
+        {{ wirkstoffName }} · {{ praeparat.dosis }}{{ praeparat.staerke ? ` à ${praeparat.staerke}` : '' }}, {{ praeparat.proTag }}-mal am Tag, {{ tageText() }}
         · <span :class="{ knapp: istKnapp() }">
           {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${praeparat.vorrat} Stück` }}
         </span>
