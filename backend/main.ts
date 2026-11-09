@@ -84,6 +84,37 @@ app.get("/api/plan", async (c) => {
   return c.json(plan);
 });
 
+// ---- Statistik: Wie viel wurde diese Woche schon genommen? ----
+// z. B. /api/statistik?von=2026-11-09&bis=2026-11-11
+// Für jeden Tag von "von" bis "bis": geplante Einnahmen zählen (soll)
+// und abgehakte Einnahmen zählen (ist).
+
+app.get("/api/statistik", async (c) => {
+  const von = c.req.query("von") ?? "";
+  const bis = c.req.query("bis") ?? "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(von) || !/^\d{4}-\d{2}-\d{2}$/.test(bis)) {
+    return c.json({ fehler: "von und bis müssen ein Datum sein" }, 400);
+  }
+
+  const alle = await db.allePraeparate();
+  const zeiten = await db.holeTagesablauf();
+  let soll = 0;
+  let ist = 0;
+  for (let datum = von; datum <= bis; datum = naechsterTag(datum)) {
+    soll += planeTag(praeparateAm(alle, datum), zeiten).eintraege.length;
+    ist += (await db.einnahmenAm(datum)).length;
+  }
+  const prozent = soll === 0 ? 0 : Math.round((ist / soll) * 100);
+  return c.json({ soll, ist, prozent });
+});
+
+// "2026-11-09" -> "2026-11-10"
+function naechsterTag(datum: string): string {
+  const d = new Date(datum + "T12:00:00Z");
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 // ---- Einnahmen: Abhaken auf der Heute-Seite ----
 
 // Welche Haken sind an einem Tag gesetzt? z. B. /api/einnahmen?datum=2026-11-07

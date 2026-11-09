@@ -1,4 +1,6 @@
-# Einnahmeplaner
+# Einnahmeplaner (Version „Ideen“)
+
+> Diese Version enthält zusätzlich: Wochenstatistik, Wirkstoffe-Seite, farbigen Vorrat, „Alle abhaken“ und `api-tests.http`. Die einfache Version liegt im Zweig `main`.
 
 Web-App, die Nahrungsergänzungsmittel (und optional Medikamente) so über den Tag verteilt, dass sie sich nicht gegenseitig stören.
 Prüfungsprojekt T4 – Grundlagen der Entwicklung von Web-Anwendungen und mobiler Apps (Dr. Mester).
@@ -40,6 +42,7 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 | GET | `/api/plan?datum=JJJJ-MM-TT` | berechneter Plan für diesen Tag (nur Präparate, die an dem Wochentag dran sind) |
 | GET | `/api/einnahmen?datum=JJJJ-MM-TT` | abgehakte Einnahmen eines Tages |
 | POST | `/api/einnahmen/umschalten` | Haken setzen oder entfernen (Vorrat ±1) |
+| GET | `/api/statistik?von=…&bis=…` | geplante und abgehakte Einnahmen in einem Zeitraum |
 
 Fehler kommen als `{ "fehler": "…" }` mit Status 400 oder 404.
 

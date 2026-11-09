@@ -16,6 +16,12 @@ function tageText(): string {
   if (tage.length === 0 || tage.length === 7) return 'täglich'
   return WOCHENTAGE.filter((t) => tage.includes(t.nr)).map((t) => t.kurz).join(', ')
 }
+
+// Knapp = reicht weniger als 7 Tage. Dann wird der Text orange (Klasse "knapp").
+function istKnapp(): boolean {
+  const p = props.praeparat
+  return p.vorrat !== null && p.vorrat < 7 * p.proTag
+}
 </script>
 
 <template>
@@ -24,7 +30,9 @@ function tageText(): string {
       <strong>{{ praeparat.name }}</strong><br>
       <span class="klein">
         {{ wirkstoffName }} · {{ praeparat.dosis }}, {{ praeparat.proTag }}-mal am Tag, {{ tageText() }}
-        · {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${praeparat.vorrat} Stück` }}
+        · <span :class="{ knapp: istKnapp() }">
+          {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${praeparat.vorrat} Stück` }}
+        </span>
       </span>
     </div>
     <div class="knoepfe">
@@ -37,4 +45,5 @@ function tageText(): string {
 <style scoped>
 .zeile { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .knoepfe { display: flex; gap: 0.5rem; }
+.knapp { color: #b26b00; font-weight: 600; }
 </style>

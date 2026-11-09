@@ -63,6 +63,7 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 | `views/HeuteView.vue` | Startseite: Plan zum Abhaken, Tages-Knöpfe Mo–So, Hinweise, Nachkaufen, Erinnerungen. |
 | `views/PraeparateView.vue` | Präparate anlegen, ändern, löschen. |
 | `views/TagesablaufView.vue` | Uhrzeiten der Zeitfenster einstellen. |
+| `views/WirkstoffeView.vue` | Nachschlagen: alle Wirkstoffe mit Regeln und Quellen. |
 | `components/ZeitfensterKarte.vue` | Ein Kasten auf „Heute“, z. B. „07:30 Frühstück“ mit Checkboxen. |
 | `components/PraeparatZeile.vue` | Eine Zeile in der Präparate-Liste mit „Ändern“ und „Löschen“. |
 | `style.css` | Aussehen der ganzen App. |
@@ -268,4 +269,19 @@ Aus den Folien „Das Prüfungsprojekt“ und „Technische Mindestanforderungen
 | Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (7 Tests) |
 | Dokumentation + Begründungen | `README.md`, diese Datei (Abschnitt 7 = Entscheidungen) |
 | Klein. Vollständig. Entkoppelt. Begründbar. | 4 Datenarten, alle Funktionen fertig, Frontend und Backend nur über die API verbunden |
+
+---
+
+## 12. Version „Ideen“: was dazugekommen ist
+
+Diese Version liegt auf GitHub im Zweig `ideen` (die einfache Version bleibt im Zweig `main`).
+
+| Idee | Was es macht | Wo im Code | Was man daran erklären kann |
+|---|---|---|---|
+| **Wochenstatistik** | „diese Woche bisher 85 % (17 von 20)“ unter der Überschrift | Route `GET /api/statistik` in `main.ts`, Anzeige in `HeuteView.vue` | Geschäftslogik gehört ins Backend: Es zählt für jeden Tag die geplanten (soll) und abgehakten (ist) Einnahmen. |
+| **Wirkstoffe-Seite** | Alle Wirkstoffe mit Regeln und Quelle zum Aufklappen | `views/WirkstoffeView.vue`, Route in `router.ts`, Link in `App.vue` | Neue Seite = neue View + neuer Eintrag im Router. Nutzt nur die vorhandene API (`/api/katalog`). |
+| **Vorrat farbig** | „noch 5 Stück“ wird orange, wenn es weniger als 7 Tage reicht | `components/PraeparatZeile.vue` (`:class="{ knapp: … }"`) | `:class` setzt eine CSS-Klasse nur, wenn die Bedingung stimmt. |
+| **Alle abhaken** | Knopf pro Zeitfenster, hakt alle offenen Mittel ab | `components/ZeitfensterKarte.vue` (neues `emit`), `alleAbhaken()` in `HeuteView.vue` | Die Komponente meldet nur „Knopf gedrückt“ (emit). Was dann passiert, entscheidet die Seite. |
+
+**Neu: `api-tests.http`** – Anfragen an die API ohne Frontend, z. B. für das Prüfungsgespräch („Die API funktioniert auch ohne Vue“). In VS Code mit der Erweiterung *REST Client* über jeder Anfrage auf *Send Request* klicken.
 

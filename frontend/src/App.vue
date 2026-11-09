@@ -6,6 +6,7 @@
       <RouterLink to="/">Heute</RouterLink>
       <RouterLink to="/praeparate">Präparate</RouterLink>
       <RouterLink to="/tagesablauf">Tagesablauf</RouterLink>
+      <RouterLink to="/wirkstoffe">Wirkstoffe</RouterLink>
     </nav>
   </header>
 

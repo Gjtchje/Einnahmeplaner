@@ -12,10 +12,26 @@ export interface Wirkstoff {
   hinweise: string[]
 }
 
+export interface Regel {
+  a: string
+  b: string
+  typ: string // "abstand", "zusammen" oder "warnung"
+  stunden?: number
+  grund: string
+  quelle: string
+}
+
 export interface Katalog {
   slots: { id: string, name: string, standardZeit: string }[]
   wirkstoffe: Wirkstoff[]
+  regeln: Regel[]
   quellen: { id: string, titel: string, url: string }[]
+}
+
+export interface Statistik {
+  soll: number // so viele Einnahmen waren geplant
+  ist: number // so viele wurden abgehakt
+  prozent: number
 }
 
 export interface Praeparat {
@@ -91,3 +107,5 @@ export const speichereTagesablauf = (t: Tagesablauf) => anfrage('/api/tagesablau
 export const ladePlan = (datum: string): Promise<Plan> => anfrage(`/api/plan?datum=${datum}`)
 export const ladeEinnahmen = (datum: string): Promise<Einnahme[]> => anfrage(`/api/einnahmen?datum=${datum}`)
 export const umschalten = (e: Einnahme) => anfrage('/api/einnahmen/umschalten', 'POST', e)
+export const ladeStatistik = (von: string, bis: string): Promise<Statistik> =>
+  anfrage(`/api/statistik?von=${von}&bis=${bis}`)

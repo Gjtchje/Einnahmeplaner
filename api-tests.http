@@ -1,0 +1,30 @@
+### API ohne Frontend testen
+### In VS Code mit der Erweiterung "REST Client": über jeder Anfrage auf "Send Request" klicken.
+### Vorher muss der Server laufen (start-backend.bat oder Einnahmeplaner.bat).
+
+### Katalog: alle Wirkstoffe, Zeitfenster, Regeln
+GET http://localhost:8000/api/katalog
+
+### Alle Präparate
+GET http://localhost:8000/api/praeparate
+
+### Plan für einen Tag
+GET http://localhost:8000/api/plan?datum=2026-11-09
+
+### Präparat anlegen (richtig) -> 201
+POST http://localhost:8000/api/praeparate
+Content-Type: application/json
+
+{ "name": "Test-Magnesium", "wirkstoffId": "magnesium", "dosis": "1 Kapsel", "proTag": 1, "vorrat": 20, "tage": [1, 2, 3, 4, 5] }
+
+### Präparat anlegen (falsch: Name zu kurz) -> 400 mit Fehlermeldung von Zod
+POST http://localhost:8000/api/praeparate
+Content-Type: application/json
+
+{ "name": "X", "wirkstoffId": "magnesium", "dosis": "1 Kapsel", "proTag": 1, "vorrat": null, "tage": [1] }
+
+### Unbekannte Adresse -> 404
+GET http://localhost:8000/api/gibtsnicht
+
+### Wochenstatistik
+GET http://localhost:8000/api/statistik?von=2026-11-09&bis=2026-11-11

@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HeuteView from './views/HeuteView.vue'
 import PraeparateView from './views/PraeparateView.vue'
 import TagesablaufView from './views/TagesablaufView.vue'
+import WirkstoffeView from './views/WirkstoffeView.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -10,5 +11,6 @@ export default createRouter({
     { path: '/', component: HeuteView },
     { path: '/praeparate', component: PraeparateView },
     { path: '/tagesablauf', component: TagesablaufView },
+    { path: '/wirkstoffe', component: WirkstoffeView },
   ],
 })

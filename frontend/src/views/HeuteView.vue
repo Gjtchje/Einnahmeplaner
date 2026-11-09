@@ -52,6 +52,13 @@ async function laden() {
   }
 }
 
+// ---- Wochenstatistik: von Montag bis heute ----
+const statistik = ref<api.Statistik | null>(null)
+
+async function ladeStatistik() {
+  statistik.value = await api.ladeStatistik(woche.value[0]!.datum, heute)
+}
+
 // Anderen Tag anzeigen
 function zeigeTag(datum: string) {
   gewaehlt.value = datum
@@ -62,6 +69,22 @@ function zeigeTag(datum: string) {
 async function haken(praeparatId: string, slot: string) {
   await api.umschalten({ datum: gewaehlt.value, praeparatId, slot })
   await laden()
+  await ladeStatistik()
+}
+
+// "Alle abhaken": jedes noch offene Präparat in diesem Zeitfenster einmal umschalten
+async function alleAbhaken(slot: string) {
+  for (const id of offeneIn(slot)) {
+    await api.umschalten({ datum: gewaehlt.value, praeparatId: id, slot })
+  }
+  await laden()
+  await ladeStatistik()
+}
+
+function offeneIn(slot: string): string[] {
+  return plan.value!.eintraege
+    .filter((e) => e.slot === slot && !istAbgehakt(e.praeparat.id, slot))
+    .map((e) => e.praeparat.id)
 }
 
 function istAbgehakt(praeparatId: string, slot: string): boolean {
@@ -146,6 +169,7 @@ async function erinnerungPruefen() {
 let timer: number
 onMounted(async () => {
   await laden()
+  await ladeStatistik()
   erinnerungPruefen()
   timer = setInterval(erinnerungPruefen, 30_000)
 })
@@ -155,7 +179,12 @@ onUnmounted(() => clearInterval(timer))
 <template>
   <main>
     <h1>{{ ueberschrift }}</h1>
-    <p class="unterzeile">{{ erledigt }} von {{ anzahl }} erledigt</p>
+    <p class="unterzeile">
+      {{ erledigt }} von {{ anzahl }} erledigt
+      <span v-if="statistik && statistik.soll > 0">
+        · diese Woche bisher {{ statistik.prozent }} % ({{ statistik.ist }} von {{ statistik.soll }})
+      </span>
+    </p>
 
     <!-- Tages-Knöpfe: Montag bis Sonntag dieser Woche -->
     <nav class="woche" aria-label="Tag auswählen">
@@ -184,6 +213,7 @@ onUnmounted(() => clearInterval(timer))
       :eintraege="fenster.eintraege"
       :abgehakt="abgehaktIn(fenster.id)"
       @haken="(praeparatId) => haken(praeparatId, fenster.id)"
+      @alle-abhaken="alleAbhaken(fenster.id)"
     />
 
     <!-- Hinweise des Planers -->

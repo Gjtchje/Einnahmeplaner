@@ -5,7 +5,7 @@
 import type { Plan } from '../api'
 
 // props = Daten, die die Seite an die Komponente gibt
-defineProps<{
+const props = defineProps<{
   name: string // z. B. "Frühstück"
   zeit: string // z. B. "07:30"
   eintraege: Plan['eintraege'] // die Präparate in diesem Zeitfenster
@@ -13,7 +13,12 @@ defineProps<{
 }>()
 
 // emit = Nachricht an die Seite: "Präparat mit dieser ID wurde angeklickt"
-const emit = defineEmits<{ haken: [praeparatId: string] }>()
+const emit = defineEmits<{ haken: [praeparatId: string], alleAbhaken: [] }>()
+
+// Ist in diesem Zeitfenster noch etwas offen? Nur dann den Knopf "Alle abhaken" zeigen.
+function nochOffen(): boolean {
+  return props.eintraege.some((e) => !props.abgehakt.includes(e.praeparat.id))
+}
 </script>
 
 <template>
@@ -21,6 +26,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
     <div class="zeit">
       <strong>{{ zeit }}</strong>
       <span class="klein">{{ name }}</span>
+      <button v-if="nochOffen() && eintraege.length > 1" class="alle" @click="emit('alleAbhaken')">Alle abhaken</button>
     </div>
     <div>
       <label v-for="e in eintraege" :key="e.praeparat.id" class="eintrag">
@@ -42,6 +48,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
 <style scoped>
 .zeitfenster { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; }
 .zeit { display: grid; align-content: start; }
+.alle { margin-top: 0.5rem; padding: 0.3rem 0.7rem; font-size: 0.8rem; justify-self: start; }
 .zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; }
 
 .eintrag { display: flex; gap: 0.6rem; align-items: flex-start; color: var(--text); font-size: 1rem; cursor: pointer; }
