@@ -22,34 +22,40 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
       <strong>{{ zeit }}</strong>
       <span class="klein">{{ name }}</span>
     </div>
-    <div>
-      <label v-for="e in eintraege" :key="e.praeparat.id" class="eintrag">
-        <input
-          type="checkbox"
-          :checked="abgehakt.includes(e.praeparat.id)"
-          @change="emit('haken', e.praeparat.id)"
-        >
-        <span>
-          <span :class="{ durch: abgehakt.includes(e.praeparat.id) }">{{ e.praeparat.name }}</span>
-          <span class="klein"> · {{ e.praeparat.dosis }}{{ e.praeparat.staerke ? ` à ${e.praeparat.staerke}` : '' }}</span><br>
-          <span class="tipp">{{ e.wirkstoff.hinweise[0] }}</span>
-        </span>
-      </label>
-    </div>
+    <ul class="eintraege">
+      <li v-for="e in eintraege" :key="e.praeparat.id">
+        <label class="eintrag">
+          <input
+            type="checkbox"
+            :checked="abgehakt.includes(e.praeparat.id)"
+            @change="emit('haken', e.praeparat.id)"
+          >
+          <span>
+            <span class="name" :class="{ durch: abgehakt.includes(e.praeparat.id) }">{{ e.praeparat.name }}</span>
+            <span class="klein"> · {{ e.praeparat.dosis }}{{ e.praeparat.staerke ? ` à ${e.praeparat.staerke}` : '' }}</span>
+            <span class="tipp">{{ e.wirkstoff.hinweise[0] }}</span>
+          </span>
+        </label>
+      </li>
+    </ul>
   </section>
 </template>
 
 <style scoped>
-.zeitfenster { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; }
-.zeit { display: grid; align-content: start; }
-.zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; }
+.zeitfenster { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--abstand); }
+.zeit { display: grid; align-content: start; gap: 0.1rem; }
+.zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; line-height: 1.1; }
 
-.eintrag { display: flex; gap: 0.6rem; align-items: flex-start; color: var(--text); font-size: 1rem; cursor: pointer; }
-.eintrag input { width: 1.2rem; height: 1.2rem; accent-color: var(--gruen); }
+.eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.eintrag { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; align-items: start; color: var(--text); font-size: 1rem; cursor: pointer; }
+.eintrag input { margin-top: 0.15rem; }
+.name { font-weight: 500; }
 .durch { text-decoration: line-through; color: var(--leise); }
-.tipp { font-size: 0.8rem; color: var(--gruen); }
+.tipp { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--gruen); }
 
-@media (max-width: 520px) {
-  .zeitfenster { grid-template-columns: 1fr; gap: 0.5rem; }
+/* Handy: Uhrzeit und Name nebeneinander als Kopfzeile */
+@media (max-width: 600px) {
+  .zeitfenster { grid-template-columns: 1fr; gap: 0.75rem; }
+  .zeit { display: flex; align-items: baseline; gap: 0.6rem; }
 }
 </style>
