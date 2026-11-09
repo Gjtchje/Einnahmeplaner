@@ -222,7 +222,8 @@ Für den normalen Gebrauch ist das unpraktisch. Deshalb macht `Einnahmeplaner.ba
 
 1. **Frontend bauen** (`npm run build-only`): Vite macht aus den `.vue`- und `.ts`-Dateien fertige HTML-, CSS- und JavaScript-Dateien im Ordner `frontend/dist`.
 2. **Backend starten**: Das Backend liefert jetzt **auch** diese fertigen Dateien aus (die zwei Zeilen mit `serveStatic` unten in `main.ts`). Es läuft also nur noch **ein** Programm auf Port 8000.
-3. **App-Fenster öffnen**: Edge wird mit `--app=http://localhost:8000` gestartet. Das ist ein Browserfenster ohne Adressleiste und Tabs – es sieht aus wie ein eigenes Programm.
+3. **Warten**: Jede Sekunde fragt `curl` beim Server nach. Erst wenn er antwortet, geht es weiter (beim ersten Start braucht Deno etwas länger).
+4. **App-Fenster öffnen**: Edge wird mit `--app=http://localhost:8000` gestartet. Das ist ein Browserfenster ohne Adressleiste und Tabs – es sieht aus wie ein eigenes Programm.
 
 Technisch ist es weiterhin `localhost` (der eigene Rechner) – man sieht es nur nicht mehr.
 
