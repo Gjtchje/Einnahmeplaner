@@ -125,16 +125,3 @@ export interface Laborwert {
 export const ladeLaborwerte = (): Promise<Laborwert[]> => anfrage('/api/laborwerte')
 export const erstelleLaborwert = (l: Omit<Laborwert, 'id'>) => anfrage('/api/laborwerte', 'POST', l)
 export const loescheLaborwert = (id: string) => anfrage(`/api/laborwerte/${id}`, 'DELETE')
-
-// ---- Produktsuche (Open Food Facts) ----
-
-export interface Treffer {
-  name: string
-  marke: string
-  code: string
-  wirkstoffId: string | null // vom Backend geraten
-}
-
-export const sucheProdukt = (suche: string): Promise<Treffer[]> =>
-  anfrage(`/api/produktsuche?q=${encodeURIComponent(suche)}`)
-

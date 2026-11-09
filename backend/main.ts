@@ -12,7 +12,6 @@ import { einnahmeSchema, KATALOG, laborwertSchema, praeparatSchema, tagesablaufS
 import { planeTag, praeparateAm } from "./planer.ts";
 import * as db from "./datenbank.ts";
 import { BEISPIELDATEN } from "./beispieldaten.ts";
-import { sucheProdukt } from "./produktsuche.ts";
 
 const app = new Hono();
 
@@ -165,20 +164,6 @@ app.post("/api/laborwerte", async (c) => {
 app.delete("/api/laborwerte/:id", async (c) => {
   await db.loescheLaborwert(c.req.param("id"));
   return c.body(null, 204);
-});
-
-// ---- Produktsuche über Open Food Facts (externer Dienst) ----
-// z. B. /api/produktsuche?q=magnesium  oder  /api/produktsuche?q=4058172309563 (Barcode-Nummer)
-
-app.get("/api/produktsuche", async (c) => {
-  const suche = (c.req.query("q") ?? "").trim();
-  if (suche.length < 2) return c.json({ fehler: "Bitte mindestens 2 Zeichen eingeben" }, 400);
-  try {
-    return c.json(await sucheProdukt(suche));
-  } catch {
-    // Der fremde Dienst ist nicht erreichbar – unsere App läuft trotzdem weiter.
-    return c.json({ fehler: "Die Produktdatenbank (Open Food Facts) ist gerade nicht erreichbar." }, 502);
-  }
 });
 
 // ---- Fehlerbehandlung ----

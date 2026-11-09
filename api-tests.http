@@ -34,7 +34,3 @@ POST http://localhost:8000/api/laborwerte
 Content-Type: application/json
 
 { "name": "Vitamin D (25-OH)", "wert": 32.5, "einheit": "ng/ml", "datum": "2026-11-09", "referenz": "30–100" }
-
-### Produktsuche über Open Food Facts (Name oder Barcode-Nummer)
-GET http://localhost:8000/api/produktsuche?q=magnesium
-

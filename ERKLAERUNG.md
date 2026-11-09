@@ -307,11 +307,8 @@ Diese Version liegt auf GitHub im Zweig `ideen` (die einfache Version bleibt im 
 | **Alle abhaken** | Knopf pro Zeitfenster, hakt alle offenen Mittel ab | `components/ZeitfensterKarte.vue` (neues `emit`), `alleAbhaken()` in `HeuteView.vue` | Die Komponente meldet nur „Knopf gedrückt“ (emit). Was dann passiert, entscheidet die Seite. |
 
 | **Laborwerte-Tagebuch** | Werte vom Laborbericht eintragen, Verlauf sehen („18 → 32,5 ng/ml“) – **ohne** Bewertung oder Empfehlung | `views/LaborwerteView.vue`, Routen `/api/laborwerte` in `main.ts`, `laborwertSchema` in `modell.ts` | Eine neue Datenart mit Anlegen, Anzeigen, Löschen – das gleiche Muster wie bei den Präparaten. Warum keine Empfehlung: ADR-008 in `ARCHITEKTUR.md`. |
-| **Produktsuche** | Produktname oder Barcode-Nummer eingeben → Treffer übernehmen, Wirkstoff wird erkannt | `backend/produktsuche.ts`, Route `/api/produktsuche`, Suchfeld in `PraeparateView.vue` | **Externer Dienst:** Unser Backend fragt Open Food Facts und gibt die Treffer weiter. Ist der Dienst nicht erreichbar, antwortet unser Server mit 502 und die App läuft normal weiter. |
 
-**Warum fragt das Backend Open Food Facts und nicht der Browser?** So bleibt der fremde Dienst hinter unserer eigenen API versteckt: Das Frontend kennt nur `/api/produktsuche`. Würde man später eine andere Produktdatenbank nehmen, müsste man nur `produktsuche.ts` ändern.
-
-**Warum kein Kamera-Scanner?** Die Browser-Funktion zum Barcode-Lesen (`BarcodeDetector`) gibt es in Chrome und Edge unter Windows nicht; dafür bräuchte man eine zusätzliche Bibliothek. Die Barcode-Nummer (die Ziffern unter dem Strichcode) kann man aber eintippen – das Ergebnis ist dasselbe.
+**Bewusst weggelassen: Produktsuche.** Eine Suche über die offene Produktdatenbank Open Food Facts war eingebaut, wurde aber wieder entfernt: Nahrungsergänzungsmittel sind dort lückenhaft erfasst, die App hängt dann von einem fremden Dienst ab, und es macht das Projekt größer, ohne den Kern zu verbessern (siehe ADR-010 in `ARCHITEKTUR.md`).
 
 **Neu: `api-tests.http`** – Anfragen an die API ohne Frontend, z. B. für das Prüfungsgespräch („Die API funktioniert auch ohne Vue“). In VS Code mit der Erweiterung *REST Client* über jeder Anfrage auf *Send Request* klicken.
 

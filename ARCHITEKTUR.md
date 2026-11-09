@@ -16,7 +16,6 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
   4. Hinweise sehen (Konflikte, Tipps, Warnungen, „bald nachkaufen“) und an Einnahmen erinnert werden
   5. Wochenstatistik sehen, Wirkstoffe mit Regeln und Quellen nachschlagen
   6. Laborwerte als Tagebuch eintragen (ohne Bewertung)
-  7. Produkt per Name oder Barcode-Nummer suchen und übernehmen
 - **Out of scope:** Dosis-Empfehlungen, mehrere Benutzer, Login, Online-Betrieb
 
 ### Domäne
@@ -46,7 +45,7 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
 - **Persistenzmodell:** Schlüssel-Wert: `["praeparate", id]`, `["tagesablauf"]`, `["einnahmen", datum, praeparatId, slot]`, `["laborwerte", id]`. Der Plan wird nicht gespeichert, sondern immer neu berechnet.
 
 ### Externe Services
-- **Open Food Facts** (offene Produktdatenbank) für die Produktsuche – nur über unser Backend angesprochen, siehe ADR-010
+- keine (eine Produktsuche über Open Food Facts wurde geprüft und verworfen, siehe ADR-010)
 
 ### Security
 - **Authentication / Authorization:** keine – Einzelnutzer-App auf dem eigenen Rechner (siehe ADR-007)
@@ -78,7 +77,7 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 | D-007 | Kein Login | Accepted | ADR-007 |
 | D-008 | Keine Dosis-Empfehlung | Accepted | ADR-008 |
 | D-009 | Backend liefert das Frontend aus (Ein-Klick-Start) | Accepted | ADR-009 |
-| D-011 | Produktsuche über Open Food Facts, angesprochen vom Backend | Accepted | ADR-010 |
+| D-011 | Produktsuche über Open Food Facts | Rejected (wieder entfernt) | ADR-010 |
 | D-010 | Erste, größere Version mit 25 Dateien | Superseded (vereinfacht am 07.11.2026) | – |
 
 ---
@@ -158,11 +157,10 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 - **Alternativen:** Online-Hosting (z. B. Deno Deploy); Desktop-App (Electron).
 - **Konsequenzen:** + ein Doppelklick, ein Programm · − läuft nur auf dem eigenen Rechner; Erinnerungen nur, solange das Fenster offen ist.
 
-### ADR-010: Produktsuche über Open Food Facts, angesprochen vom Backend
-- **Status:** Accepted
-- **Kontext:** Präparate sollen schneller angelegt werden können – per Produktname oder Barcode-Nummer.
-- **Entscheidung:** Das Backend fragt die offene Produktdatenbank Open Food Facts (`/api/v2/product/<barcode>.json` bzw. Namenssuche) und gibt bis zu 5 Treffer über die eigene Route `/api/produktsuche` weiter. Der Wirkstoff wird über Suchwörter im Produktnamen geraten (`rateWirkstoff`, mit Tests).
-- **Alternativen:** Browser fragt Open Food Facts direkt; kommerzielle Arzneimittel-Datenbank; Kamera-Scanner im Browser.
-- **Begründung:** Kostenlos und offen; über das eigene Backend bleibt der fremde Dienst austauschbar und das Frontend kennt nur unsere API. Kamera-Scanner (`BarcodeDetector`) gibt es in Chrome/Edge unter Windows nicht – die Barcode-Nummer kann man eintippen.
-- **Konsequenzen:** + schneller anlegen · − abhängig von einem fremden Dienst (bei Ausfall: Status 502, Rest der App läuft weiter); Nahrungsergänzungsmittel sind dort nicht vollständig erfasst; geratener Wirkstoff muss vom Nutzer geprüft werden.
-
+### ADR-010: Keine Produktsuche über Open Food Facts
+- **Status:** Rejected (war kurz eingebaut und wurde wieder entfernt)
+- **Kontext:** Idee: Präparate per Produktname oder Barcode-Nummer automatisch anlegen, Daten aus der offenen Produktdatenbank Open Food Facts.
+- **Entscheidung:** Nicht umsetzen. Präparate werden von Hand angelegt; der Wirkstoff wird aus der Liste gewählt.
+- **Begründung:** Nahrungsergänzungsmittel sind dort lückenhaft erfasst; die App wäre von einem fremden Dienst abhängig; mehr Code, ohne den Kern (Planer) zu verbessern. Ein Kamera-Scanner im Browser (`BarcodeDetector`) fehlt außerdem in Chrome/Edge unter Windows.
+- **Konsequenzen:** + kleiner, keine externe Abhängigkeit · − Anlegen dauert etwas länger.
+- **Folgen:** neu prüfen, falls es eine verlässliche Produktdatenbank für Nahrungsergänzungsmittel gibt.
