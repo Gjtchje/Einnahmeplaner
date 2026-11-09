@@ -1,6 +1,6 @@
 # Einnahmeplaner (Version „Ideen“)
 
-> Diese Version enthält zusätzlich: Wochenstatistik, Wirkstoffe-Seite, farbigen Vorrat, „Alle abhaken“ und `api-tests.http`. Die einfache Version liegt im Zweig `main`.
+> Diese Version enthält zusätzlich: Wochenstatistik, Wirkstoffe-Seite, farbigen Vorrat, „Alle abhaken“, Laborwerte-Tagebuch, Produktsuche (Open Food Facts) und `api-tests.http`. Die einfache Version liegt im Zweig `main`.
 
 Web-App, die Nahrungsergänzungsmittel (und optional Medikamente) so über den Tag verteilt, dass sie sich nicht gegenseitig stören.
 Prüfungsprojekt T4 – Grundlagen der Entwicklung von Web-Anwendungen und mobiler Apps (Dr. Mester).
@@ -45,6 +45,10 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 | GET | `/api/einnahmen?datum=JJJJ-MM-TT` | abgehakte Einnahmen eines Tages |
 | POST | `/api/einnahmen/umschalten` | Haken setzen oder entfernen (Vorrat ±1) |
 | GET | `/api/statistik?von=…&bis=…` | geplante und abgehakte Einnahmen in einem Zeitraum |
+| GET | `/api/laborwerte` | alle Laborwerte (Tagebuch) |
+| POST | `/api/laborwerte` | Laborwert eintragen |
+| DELETE | `/api/laborwerte/:id` | Laborwert löschen |
+| GET | `/api/produktsuche?q=…` | Produkt bei Open Food Facts suchen (Name oder Barcode-Nummer) |
 
 Fehler kommen als `{ "fehler": "…" }` mit Status 400 oder 404.
 

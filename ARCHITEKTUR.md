@@ -1,4 +1,4 @@
-# Einnahmeplaner – Architekturbeschreibung
+# Einnahmeplaner – Architekturbeschreibung (Version „Ideen“)
 
 Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App in wenigen Minuten), dann die wichtigsten **Entscheidungen als ADR**.
 
@@ -14,10 +14,13 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
   2. Tagesablauf einstellen (Uhrzeiten der 6 Zeitfenster)
   3. Tagesplan ansehen (heute oder ein anderer Tag der Woche) und Einnahmen abhaken
   4. Hinweise sehen (Konflikte, Tipps, Warnungen, „bald nachkaufen“) und an Einnahmen erinnert werden
+  5. Wochenstatistik sehen, Wirkstoffe mit Regeln und Quellen nachschlagen
+  6. Laborwerte als Tagebuch eintragen (ohne Bewertung)
+  7. Produkt per Name oder Barcode-Nummer suchen und übernehmen
 - **Out of scope:** Dosis-Empfehlungen, mehrere Benutzer, Login, Online-Betrieb
 
 ### Domäne
-- **Wichtige Entitäten:** Wirkstoff, Regel (fester Katalog) · Präparat, Tagesablauf, Einnahme (Nutzerdaten)
+- **Wichtige Entitäten:** Wirkstoff, Regel (fester Katalog) · Präparat, Tagesablauf, Einnahme, Laborwert (Nutzerdaten)
 - **Wichtige Regeln:**
   - Wenn zwei Wirkstoffe eine Abstandsregel haben (z. B. Eisen ↔ Calcium 2 Std.), dürfen ihre Zeitfenster nicht näher beieinander liegen.
   - Medikamente werden vor Nahrungsergänzungsmitteln eingeplant.
@@ -28,7 +31,7 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
 ### Client
 - **Technologie:** Vue 3 (Single File Components, Composition API), TypeScript, Vite, Vue Router
 - **Rendering:** SPA (Single Page Application) – im Browser gerendert
-- **State:** Server-State (Präparate, Plan, Haken) liegt im Backend und wird bei Bedarf neu geladen; Formular- und UI-State in der jeweiligen Seite (`ref`); URL-State über den Router (`/`, `/praeparate`, `/tagesablauf`)
+- **State:** Server-State (Präparate, Plan, Haken, Laborwerte) liegt im Backend und wird bei Bedarf neu geladen; Formular- und UI-State in der jeweiligen Seite (`ref`); URL-State über den Router (`/`, `/praeparate`, `/tagesablauf`, `/wirkstoffe`, `/laborwerte`)
 
 ### Backend
 - **Technologie:** Deno, Hono, Zod
@@ -40,7 +43,10 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
 
 ### Daten
 - **Datenbank:** Deno KV (eingebaut, als Datei in `backend/data/`)
-- **Persistenzmodell:** Schlüssel-Wert: `["praeparate", id]`, `["tagesablauf"]`, `["einnahmen", datum, praeparatId, slot]`. Der Plan wird nicht gespeichert, sondern immer neu berechnet.
+- **Persistenzmodell:** Schlüssel-Wert: `["praeparate", id]`, `["tagesablauf"]`, `["einnahmen", datum, praeparatId, slot]`, `["laborwerte", id]`. Der Plan wird nicht gespeichert, sondern immer neu berechnet.
+
+### Externe Services
+- **Open Food Facts** (offene Produktdatenbank) für die Produktsuche – nur über unser Backend angesprochen, siehe ADR-010
 
 ### Security
 - **Authentication / Authorization:** keine – Einzelnutzer-App auf dem eigenen Rechner (siehe ADR-007)
@@ -72,6 +78,7 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 | D-007 | Kein Login | Accepted | ADR-007 |
 | D-008 | Keine Dosis-Empfehlung | Accepted | ADR-008 |
 | D-009 | Backend liefert das Frontend aus (Ein-Klick-Start) | Accepted | ADR-009 |
+| D-011 | Produktsuche über Open Food Facts, angesprochen vom Backend | Accepted | ADR-010 |
 | D-010 | Erste, größere Version mit 25 Dateien | Superseded (vereinfacht am 07.11.2026) | – |
 
 ---
@@ -142,6 +149,7 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 - **Alternativen:** Dosis-Empfehlung aus Körpergewicht oder Laborwerten.
 - **Begründung:** Medizinisch riskant (Laborwerte brauchen ärztliche Einordnung, z. B. Überdosierung bei Vitamin D möglich); eine App mit persönlicher Dosis-Empfehlung wäre sehr wahrscheinlich ein Medizinprodukt (EU-MDR).
 - **Konsequenzen:** + sicher und rechtlich unkritisch · − Nutzer muss Dosis selbst kennen.
+- **Umsetzung in dieser Version:** Laborwerte gibt es nur als **Tagebuch** (eintragen und Verlauf ansehen). Die Seite sagt ausdrücklich, dass die Werte nicht bewertet werden.
 
 ### ADR-009: Backend liefert das Frontend aus (Ein-Klick-Start)
 - **Status:** Accepted
@@ -149,3 +157,12 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 - **Entscheidung:** Das Frontend wird gebaut (`frontend/dist`) und vom Backend mit ausgeliefert; `Einnahmeplaner.bat` öffnet die App in einem Edge-Fenster ohne Adressleiste.
 - **Alternativen:** Online-Hosting (z. B. Deno Deploy); Desktop-App (Electron).
 - **Konsequenzen:** + ein Doppelklick, ein Programm · − läuft nur auf dem eigenen Rechner; Erinnerungen nur, solange das Fenster offen ist.
+
+### ADR-010: Produktsuche über Open Food Facts, angesprochen vom Backend
+- **Status:** Accepted
+- **Kontext:** Präparate sollen schneller angelegt werden können – per Produktname oder Barcode-Nummer.
+- **Entscheidung:** Das Backend fragt die offene Produktdatenbank Open Food Facts (`/api/v2/product/<barcode>.json` bzw. Namenssuche) und gibt bis zu 5 Treffer über die eigene Route `/api/produktsuche` weiter. Der Wirkstoff wird über Suchwörter im Produktnamen geraten (`rateWirkstoff`, mit Tests).
+- **Alternativen:** Browser fragt Open Food Facts direkt; kommerzielle Arzneimittel-Datenbank; Kamera-Scanner im Browser.
+- **Begründung:** Kostenlos und offen; über das eigene Backend bleibt der fremde Dienst austauschbar und das Frontend kennt nur unsere API. Kamera-Scanner (`BarcodeDetector`) gibt es in Chrome/Edge unter Windows nicht – die Barcode-Nummer kann man eintippen.
+- **Konsequenzen:** + schneller anlegen · − abhängig von einem fremden Dienst (bei Ausfall: Status 502, Rest der App läuft weiter); Nahrungsergänzungsmittel sind dort nicht vollständig erfasst; geratener Wirkstoff muss vom Nutzer geprüft werden.
+
