@@ -19,6 +19,8 @@ Optional eigenes Symbol: Rechtsklick auf die Verknüpfung → *Eigenschaften* �
 3. Tests: `test-backend.bat`
 4. Stand sichern: `speichern.bat`
 
+Es kann immer nur **ein** Server gleichzeitig laufen (Port 8000). Vor dem Start einer anderen Version das Server-Fenster schließen.
+
 Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in `backend/data/`.
 
 ## Technik

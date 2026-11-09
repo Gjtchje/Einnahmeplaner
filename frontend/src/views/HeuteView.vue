@@ -39,6 +39,7 @@ const ueberschrift = computed(() => {
 
 // Alles vom Backend laden – gleichzeitig, damit es schneller geht
 async function laden() {
+  fehler.value = ''
   try {
     const [k, t, p, e] = await Promise.all([
       api.ladeKatalog(), api.ladeTagesablauf(), api.ladePlan(gewaehlt.value), api.ladeEinnahmen(gewaehlt.value),
@@ -127,10 +128,10 @@ async function erinnerungPruefen() {
   const minutenJetzt = jetzt.getHours() * 60 + jetzt.getMinutes()
   // Immer den Plan von HEUTE prüfen – egal, welcher Tag gerade angezeigt wird
   const [planHeute, einnahmen] = await Promise.all([api.ladePlan(heute), api.ladeEinnahmen(heute)])
-  const erledigt = einnahmen.map((e) => `${e.praeparatId}|${e.slot}`)
+  const abgehaktHeute = einnahmen.map((e) => `${e.praeparatId}|${e.slot}`)
 
   for (const [slot, zeit] of Object.entries(zeiten.value)) {
-    const offen = planHeute.eintraege.filter((e) => e.slot === slot && !erledigt.includes(`${e.praeparat.id}|${slot}`))
+    const offen = planHeute.eintraege.filter((e) => e.slot === slot && !abgehaktHeute.includes(`${e.praeparat.id}|${slot}`))
     const seitMinuten = minutenJetzt - inMinuten(zeit)
     const schluessel = `${heute}|${slot}`
     if (offen.length > 0 && seitMinuten >= 0 && seitMinuten <= 30 && !gemeldet.includes(schluessel)) {
@@ -172,7 +173,8 @@ onUnmounted(() => clearInterval(timer))
     <p v-if="fehler" class="fehler">{{ fehler }}</p>
 
     <p v-if="plan && anzahl === 0" class="karte">
-      Noch keine Präparate. Lege unter <RouterLink to="/praeparate">Präparate</RouterLink> welche an.
+      An diesem Tag ist nichts geplant. Präparate legst du unter
+      <RouterLink to="/praeparate">Präparate</RouterLink> an.
     </p>
 
     <!-- Ein Kasten pro Zeitfenster (eigene Komponente, siehe components/ZeitfensterKarte.vue) -->
