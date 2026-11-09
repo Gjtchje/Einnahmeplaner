@@ -105,6 +105,20 @@ app.post("/api/einnahmen/umschalten", async (c) => {
   }
 });
 
+// ---- Fehlerbehandlung ----
+
+// Unbekannte API-Adresse, z. B. /api/gibtsnicht -> 404 als JSON
+app.all("/api/*", (c) => c.json({ fehler: "Diese Adresse gibt es nicht" }, 404));
+
+// Unerwarteter Fehler irgendwo im Server -> nicht abstürzen, sondern antworten.
+// Kaputtes JSON vom Browser ist ein Fehler des Browsers (400), alles andere ein
+// Fehler des Servers (500). Details nur ins Server-Fenster, nicht an den Browser.
+app.onError((fehler, c) => {
+  if (fehler instanceof SyntaxError) return c.json({ fehler: "Ungültiges JSON" }, 400);
+  console.error(fehler);
+  return c.json({ fehler: "Interner Serverfehler" }, 500);
+});
+
 // ---- Frontend ausliefern (für den Ein-Klick-Start) ----
 // Alles, was keine /api-Adresse ist, kommt aus dem fertig gebauten Frontend
 // (Ordner frontend/dist). Unbekannte Adressen bekommen die index.html,

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import * as api from '../api'
+import PraeparatZeile from '../components/PraeparatZeile.vue'
 
 const praeparate = ref<api.Praeparat[]>([])
 const wirkstoffe = ref<api.Wirkstoff[]>([])
@@ -116,20 +117,15 @@ onMounted(laden)
       <button v-if="bearbeiteId" type="button" @click="abbrechen">Abbrechen</button>
     </form>
 
-    <!-- Liste aller Präparate -->
-    <div v-for="p in praeparate" :key="p.id" class="karte zeile">
-      <div>
-        <strong>{{ p.name }}</strong><br>
-        <span class="klein">
-          {{ wirkstoffName(p.wirkstoffId) }} · {{ p.dosis }}, {{ p.proTag }}-mal täglich
-          · {{ p.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${p.vorrat} Stück` }}
-        </span>
-      </div>
-      <div class="knoepfe">
-        <button @click="bearbeiten(p)">Ändern</button>
-        <button @click="loeschen(p)">Löschen</button>
-      </div>
-    </div>
+    <!-- Liste aller Präparate (eigene Komponente, siehe components/PraeparatZeile.vue) -->
+    <PraeparatZeile
+      v-for="p in praeparate"
+      :key="p.id"
+      :praeparat="p"
+      :wirkstoff-name="wirkstoffName(p.wirkstoffId)"
+      @aendern="bearbeiten(p)"
+      @loeschen="loeschen(p)"
+    />
   </main>
 </template>
 
@@ -138,8 +134,6 @@ h2 { font-size: 1.2rem; margin-bottom: 1rem; }
 .reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
 .hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
 form button { margin-right: 0.5rem; }
-.zeile { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.knoepfe { display: flex; gap: 0.5rem; }
 
 @media (max-width: 520px) {
   .reihe { grid-template-columns: 1fr; gap: 0; }

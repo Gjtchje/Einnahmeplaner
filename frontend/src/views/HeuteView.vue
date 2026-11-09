@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import * as api from '../api'
+import ZeitfensterKarte from '../components/ZeitfensterKarte.vue'
 
 // ---- Daten (ref = Vue zeigt Änderungen automatisch an) ----
 const katalog = ref<api.Katalog | null>(null)
@@ -39,6 +40,11 @@ async function haken(praeparatId: string, slot: string) {
 
 function istAbgehakt(praeparatId: string, slot: string): boolean {
   return abgehakt.value.includes(`${praeparatId}|${slot}`)
+}
+
+// IDs der Präparate, die in einem Zeitfenster schon abgehakt sind
+function abgehaktIn(slot: string): string[] {
+  return abgehakt.value.filter((k) => k.endsWith(`|${slot}`)).map((k) => k.split('|')[0]!)
 }
 
 // ---- Berechnete Werte (computed = wird automatisch neu berechnet) ----
@@ -108,27 +114,16 @@ onUnmounted(() => clearInterval(timer))
       Noch keine Präparate. Lege unter <RouterLink to="/praeparate">Präparate</RouterLink> welche an.
     </p>
 
-    <!-- Ein Kasten pro Zeitfenster -->
-    <section v-for="fenster in zeitfenster" :key="fenster.id" class="karte zeitfenster">
-      <div class="zeit">
-        <strong>{{ fenster.zeit }}</strong>
-        <span class="klein">{{ fenster.name }}</span>
-      </div>
-      <div>
-        <label v-for="e in fenster.eintraege" :key="e.praeparat.id" class="eintrag">
-          <input
-            type="checkbox"
-            :checked="istAbgehakt(e.praeparat.id, fenster.id)"
-            @change="haken(e.praeparat.id, fenster.id)"
-          >
-          <span>
-            <span :class="{ durch: istAbgehakt(e.praeparat.id, fenster.id) }">{{ e.praeparat.name }}</span>
-            <span class="klein"> · {{ e.praeparat.dosis }}</span><br>
-            <span class="tipp">{{ e.wirkstoff.hinweise[0] }}</span>
-          </span>
-        </label>
-      </div>
-    </section>
+    <!-- Ein Kasten pro Zeitfenster (eigene Komponente, siehe components/ZeitfensterKarte.vue) -->
+    <ZeitfensterKarte
+      v-for="fenster in zeitfenster"
+      :key="fenster.id"
+      :name="fenster.name"
+      :zeit="fenster.zeit"
+      :eintraege="fenster.eintraege"
+      :abgehakt="abgehaktIn(fenster.id)"
+      @haken="(praeparatId) => haken(praeparatId, fenster.id)"
+    />
 
     <!-- Hinweise des Planers -->
     <section v-if="plan && plan.hinweise.length > 0">
@@ -152,20 +147,7 @@ onUnmounted(() => clearInterval(timer))
 </template>
 
 <style scoped>
-.zeitfenster { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; }
-.zeit { display: grid; align-content: start; }
-.zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; }
-
-.eintrag { display: flex; gap: 0.6rem; align-items: flex-start; color: var(--text); font-size: 1rem; cursor: pointer; }
-.eintrag input { width: 1.2rem; height: 1.2rem; accent-color: var(--gruen); }
-.durch { text-decoration: line-through; color: var(--leise); }
-.tipp { font-size: 0.8rem; color: var(--gruen); }
-
 h2 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem; }
 .hinweis { background: var(--gruen-hell); }
 .hinweis.warnung { background: var(--orange-hell); }
-
-@media (max-width: 520px) {
-  .zeitfenster { grid-template-columns: 1fr; gap: 0.5rem; }
-}
 </style>

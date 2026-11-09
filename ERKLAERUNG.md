@@ -63,6 +63,8 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 | `views/HeuteView.vue` | Startseite: Plan zum Abhaken, Hinweise, Nachkaufen, Erinnerungen. |
 | `views/PraeparateView.vue` | Präparate anlegen, ändern, löschen. |
 | `views/TagesablaufView.vue` | Uhrzeiten der Zeitfenster einstellen. |
+| `components/ZeitfensterKarte.vue` | Ein Kasten auf „Heute“, z. B. „07:30 Frühstück“ mit Checkboxen. |
+| `components/PraeparatZeile.vue` | Eine Zeile in der Präparate-Liste mit „Ändern“ und „Löschen“. |
 | `style.css` | Aussehen der ganzen App. |
 
 ---
@@ -138,7 +140,8 @@ Uhrzeiten: nüchtern 07:00 · Frühstück 07:30 · Vormittag 10:00 · Mittag 12:
 | **REST-API** | Feste Adressen, über die Frontend und Backend reden | `main.ts` |
 | **GET / POST / PUT / DELETE** | Lesen / Anlegen / Ändern / Löschen | `main.ts`, `api.ts` |
 | **JSON** | Textformat für Daten, z. B. `{ "name": "Zink" }` | überall |
-| **Statuscode** | Zahl in der Antwort: 200 ok, 201 angelegt, 204 gelöscht, 400 falsche Eingabe, 404 nicht gefunden | `main.ts` |
+| **Statuscode** | Zahl in der Antwort: 200 ok, 201 angelegt, 204 gelöscht, 400 falsche Eingabe, 404 nicht gefunden, 500 Fehler im Server | `main.ts` |
+| **Fehlerbehandlung** | Unbekannte Adresse → 404, kaputtes JSON → 400, unerwarteter Fehler → 500 (statt Absturz) | `main.ts`, Abschnitt „Fehlerbehandlung“ |
 | **Zod** | Prüft, ob Daten richtig sind, bevor sie gespeichert werden | `modell.ts` |
 | **Deno KV** | Einfache Datenbank: Wert unter einem Schlüssel speichern | `datenbank.ts` |
 | **Hono** | Kleines Framework für die Routen des Servers | `main.ts` |
@@ -148,6 +151,9 @@ Uhrzeiten: nüchtern 07:00 · Frühstück 07:30 · Vormittag 10:00 · Mittag 12:
 | **`v-for` / `v-if`** | Liste anzeigen / nur anzeigen, wenn … | Views |
 | **`onMounted`** | Code, der läuft, sobald die Seite angezeigt wird (Daten laden) | Views |
 | **Router** | Zeigt je nach Adresse eine andere Seite | `router.ts` |
+| **Komponente** | Ein wiederverwendbarer Baustein der Oberfläche (eine `.vue`-Datei) | `components/` |
+| **props** | Daten, die eine Seite an eine Komponente gibt | `ZeitfensterKarte.vue` |
+| **emit** | Nachricht von der Komponente an die Seite, z. B. „wurde angeklickt“ | `PraeparatZeile.vue` |
 | **Vite-Proxy** | Leitet im Entwicklungsmodus `/api/...` vom Frontend (Port 5173) an das Backend (Port 8000) weiter | `vite.config.ts` |
 
 ---
@@ -176,6 +182,9 @@ Uhrzeiten: nüchtern 07:00 · Frühstück 07:30 · Vormittag 10:00 · Mittag 12:
 
 **Warum Frontend und Backend getrennt?**
 Klare Aufgaben: Das Frontend zeigt an, das Backend prüft, rechnet und speichert. Sie reden nur über die REST-API. Beide Teile sind dadurch austauschbar und einzeln testbar.
+
+**Warum sind ZeitfensterKarte und PraeparatZeile eigene Komponenten?**
+Sie kommen mehrfach vor (ein Kasten pro Zeitfenster, eine Zeile pro Präparat). Als eigene Komponente steht das Aussehen nur an einer Stelle, und die Seite bleibt übersichtlich. Die Komponente bekommt Daten über **props** und meldet Klicks über **emit**. Mit dem Backend redet nur die Seite.
 
 **Was macht Zod?**
 Zod prüft jede Eingabe, bevor sie gespeichert wird. Ist etwas falsch, schickt der Server Status 400 mit einer Fehlermeldung zurück. Aus dem Zod-Schema entsteht außerdem automatisch der TypeScript-Typ.
@@ -218,3 +227,33 @@ Für den normalen Gebrauch ist das unpraktisch. Deshalb macht `Einnahmeplaner.ba
 Technisch ist es weiterhin `localhost` (der eigene Rechner) – man sieht es nur nicht mehr.
 
 **Warum `index.html` für unbekannte Adressen?** Die Adressen `/praeparate` oder `/tagesablauf` gibt es als Datei gar nicht. Der Server schickt dann die `index.html`, und der Vue-Router zeigt die richtige Seite an.
+
+---
+
+## 11. Checkliste: Vorgaben von Dr. Mester
+
+Aus den Folien „Das Prüfungsprojekt“ und „Technische Mindestanforderungen“:
+
+| Vorgabe | Erfüllt durch |
+|---|---|
+| Daten anzeigen | Seiten „Heute“ und „Präparate“ |
+| Daten anlegen / verändern / löschen | Präparate: `POST`, `PUT`, `DELETE /api/praeparate` |
+| Daten persistent speichern | Deno KV (`datenbank.ts`), Datei in `backend/data/` |
+| REST-API verwenden | `api.ts` ↔ `main.ts` |
+| Sinnvolle Benutzeroberfläche | 3 Seiten, Navigation, Fehlermeldungen, Handy-tauglich |
+| **Frontend:** Vue.js mit SFC + Composition API | `.vue`-Dateien mit `<script setup>` |
+| TypeScript | `lang="ts"` in allen Vue-Dateien, `.ts`-Dateien |
+| Komponentenorientierte Struktur | `App.vue`, 3 Views, 2 Komponenten (`components/`) |
+| REST-Kommunikation | `fetch` in `api.ts` |
+| **Backend:** Deno + Hono | `main.ts` |
+| REST-API, JSON | alle Routen in `main.ts` antworten mit `c.json(...)` |
+| Validierung | Zod-Schemas in `modell.ts`, `safeParse` in `main.ts` |
+| Geschäftslogik | `planer.ts` (+ Vorrat beim Abhaken in `datenbank.ts`) |
+| Persistente Datenhaltung | Deno KV |
+| Fehlerbehandlung | 400 / 404 / 500 in `main.ts`, Fehlermeldungen im Frontend |
+| **Projekt:** Git | GitHub: Gjtchje/Einnahmeplaner |
+| Vite für das Frontend | `frontend/vite.config.ts` |
+| Tests (Entwicklungsweg: „… Test, Dokumentation“) | `planer_test.ts` (6 Tests) |
+| Dokumentation + Begründungen | `README.md`, diese Datei (Abschnitt 7 = Entscheidungen) |
+| Klein. Vollständig. Entkoppelt. Begründbar. | 4 Datenarten, alle Funktionen fertig, Frontend und Backend nur über die API verbunden |
+
