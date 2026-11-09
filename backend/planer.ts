@@ -74,9 +74,11 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
   const vorhandeneIds = eintraege.map((e) => e.wirkstoff.id);
   for (const regel of KATALOG.regeln) {
     const beideDa = vorhandeneIds.includes(regel.a) && vorhandeneIds.includes(regel.b);
+    if (!beideDa) continue; // Regel betrifft diesen Tag nicht
+
     const namen = `${findeWirkstoff(regel.a).name} + ${findeWirkstoff(regel.b).name}`;
-    if (beideDa && regel.typ === "zusammen") hinweise.push(`Tipp (${namen}): ${regel.grund}`);
-    if (beideDa && regel.typ === "warnung") hinweise.push(`Warnung (${namen}): ${regel.grund}`);
+    if (regel.typ === "zusammen") hinweise.push(`Tipp (${namen}): ${regel.grund}`);
+    if (regel.typ === "warnung") hinweise.push(`Warnung (${namen}): ${regel.grund}`);
   }
 
   return { eintraege, hinweise };

@@ -70,6 +70,24 @@ Die App rechnet **keine Dosis** aus. Die Dosis trägst du selbst ein (Packungsbe
 
 ---
 
+## 3b. Die Daten (Datenmodell)
+
+| Was | Bedeutung | Wo gespeichert | Wer ändert es? |
+|---|---|---|---|
+| **Wirkstoff** | z. B. Eisen: beste Zeitfenster + Hinweise | `wirkstoffe.json` (fest) | niemand – nur ich als Entwickler |
+| **Regel** | Beziehung zwischen zwei Wirkstoffen: `abstand`, `zusammen` oder `warnung` | `wirkstoffe.json` (fest) | niemand |
+| **Präparat** | ein Mittel des Nutzers: Name, Wirkstoff, Dosis, wie oft am Tag, Wochentage, Vorrat | Deno KV `["praeparate", id]` | Nutzer (Seite „Präparate“) |
+| **Tagesablauf** | Uhrzeit für jedes der 6 Zeitfenster | Deno KV `["tagesablauf"]` | Nutzer (Seite „Tagesablauf“) |
+| **Einnahme** | ein Haken: „Präparat X am Tag Y im Zeitfenster Z genommen“ | Deno KV `["einnahmen", datum, praeparatId, slot]` | Nutzer (Checkbox auf „Heute“) |
+
+- Jedes Präparat gehört zu **genau einem** Wirkstoff. Ein Wirkstoff kann zu **vielen** Präparaten gehören (1 : N).
+- Ein Präparat hat **viele** Einnahmen, eine pro Tag und Zeitfenster (1 : N).
+- Der **Plan** wird nicht gespeichert, sondern jedes Mal aus Präparaten + Tagesablauf + Regeln berechnet.
+- **Vorrat** zählt Einnahmen: Jeder Haken zieht 1 ab, Haken entfernen gibt 1 zurück. „Bald nachkaufen“ erscheint, wenn der Vorrat für weniger als 7 Tage reicht.
+- Der Schlüssel `["einnahmen", datum, …]` ist absichtlich so gebaut: Mit `kv.list({ prefix: ["einnahmen", "2026-11-09"] })` bekommt man alle Haken eines Tages auf einmal.
+
+---
+
 ## 4. Der Planer (`backend/planer.ts`) – Schritt für Schritt
 
 Im Katalog steht für jeden Wirkstoff, welche Zeitfenster am besten sind (das beste zuerst):
