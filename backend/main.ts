@@ -7,6 +7,7 @@
 //   4. Antwort als JSON zurückschicken
 
 import { Hono } from "hono";
+import { serveStatic } from "hono/deno";
 import { einnahmeSchema, KATALOG, praeparatSchema, tagesablaufSchema } from "./modell.ts";
 import { planeTag } from "./planer.ts";
 import * as db from "./datenbank.ts";
@@ -103,6 +104,13 @@ app.post("/api/einnahmen/umschalten", async (c) => {
     return c.json({ abgehakt: true });
   }
 });
+
+// ---- Frontend ausliefern (für den Ein-Klick-Start) ----
+// Alles, was keine /api-Adresse ist, kommt aus dem fertig gebauten Frontend
+// (Ordner frontend/dist). Unbekannte Adressen bekommen die index.html,
+// damit der Vue-Router z. B. /praeparate selbst anzeigen kann.
+app.use("/*", serveStatic({ root: "../frontend/dist" }));
+app.get("/*", serveStatic({ path: "../frontend/dist/index.html" }));
 
 // ---- Start ----
 

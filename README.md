@@ -7,8 +7,13 @@ Prüfungsprojekt T4 – Grundlagen der Entwicklung von Web-Anwendungen und mobil
 
 ## Starten
 
+**Mit einem Doppelklick:** `Einnahmeplaner.bat` öffnen.
+Beim ersten Mal werden die Pakete installiert und ein Symbol **„Einnahmeplaner“ auf dem Desktop** angelegt. Danach reicht ein Doppelklick auf dieses Symbol.
+Die App öffnet sich in einem eigenen Fenster. Der Server läuft unten in der Taskleiste (minimiert) – zum Beenden dieses Fenster schließen.
+
+**Zum Entwickeln** (Änderungen sofort sehen):
 1. `start-backend.bat` → Backend auf http://localhost:8000
-2. `start-frontend.bat` → App auf **http://localhost:5173** (beim ersten Mal wird `npm install` ausgeführt)
+2. `start-frontend.bat` → App auf **http://localhost:5173**
 3. Tests: `test-backend.bat`
 4. Stand sichern: `speichern.bat`
 

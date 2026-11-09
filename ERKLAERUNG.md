@@ -203,3 +203,18 @@ Eine PWA, damit Erinnerungen auch bei geschlossener App kommen, und danach Benut
 
 **Welche Rolle hatte KI?**
 Ehrlich sagen: Claude (Anthropic) wurde für Recherche, Code und Erklärungen genutzt (steht auch in der Themenwahl). Zeig, dass du es verstanden hast, z. B. indem du den Planer live mit einem geänderten Tagesablauf vorführst.
+
+---
+
+## 10. Wie funktioniert der Ein-Klick-Start?
+
+Beim Entwickeln laufen zwei Programme: Vite zeigt das Frontend (Port 5173), Deno das Backend (Port 8000).
+Für den normalen Gebrauch ist das unpraktisch. Deshalb macht `Einnahmeplaner.bat` Folgendes:
+
+1. **Frontend bauen** (`npm run build-only`): Vite macht aus den `.vue`- und `.ts`-Dateien fertige HTML-, CSS- und JavaScript-Dateien im Ordner `frontend/dist`.
+2. **Backend starten**: Das Backend liefert jetzt **auch** diese fertigen Dateien aus (die zwei Zeilen mit `serveStatic` unten in `main.ts`). Es läuft also nur noch **ein** Programm auf Port 8000.
+3. **App-Fenster öffnen**: Edge wird mit `--app=http://localhost:8000` gestartet. Das ist ein Browserfenster ohne Adressleiste und Tabs – es sieht aus wie ein eigenes Programm.
+
+Technisch ist es weiterhin `localhost` (der eigene Rechner) – man sieht es nur nicht mehr.
+
+**Warum `index.html` für unbekannte Adressen?** Die Adressen `/praeparate` oder `/tagesablauf` gibt es als Datei gar nicht. Der Server schickt dann die `index.html`, und der Vue-Router zeigt die richtige Seite an.
