@@ -47,6 +47,7 @@ export const praeparatSchema = z.object({
     "Bitte einen Wirkstoff auswählen",
   ),
   dosis: z.string().trim().min(1, "Bitte eine Dosis angeben, z. B. 1 Tablette"),
+  staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""), // z. B. "500 mg" (optional)
   proTag: z.number().int().min(1, "Mindestens 1-mal").max(3, "Höchstens 3-mal"),
   vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = nicht zählen
   // An welchen Wochentagen? Wie in JavaScript: 0 = Sonntag, 1 = Montag, ... 6 = Samstag

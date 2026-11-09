@@ -22,7 +22,8 @@ export interface Praeparat {
   id: string
   name: string
   wirkstoffId: string
-  dosis: string
+  dosis: string // z. B. "1 Tablette"
+  staerke: string // z. B. "500 mg" (darf leer sein)
   proTag: number
   vorrat: number | null
   tage: number[] // Wochentage: 0 = Sonntag, 1 = Montag, ... 6 = Samstag

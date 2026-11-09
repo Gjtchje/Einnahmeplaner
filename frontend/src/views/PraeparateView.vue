@@ -10,7 +10,7 @@ const fehler = ref('')
 
 // Das Formular. bearbeiteId = null heißt: neues Präparat anlegen.
 const leer: api.NeuesPraeparat = {
-  name: '', wirkstoffId: '', dosis: '1 Tablette', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
+  name: '', wirkstoffId: '', dosis: '1 Tablette', staerke: '', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
 }
 const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] }) // Kopie, damit leer unverändert bleibt
 const bearbeiteId = ref<string | null>(null)
@@ -48,7 +48,7 @@ async function speichern() {
 function bearbeiten(p: api.Praeparat) {
   bearbeiteId.value = p.id
   formular.value = {
-    name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, proTag: p.proTag, vorrat: p.vorrat,
+    name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, staerke: p.staerke ?? '', proTag: p.proTag, vorrat: p.vorrat,
     tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6], // ältere Präparate ohne Wochentage = täglich
   }
   window.scrollTo({ top: 0 })
@@ -104,6 +104,9 @@ onMounted(laden)
         <label>Dosis
           <input v-model="formular.dosis" placeholder="z. B. 1 Tablette">
         </label>
+        <label>Stärke (optional)
+          <input v-model="formular.staerke" placeholder="z. B. 500 mg">
+        </label>
         <label>Wie oft am Tag?
           <select v-model.number="formular.proTag">
             <option :value="1">1-mal</option>
@@ -144,7 +147,7 @@ onMounted(laden)
 
 <style scoped>
 h2 { font-size: 1.2rem; margin-bottom: 1rem; }
-.reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.reihe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
 .hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
 form button { margin-right: 0.5rem; }
 .tage { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border: none; padding: 0; margin: 0 0 1rem; }

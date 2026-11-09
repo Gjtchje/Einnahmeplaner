@@ -24,6 +24,7 @@ function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
     name: wirkstoffId,
     wirkstoffId,
     dosis: "1 Tablette",
+    staerke: "",
     proTag,
     vorrat: null,
     tage: [0, 1, 2, 3, 4, 5, 6],
@@ -81,5 +82,11 @@ Deno.test("Wochentage: Zink nur montags – am Montag dabei, am Dienstag nicht",
   const zink = { ...praeparat("zink"), tage: [1] }; // 1 = Montag
   gleich(praeparateAm([zink], "2026-11-09").length, 1); // 09.11.2026 ist ein Montag
   gleich(praeparateAm([zink], "2026-11-10").length, 0); // Dienstag
+});
+
+Deno.test("ASS 100 und Ibuprofen werden 2 Stunden getrennt, ASS zuerst", () => {
+  const plan = planeTag([praeparat("ibuprofen"), praeparat("ass-100")], ZEITEN);
+  gleich(slotsVon(plan, "ass-100"), ["fruehstueck"]);
+  gleich(slotsVon(plan, "ibuprofen"), ["mittag"]);
 });
 
