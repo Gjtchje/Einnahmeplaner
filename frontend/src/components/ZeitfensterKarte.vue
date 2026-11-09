@@ -5,7 +5,7 @@
 import type { Plan } from '../api'
 
 // props = Daten, die die Seite an die Komponente gibt
-const props = defineProps<{
+defineProps<{
   name: string // z. B. "Frühstück"
   zeit: string // z. B. "07:30"
   eintraege: Plan['eintraege'] // die Präparate in diesem Zeitfenster
@@ -13,12 +13,7 @@ const props = defineProps<{
 }>()
 
 // emit = Nachricht an die Seite: "Präparat mit dieser ID wurde angeklickt"
-const emit = defineEmits<{ haken: [praeparatId: string], alleAbhaken: [] }>()
-
-// Ist in diesem Zeitfenster noch etwas offen? Nur dann den Knopf "Alle abhaken" zeigen.
-function nochOffen(): boolean {
-  return props.eintraege.some((e) => !props.abgehakt.includes(e.praeparat.id))
-}
+const emit = defineEmits<{ haken: [praeparatId: string] }>()
 </script>
 
 <template>
@@ -26,9 +21,6 @@ function nochOffen(): boolean {
     <div class="zeit">
       <strong>{{ zeit }}</strong>
       <span class="klein">{{ name }}</span>
-      <button v-if="nochOffen() && eintraege.length > 1" class="klein-knopf alle" @click="emit('alleAbhaken')">
-        Alle abhaken
-      </button>
     </div>
     <ul class="eintraege">
       <li v-for="e in eintraege" :key="e.praeparat.id">
@@ -53,7 +45,6 @@ function nochOffen(): boolean {
 .zeitfenster { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--abstand); }
 .zeit { display: grid; align-content: start; gap: 0.1rem; }
 .zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; line-height: 1.1; }
-.alle { justify-self: start; margin-top: 0.4rem; }
 
 .eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .eintrag { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; align-items: start; color: var(--text); font-size: 1rem; cursor: pointer; }
@@ -66,6 +57,5 @@ function nochOffen(): boolean {
 @media (max-width: 600px) {
   .zeitfenster { grid-template-columns: 1fr; gap: 0.75rem; }
   .zeit { display: flex; align-items: baseline; gap: 0.6rem; }
-  .alle { margin: 0 0 0 auto; } /* auf dem Handy rechts in der Kopfzeile */
 }
 </style>

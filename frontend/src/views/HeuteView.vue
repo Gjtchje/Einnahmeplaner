@@ -73,21 +73,6 @@ async function haken(praeparatId: string, slot: string) {
   await ladeStatistik()
 }
 
-// "Alle abhaken": jedes noch offene Präparat in diesem Zeitfenster einmal umschalten
-async function alleAbhaken(slot: string) {
-  for (const id of offeneIn(slot)) {
-    await api.umschalten({ datum: gewaehlt.value, praeparatId: id, slot })
-  }
-  await laden()
-  await ladeStatistik()
-}
-
-function offeneIn(slot: string): string[] {
-  return plan.value!.eintraege
-    .filter((e) => e.slot === slot && !istAbgehakt(e.praeparat.id, slot))
-    .map((e) => e.praeparat.id)
-}
-
 function istAbgehakt(praeparatId: string, slot: string): boolean {
   return abgehakt.value.includes(`${praeparatId}|${slot}`)
 }
@@ -215,7 +200,6 @@ onUnmounted(() => clearInterval(timer))
       :eintraege="fenster.eintraege"
       :abgehakt="abgehaktIn(fenster.id)"
       @haken="(praeparatId) => haken(praeparatId, fenster.id)"
-      @alle-abhaken="alleAbhaken(fenster.id)"
     />
 
     <!-- Hinweise des Planers -->

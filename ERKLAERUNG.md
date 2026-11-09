@@ -304,7 +304,6 @@ Diese Version liegt auf GitHub im Zweig `ideen` (die einfache Version bleibt im 
 | **Wochenstatistik** | „diese Woche bisher 85 % (17 von 20)“ unter der Überschrift | Route `GET /api/statistik` in `main.ts`, Anzeige in `HeuteView.vue` | Geschäftslogik gehört ins Backend: Es zählt für jeden Tag die geplanten (soll) und abgehakten (ist) Einnahmen. |
 | **Wirkstoffe-Seite** | Alle Wirkstoffe mit Regeln und Quelle zum Aufklappen | `views/WirkstoffeView.vue`, Route in `router.ts`, Link in `App.vue` | Neue Seite = neue View + neuer Eintrag im Router. Nutzt nur die vorhandene API (`/api/katalog`). |
 | **Vorrat farbig** | „noch 5 Stück“ wird orange, wenn es weniger als 7 Tage reicht | `components/PraeparatZeile.vue` (`:class="{ knapp: … }"`) | `:class` setzt eine CSS-Klasse nur, wenn die Bedingung stimmt. |
-| **Alle abhaken** | Knopf pro Zeitfenster, hakt alle offenen Mittel ab | `components/ZeitfensterKarte.vue` (neues `emit`), `alleAbhaken()` in `HeuteView.vue` | Die Komponente meldet nur „Knopf gedrückt“ (emit). Was dann passiert, entscheidet die Seite. |
 
 | **Laborwerte-Tagebuch** | Werte vom Laborbericht eintragen, Verlauf sehen („18 → 32,5 ng/ml“) – **ohne** Bewertung oder Empfehlung | `views/LaborwerteView.vue`, Routen `/api/laborwerte` in `main.ts`, `laborwertSchema` in `modell.ts` | Eine neue Datenart mit Anlegen, Anzeigen, Löschen – das gleiche Muster wie bei den Präparaten. Warum keine Empfehlung: ADR-008 in `ARCHITEKTUR.md`. |
 
