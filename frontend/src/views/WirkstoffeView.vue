@@ -40,9 +40,11 @@ function partner(regel: api.Regel, id: string): string {
     <!-- <details> ist ein HTML-Element zum Auf- und Zuklappen, ganz ohne JavaScript -->
     <details v-for="w in katalog?.wirkstoffe" :key="w.id" class="karte">
       <summary>
-        <strong>{{ w.name }}</strong>
-        <span v-if="w.kategorie === 'medikament'" class="etikett">Medikament</span>
-        <span class="klein"> · am besten: {{ w.slots.map(slotName).join(', ') }}</span>
+        <span class="titel">
+          <strong>{{ w.name }}</strong>
+          <span v-if="w.kategorie === 'medikament'" class="etikett">Medikament</span>
+        </span>
+        <span class="klein">Am besten: {{ w.slots.map(slotName).join(', ') }}</span>
       </summary>
 
       <ul>
@@ -60,8 +62,13 @@ function partner(regel: api.Regel, id: string): string {
 </template>
 
 <style scoped>
-summary { cursor: pointer; }
+summary { cursor: pointer; display: grid; gap: 0.15rem; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '+'; position: absolute; right: 1.25rem; color: var(--gruen); font-size: 1.3rem; }
+details { position: relative; }
+details[open] summary::after { content: '–'; }
+.titel { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding-right: 1.5rem; }
 ul { margin: 0.75rem 0; padding-left: 1.2rem; font-size: 0.9rem; }
-.regel { margin: 0.4rem 0; font-size: 0.9rem; }
+.regel { margin: 0.5rem 0; font-size: 0.9rem; }
 .regel a { font-size: 0.8rem; margin-left: 0.3rem; color: var(--gruen); }
 </style>

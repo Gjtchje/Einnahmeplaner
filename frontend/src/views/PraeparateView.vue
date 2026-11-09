@@ -84,23 +84,24 @@ onMounted(laden)
       <h2>{{ bearbeiteId ? 'Präparat ändern' : 'Neues Präparat' }}</h2>
 
       <!-- v-model verbindet das Eingabefeld mit dem Formular-Objekt (in beide Richtungen) -->
-      <label>Name
-        <input v-model="formular.name" placeholder="z. B. Vitamin D3 von dm">
-      </label>
-
-      <label>Wirkstoff
-        <select v-model="formular.wirkstoffId">
-          <option value="" disabled>Bitte wählen …</option>
-          <option v-for="w in wirkstoffe" :key="w.id" :value="w.id">
-            {{ w.name }}{{ w.kategorie === 'medikament' ? ' (Medikament)' : '' }}
-          </option>
-        </select>
-      </label>
-      <ul v-if="gewaehlt" class="hinweise">
+      <div class="felder breit">
+        <label>Name
+          <input v-model="formular.name" placeholder="z. B. Vitamin D3 von dm">
+        </label>
+        <label>Wirkstoff
+          <select v-model="formular.wirkstoffId">
+            <option value="" disabled>Bitte wählen …</option>
+            <option v-for="w in wirkstoffe" :key="w.id" :value="w.id">
+              {{ w.name }}{{ w.kategorie === 'medikament' ? ' (Medikament)' : '' }}
+            </option>
+          </select>
+        </label>
+      </div>
+      <ul v-if="gewaehlt" class="karte hinweis hinweise">
         <li v-for="h in gewaehlt.hinweise" :key="h">{{ h }}</li>
       </ul>
 
-      <div class="reihe">
+      <div class="felder">
         <label>Dosis
           <input v-model="formular.dosis" placeholder="z. B. 1 Tablette">
         </label>
@@ -115,24 +116,28 @@ onMounted(laden)
           </select>
         </label>
         <label>Vorrat (Stück, optional)
-          <input v-model.number="formular.vorrat" type="number" min="0" placeholder="leer = nicht zählen">
+          <input v-model.number="formular.vorrat" type="number" min="0" placeholder="z. B. 60">
         </label>
       </div>
 
-      <!-- Wochentage: v-model mit einer Liste – angehakte Tage landen in formular.tage -->
-      <fieldset class="tage">
+      <!-- Wochentage: v-model mit einer Liste – angeklickte Tage landen in formular.tage -->
+      <fieldset class="chips">
         <legend>An welchen Tagen?</legend>
-        <label v-for="t in api.WOCHENTAGE" :key="t.nr">
-          <input v-model="formular.tage" type="checkbox" :value="t.nr"> {{ t.kurz }}
+        <label v-for="t in api.WOCHENTAGE" :key="t.nr" class="chip">
+          <input v-model="formular.tage" type="checkbox" :value="t.nr">
+          <span>{{ t.kurz }}</span>
         </label>
       </fieldset>
 
       <p v-if="fehler" class="fehler">{{ fehler }}</p>
 
-      <button type="submit" class="haupt">Speichern</button>
-      <button v-if="bearbeiteId" type="button" @click="abbrechen">Abbrechen</button>
+      <div class="knoepfe">
+        <button type="submit" class="haupt">Speichern</button>
+        <button v-if="bearbeiteId" type="button" @click="abbrechen">Abbrechen</button>
+      </div>
     </form>
 
+    <h2>Deine Präparate</h2>
     <!-- Liste aller Präparate (eigene Komponente, siehe components/PraeparatZeile.vue) -->
     <PraeparatZeile
       v-for="p in praeparate"
@@ -146,15 +151,5 @@ onMounted(laden)
 </template>
 
 <style scoped>
-h2 { font-size: 1.2rem; margin-bottom: 1rem; }
-.reihe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
-.hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
-form button { margin-right: 0.5rem; }
-.tage { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border: none; padding: 0; margin: 0 0 1rem; }
-.tage legend { font-size: 0.85rem; color: var(--leise); margin-bottom: 0.25rem; }
-.tage label { display: flex; align-items: center; gap: 0.3rem; margin: 0; font-size: 1rem; color: var(--text); }
-
-@media (max-width: 520px) {
-  .reihe { grid-template-columns: 1fr; gap: 0; }
-}
+.hinweise { margin: calc(var(--abstand) * -0.25) 0 var(--abstand); padding-left: 2rem; font-size: 0.85rem; }
 </style>

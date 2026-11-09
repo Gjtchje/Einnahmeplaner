@@ -67,14 +67,14 @@ onMounted(laden)
     <h1>Laborwerte</h1>
     <p class="unterzeile">Ein Tagebuch für deine Blutwerte – damit du den Verlauf siehst.</p>
 
-    <p class="karte hinweis">
+    <p class="karte hinweis warnung">
       Die App <strong>bewertet die Werte nicht</strong> und sagt nicht, was du nehmen solltest.
       Besprich deine Werte bitte mit deiner Ärztin oder deinem Arzt.
     </p>
 
     <form class="karte" @submit.prevent="speichern">
       <h2>Neuer Wert</h2>
-      <div class="reihe">
+      <div class="felder breit">
         <label>Was wurde gemessen?
           <input v-model="formular.name" list="vorschlaege" placeholder="z. B. Vitamin D (25-OH)">
           <!-- <datalist> zeigt Vorschläge beim Tippen an -->
@@ -82,53 +82,46 @@ onMounted(laden)
             <option v-for="v in vorschlaege" :key="v" :value="v" />
           </datalist>
         </label>
+      </div>
+      <div class="felder">
         <label>Wert
           <input v-model.number="formular.wert" type="number" step="any">
         </label>
         <label>Einheit
           <input v-model="formular.einheit" placeholder="z. B. ng/ml">
         </label>
-      </div>
-      <div class="reihe">
         <label>Datum
           <input v-model="formular.datum" type="date">
         </label>
-        <label>Referenzbereich (optional, vom Laborbericht)
+        <label>Referenz (optional)
           <input v-model="formular.referenz" placeholder="z. B. 30–100">
         </label>
       </div>
       <p v-if="fehler" class="fehler">{{ fehler }}</p>
-      <button type="submit" class="haupt">Speichern</button>
+      <div class="knoepfe">
+        <button type="submit" class="haupt">Speichern</button>
+      </div>
     </form>
 
+    <h2 v-if="Object.keys(gruppen).length > 0">Dein Verlauf</h2>
     <!-- Eine Karte pro gemessenem Wert, darin der Verlauf -->
     <section v-for="(werte, name) in gruppen" :key="name" class="karte">
       <h2>{{ name }}</h2>
       <p class="verlauf">{{ verlauf(werte) }}</p>
-      <table>
-        <tr v-for="w in werte" :key="w.id">
-          <td>{{ datumDeutsch(w.datum) }}</td>
-          <td><strong>{{ String(w.wert).replace('.', ',') }} {{ w.einheit }}</strong></td>
-          <td class="klein">{{ w.referenz ? `Referenz: ${w.referenz}` : '' }}</td>
-          <td><button @click="loeschen(w.id)">Löschen</button></td>
-        </tr>
-      </table>
+      <!-- Eine Zeile pro Messung: Datum und Wert links, Löschen rechts -->
+      <div v-for="w in werte" :key="w.id" class="zeile fest messung">
+        <div>
+          <strong>{{ String(w.wert).replace('.', ',') }} {{ w.einheit }}</strong>
+          <span class="klein"> · {{ datumDeutsch(w.datum) }}</span>
+          <p v-if="w.referenz" class="klein">Referenz laut Labor: {{ w.referenz }}</p>
+        </div>
+        <button class="klein-knopf" @click="loeschen(w.id)">Löschen</button>
+      </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
-.hinweis { background: var(--orange-hell); font-size: 0.9rem; }
-.reihe { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.75rem; }
-.reihe:nth-of-type(2) { grid-template-columns: 1fr 2fr; }
 .verlauf { font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; margin: 0 0 0.5rem; }
-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-td { padding: 0.35rem 0.25rem; border-top: 1px solid var(--rand); }
-td:last-child { text-align: right; }
-td button { padding: 0.25rem 0.7rem; font-size: 0.8rem; }
-
-@media (max-width: 520px) {
-  .reihe, .reihe:nth-of-type(2) { grid-template-columns: 1fr; gap: 0; }
-}
+.messung { padding: 0.6rem 0; border-top: 1px solid var(--rand); }
 </style>

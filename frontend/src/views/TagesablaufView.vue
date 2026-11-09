@@ -28,24 +28,29 @@ async function speichern() {
     <p class="unterzeile">Wann isst du, wann gehst du schlafen? Daraus berechnet der Plan die Abstände.</p>
 
     <form class="karte" @submit.prevent="speichern">
-      <label v-for="s in slots" :key="s.id" class="zeile">
+      <!-- Jede Zeile: Name links, Uhrzeit rechts – alle Uhrzeit-Felder gleich breit -->
+      <label v-for="s in slots" :key="s.id" class="uhrzeit-zeile">
         <span>{{ s.name }}</span>
         <input v-model="zeiten[s.id]" type="time">
       </label>
-      <button type="submit" class="haupt">Speichern</button>
-      <span class="klein"> {{ meldung }}</span>
+      <div class="knoepfe">
+        <button type="submit" class="haupt">Speichern</button>
+        <span class="klein">{{ meldung }}</span>
+      </div>
     </form>
   </main>
 </template>
 
 <style scoped>
-.zeile {
-  display: flex;
-  justify-content: space-between;
+.uhrzeit-zeile {
+  display: grid;
+  grid-template-columns: 1fr 8.5rem; /* rechts immer dieselbe Breite -> alles steht untereinander */
   align-items: center;
-  padding-bottom: 0.6rem;
+  gap: var(--abstand);
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--rand);
   font-size: 1rem;
   color: var(--text);
 }
+.knoepfe { margin-top: var(--abstand); }
 </style>

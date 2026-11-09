@@ -182,8 +182,8 @@ onUnmounted(() => clearInterval(timer))
     <h1>{{ ueberschrift }}</h1>
     <p class="unterzeile">
       {{ erledigt }} von {{ anzahl }} erledigt
-      <span v-if="statistik && statistik.soll > 0">
-        · diese Woche bisher {{ statistik.prozent }} % ({{ statistik.ist }} von {{ statistik.soll }})
+      <span v-if="statistik && statistik.soll > 0" class="woche-statistik">
+        Diese Woche bisher {{ statistik.prozent }} % ({{ statistik.ist }} von {{ statistik.soll }})
       </span>
     </p>
 
@@ -229,21 +229,23 @@ onUnmounted(() => clearInterval(timer))
     <!-- Vorrat -->
     <section v-if="nachkaufen.length > 0">
       <h2>Bald nachkaufen</h2>
-      <p v-for="p in nachkaufen" :key="p.id" class="karte">
-        {{ p.name }} <span class="etikett">noch {{ p.vorrat }} Stück</span>
-      </p>
+      <div v-for="p in nachkaufen" :key="p.id" class="karte zeile fest">
+        <span>{{ p.name }}</span>
+        <span class="etikett">noch {{ p.vorrat }} Stück</span>
+      </div>
     </section>
 
     <!-- Erinnerungen -->
+    <h2>Erinnerungen</h2>
     <section class="karte erinnerung">
-      <template v-if="!unterstuetzt">Dieser Browser kann keine Benachrichtigungen anzeigen.</template>
+      <span v-if="!unterstuetzt">Dieser Browser kann keine Benachrichtigungen anzeigen.</span>
       <template v-else-if="erlaubnis === 'granted'">
-        🔔 Erinnerungen sind an – solange die App geöffnet ist.
-        <button @click="testBenachrichtigung">Test-Benachrichtigung</button>
+        <span>🔔 Erinnerungen sind an – solange die App geöffnet ist.</span>
+        <button class="klein-knopf" @click="testBenachrichtigung">Test-Benachrichtigung</button>
       </template>
       <template v-else-if="erlaubnis === 'denied'">
-        🔕 Benachrichtigungen sind blockiert. In Edge: Menü „…“ → Einstellungen → Cookies und Websiteberechtigungen
-        → Benachrichtigungen → localhost erlauben. Außerdem in Windows: Einstellungen → System → Benachrichtigungen → Microsoft Edge an.
+        <span>🔕 Benachrichtigungen sind blockiert. In Edge: Menü „…“ → Einstellungen → Cookies und Websiteberechtigungen
+        → Benachrichtigungen → localhost erlauben. Außerdem in Windows: Einstellungen → System → Benachrichtigungen → Microsoft Edge an.</span>
       </template>
       <button v-else class="haupt" @click="erinnerungEinschalten">🔔 Erinnerungen einschalten</button>
     </section>
@@ -251,14 +253,11 @@ onUnmounted(() => clearInterval(timer))
 </template>
 
 <style scoped>
-h2 { font-size: 1.2rem; margin: 1.5rem 0 0.5rem; }
-.hinweis { background: var(--gruen-hell); }
-.hinweis.warnung { background: var(--orange-hell); }
-
-.woche { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem; margin-bottom: 1rem; }
-.woche button { border-radius: 12px; padding: 0.4rem 0; line-height: 1.3; }
+.woche { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; margin-bottom: var(--abstand); }
+.woche button { border-radius: 12px; padding: 0.45rem 0; line-height: 1.3; }
 .woche button.heute { border-color: var(--orange); }
 .woche button.aktiv { background: var(--gruen); border-color: var(--gruen); color: white; }
 
-.erinnerung { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
+.woche-statistik { display: block; font-size: 0.85rem; }
+.erinnerung { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; font-size: 0.9rem; }
 </style>

@@ -27,23 +27,22 @@ function istKnapp(): boolean {
 <template>
   <div class="karte zeile">
     <div>
-      <strong>{{ praeparat.name }}</strong><br>
-      <span class="klein">
-        {{ wirkstoffName }} · {{ praeparat.dosis }}{{ praeparat.staerke ? ` à ${praeparat.staerke}` : '' }}, {{ praeparat.proTag }}-mal am Tag, {{ tageText() }}
-        · <span :class="{ knapp: istKnapp() }">
-          {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${praeparat.vorrat} Stück` }}
-        </span>
-      </span>
+      <strong>{{ praeparat.name }}</strong>
+      <p class="klein">
+        {{ wirkstoffName }} · {{ praeparat.dosis }}{{ praeparat.staerke ? ` à ${praeparat.staerke}` : '' }}
+        · {{ praeparat.proTag }}-mal am Tag · {{ tageText() }}
+      </p>
+      <p class="klein" :class="{ knapp: istKnapp() }">
+        {{ praeparat.vorrat === null ? 'Vorrat wird nicht gezählt' : `Vorrat: noch ${praeparat.vorrat} Stück` }}
+      </p>
     </div>
     <div class="knoepfe">
-      <button @click="emit('aendern')">Ändern</button>
-      <button @click="emit('loeschen')">Löschen</button>
+      <button class="klein-knopf" @click="emit('aendern')">Ändern</button>
+      <button class="klein-knopf" @click="emit('loeschen')">Löschen</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.zeile { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.knoepfe { display: flex; gap: 0.5rem; }
-.knapp { color: #b26b00; font-weight: 600; }
+.knapp { color: #b26b00; font-weight: 600; } /* Vorrat reicht weniger als 7 Tage */
 </style>

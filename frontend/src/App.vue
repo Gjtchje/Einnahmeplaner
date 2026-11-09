@@ -2,7 +2,7 @@
 <template>
   <header class="kopf">
     <span class="marke"><img src="/favicon.svg" alt="" width="26" height="26"> Einnahmeplaner</span>
-    <nav>
+    <nav class="menue">
       <RouterLink to="/">Heute</RouterLink>
       <RouterLink to="/praeparate">Präparate</RouterLink>
       <RouterLink to="/tagesablauf">Tagesablauf</RouterLink>
