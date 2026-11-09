@@ -1,103 +1,81 @@
-// Einnahmeplaner – API-Schicht
-// Alle HTTP-Aufrufe an das Backend liegen hier. Komponenten rufen nur diese
-// Funktionen auf und wissen nichts von URLs, Methoden oder Statuscodes.
-import type {
-  Einnahme, EinnahmeEingabe, Katalog, Plan, Praeparat, PraeparatEingabe, Tagesablauf, WirkstoffDetail,
-} from './types'
+// api.ts – Alle Anfragen an das Backend.
+// Die Seiten (Views) rufen nur diese Funktionen auf und müssen nichts über
+// URLs oder HTTP wissen.
 
-export interface FeldFehler {
-  feld: string
-  meldung: string
+// ---- Typen: so sehen die Daten aus, die das Backend schickt ----
+
+export interface Wirkstoff {
+  id: string
+  name: string
+  kategorie: string // "nem" oder "medikament"
+  slots: string[]
+  hinweise: string[]
 }
 
-// Fehler vom Server in einer einheitlichen Form.
-// "details" enthält bei 400 die Feldfehler aus der Zod-Validierung.
-export class ApiFehler extends Error {
-  status: number
-  details: FeldFehler[]
-
-  constructor(status: number, nachricht: string, details: FeldFehler[] = []) {
-    super(nachricht)
-    this.status = status
-    this.details = details
-  }
+export interface Katalog {
+  slots: { id: string, name: string, standardZeit: string }[]
+  wirkstoffe: Wirkstoff[]
+  quellen: { id: string, titel: string, url: string }[]
 }
 
-// Gemeinsamer Kern für alle Anfragen: JSON senden, Antwort prüfen, JSON lesen.
-async function anfrage<T>(url: string, optionen: RequestInit = {}): Promise<T> {
+export interface Praeparat {
+  id: string
+  name: string
+  wirkstoffId: string
+  dosis: string
+  proTag: number
+  vorrat: number | null
+}
+
+// Beim Anlegen gibt es noch keine id – die vergibt der Server
+export type NeuesPraeparat = Omit<Praeparat, 'id'>
+
+export type Tagesablauf = Record<string, string> // z. B. { fruehstueck: "07:30" }
+
+export interface Plan {
+  eintraege: { praeparat: Praeparat, wirkstoff: Wirkstoff, slot: string }[]
+  hinweise: string[]
+}
+
+export interface Einnahme {
+  datum: string
+  praeparatId: string
+  slot: string
+}
+
+// ---- Gemeinsame Hilfsfunktion für alle Anfragen ----
+
+async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   let antwort: Response
   try {
     antwort = await fetch(url, {
-      ...optionen,
-      headers: { 'Content-Type': 'application/json', ...optionen.headers },
+      method: methode,
+      headers: { 'Content-Type': 'application/json' },
+      body: daten ? JSON.stringify(daten) : undefined,
     })
   } catch {
-    // fetch selbst schlägt nur fehl, wenn der Server gar nicht erreichbar ist
-    throw new ApiFehler(0, 'Server nicht erreichbar. Läuft das Backend?')
+    throw new Error('Server nicht erreichbar – läuft das Backend?')
   }
-
+  // 204 = "erfolgreich, aber ohne Inhalt" (z. B. nach dem Löschen)
+  const ergebnis = antwort.status === 204 ? null : await antwort.json()
   if (!antwort.ok) {
-    const koerper = await antwort.json().catch(() => ({}))
-    throw new ApiFehler(antwort.status, koerper.fehler ?? `Fehler ${antwort.status}`, koerper.details)
+    throw new Error(ergebnis?.fehler ?? `Fehler ${antwort.status}`)
   }
-
-  // 204 No Content (z. B. nach DELETE) hat keinen Body
-  if (antwort.status === 204) return undefined as T
-  return antwort.json() as Promise<T>
+  return ergebnis
 }
 
-// ---- Katalog ----
+// ---- Die einzelnen Anfragen ----
 
-export function ladeKatalog(): Promise<Katalog> {
-  return anfrage('/api/katalog')
-}
+export const ladeKatalog = (): Promise<Katalog> => anfrage('/api/katalog')
 
-export function ladeWirkstoff(id: string): Promise<WirkstoffDetail> {
-  return anfrage(`/api/wirkstoffe/${encodeURIComponent(id)}`)
-}
+export const ladePraeparate = (): Promise<Praeparat[]> => anfrage('/api/praeparate')
+export const erstellePraeparat = (p: NeuesPraeparat) => anfrage('/api/praeparate', 'POST', p)
+export const aenderePraeparat = (id: string, p: NeuesPraeparat) => anfrage(`/api/praeparate/${id}`, 'PUT', p)
+export const loeschePraeparat = (id: string) => anfrage(`/api/praeparate/${id}`, 'DELETE')
 
-// ---- Präparate ----
+export const ladeTagesablauf = (): Promise<Tagesablauf> => anfrage('/api/tagesablauf')
+export const speichereTagesablauf = (t: Tagesablauf) => anfrage('/api/tagesablauf', 'PUT', t)
 
-export function ladePraeparate(): Promise<Praeparat[]> {
-  return anfrage('/api/praeparate')
-}
-
-export function erstellePraeparat(daten: PraeparatEingabe): Promise<Praeparat> {
-  return anfrage('/api/praeparate', { method: 'POST', body: JSON.stringify(daten) })
-}
-
-export function aenderePraeparat(id: string, daten: PraeparatEingabe): Promise<Praeparat> {
-  return anfrage(`/api/praeparate/${id}`, { method: 'PUT', body: JSON.stringify(daten) })
-}
-
-export function loeschePraeparat(id: string): Promise<void> {
-  return anfrage(`/api/praeparate/${id}`, { method: 'DELETE' })
-}
-
-// ---- Tagesablauf ----
-
-export function ladeTagesablauf(): Promise<Tagesablauf> {
-  return anfrage('/api/tagesablauf')
-}
-
-export function speichereTagesablauf(daten: Tagesablauf): Promise<Tagesablauf> {
-  return anfrage('/api/tagesablauf', { method: 'PUT', body: JSON.stringify(daten) })
-}
-
-// ---- Plan und Einnahmen ----
-
-export function ladePlan(): Promise<Plan> {
-  return anfrage('/api/plan')
-}
-
-export function ladeEinnahmen(datum: string): Promise<Einnahme[]> {
-  return anfrage(`/api/einnahmen?datum=${datum}`)
-}
-
-export function hakeAb(einnahme: EinnahmeEingabe): Promise<void> {
-  return anfrage('/api/einnahmen', { method: 'POST', body: JSON.stringify(einnahme) })
-}
-
-export function nimmZurueck(einnahme: EinnahmeEingabe): Promise<void> {
-  return anfrage('/api/einnahmen', { method: 'DELETE', body: JSON.stringify(einnahme) })
-}
+export const ladePlan = (): Promise<Plan> => anfrage('/api/plan')
+export const ladeEinnahmen = (datum: string): Promise<Einnahme[]> => anfrage(`/api/einnahmen?datum=${datum}`)
+export const umschalten = (e: Einnahme) => anfrage('/api/einnahmen/umschalten', 'POST', e)

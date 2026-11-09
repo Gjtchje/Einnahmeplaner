@@ -1,288 +1,147 @@
+<!-- PraeparateView.vue – Präparate anlegen, ändern und löschen. -->
 <script setup lang="ts">
-// Seite "Präparate": Liste aller Präparate plus Formular zum Anlegen/Ändern.
-// Die Prüfung der Eingaben macht der Server (Zod). Seine Feldfehler werden
-// direkt unter den passenden Feldern angezeigt.
-import { computed, onMounted, reactive, ref } from 'vue'
-import { RouterLink } from 'vue-router'
-import { aenderePraeparat, ApiFehler, erstellePraeparat, ladePraeparate, loeschePraeparat } from '@/api'
-import { EINHEITEN, type Praeparat, type PraeparatEingabe } from '@/types'
-import FormFeld from '@/components/FormFeld.vue'
-import { useKatalog } from '@/composables/useKatalog'
+import { computed, onMounted, ref } from 'vue'
+import * as api from '../api'
 
-const { nem, medikamente, findeWirkstoff, fehler: katalogFehler } = useKatalog()
+const praeparate = ref<api.Praeparat[]>([])
+const wirkstoffe = ref<api.Wirkstoff[]>([])
+const fehler = ref('')
 
-const liste = ref<Praeparat[]>([])
-const laedt = ref(true)
-const ladeFehler = ref('')
+// Das Formular. bearbeiteId = null heißt: neues Präparat anlegen.
+const leer: api.NeuesPraeparat = { name: '', wirkstoffId: '', dosis: '1 Tablette', proTag: 1, vorrat: null }
+const formular = ref<api.NeuesPraeparat>({ ...leer })
+const bearbeiteId = ref<string | null>(null)
 
-// ---- Formular ----
+// Hinweise zum gewählten Wirkstoff, die unter dem Auswahlfeld erscheinen
+const gewaehlt = computed(() => wirkstoffe.value.find((w) => w.id === formular.value.wirkstoffId))
 
-function leeresFormular(): PraeparatEingabe {
-  return { name: '', wirkstoffId: '', staerke: '', menge: 1, einheit: 'Tablette', proTag: 1, vorrat: null, notiz: '' }
-}
-
-const form = reactive<PraeparatEingabe>(leeresFormular())
-const bearbeitetId = ref<string | null>(null) // null = neues Präparat
-const formularOffen = ref(false)
-const speichert = ref(false)
-const feldFehler = ref<Record<string, string>>({})
-const allgemeinerFehler = ref('')
-const loeschenBestaetigen = ref<string | null>(null)
-
-// Hinweise zum gewählten Wirkstoff live unter dem Auswahlfeld zeigen
-const gewaehlterWirkstoff = computed(() => findeWirkstoff(form.wirkstoffId))
-
-function neu() {
-  Object.assign(form, leeresFormular())
-  bearbeitetId.value = null
-  feldFehler.value = {}
-  allgemeinerFehler.value = ''
-  formularOffen.value = true
-}
-
-function bearbeiten(p: Praeparat) {
-  const { name, wirkstoffId, staerke, menge, einheit, proTag, vorrat, notiz } = p
-  Object.assign(form, { name, wirkstoffId, staerke, menge, einheit, proTag, vorrat, notiz })
-  bearbeitetId.value = p.id
-  feldFehler.value = {}
-  allgemeinerFehler.value = ''
-  formularOffen.value = true
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-function abbrechen() {
-  formularOffen.value = false
+async function laden() {
+  try {
+    praeparate.value = await api.ladePraeparate()
+    wirkstoffe.value = (await api.ladeKatalog()).wirkstoffe
+  } catch (err) {
+    fehler.value = (err as Error).message
+  }
 }
 
 async function speichern() {
-  speichert.value = true
-  feldFehler.value = {}
-  allgemeinerFehler.value = ''
+  fehler.value = ''
+  // Leeres Vorrat-Feld liefert "" – das bedeutet "Vorrat nicht zählen" = null
+  if (String(formular.value.vorrat) === '') formular.value.vorrat = null
   try {
-    if (bearbeitetId.value) {
-      await aenderePraeparat(bearbeitetId.value, { ...form })
+    if (bearbeiteId.value) {
+      await api.aenderePraeparat(bearbeiteId.value, formular.value)
     } else {
-      await erstellePraeparat({ ...form })
+      await api.erstellePraeparat(formular.value)
     }
-    formularOffen.value = false
+    abbrechen() // Formular leeren
     await laden()
-  } catch (e) {
-    if (e instanceof ApiFehler && e.details.length) {
-      // Feldfehler vom Server: { feld: "name", meldung: "..." } -> feldFehler.name
-      for (const d of e.details) feldFehler.value[d.feld || 'allgemein'] = d.meldung
-      allgemeinerFehler.value = 'Bitte prüfe die markierten Felder.'
-    } else {
-      allgemeinerFehler.value = e instanceof ApiFehler ? e.message : 'Unbekannter Fehler'
-    }
-  } finally {
-    speichert.value = false
+  } catch (err) {
+    // Hier landen z. B. die Meldungen von Zod aus dem Backend
+    fehler.value = (err as Error).message
   }
 }
 
-// Löschen in zwei Schritten: erster Klick fragt nach, zweiter löscht.
-async function loeschen(p: Praeparat) {
-  if (loeschenBestaetigen.value !== p.id) {
-    loeschenBestaetigen.value = p.id
-    return
-  }
-  try {
-    await loeschePraeparat(p.id)
-    loeschenBestaetigen.value = null
+function bearbeiten(p: api.Praeparat) {
+  bearbeiteId.value = p.id
+  formular.value = { name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, proTag: p.proTag, vorrat: p.vorrat }
+  window.scrollTo({ top: 0 })
+}
+
+function abbrechen() {
+  bearbeiteId.value = null
+  formular.value = { ...leer }
+  fehler.value = ''
+}
+
+async function loeschen(p: api.Praeparat) {
+  if (confirm(`„${p.name}“ wirklich löschen?`)) {
+    await api.loeschePraeparat(p.id)
     await laden()
-  } catch (e) {
-    ladeFehler.value = e instanceof ApiFehler ? e.message : 'Unbekannter Fehler'
   }
 }
 
-// ---- Liste ----
-
-async function laden() {
-  ladeFehler.value = ''
-  try {
-    liste.value = await ladePraeparate()
-  } catch (e) {
-    ladeFehler.value = e instanceof ApiFehler ? e.message : 'Unbekannter Fehler'
-  } finally {
-    laedt.value = false
-  }
-}
-
-function vorratText(p: Praeparat): string {
-  if (p.vorrat === null) return 'Vorrat wird nicht gezählt'
-  const menge = String(p.vorrat).replace('.', ',')
-  return `Vorrat: ${menge} ${p.einheit} · reicht ${p.reichweiteTage} ${p.reichweiteTage === 1 ? 'Tag' : 'Tage'}`
+function wirkstoffName(id: string): string {
+  return wirkstoffe.value.find((w) => w.id === id)?.name ?? id
 }
 
 onMounted(laden)
 </script>
 
 <template>
-  <main class="seite">
-    <header class="kopfzeile">
-      <div>
-        <h1>Präparate</h1>
-        <p>Alles, was du regelmäßig einnimmst. Der Plan richtet sich automatisch danach.</p>
-      </div>
-      <button v-if="!formularOffen" class="knopf primaer" @click="neu">+ Hinzufügen</button>
-    </header>
+  <main>
+    <h1>Präparate</h1>
+    <p class="unterzeile">Alles, was du regelmäßig nimmst. Der Plan richtet sich automatisch danach.</p>
 
-    <!-- Formular -->
-    <form v-if="formularOffen" class="karte formular" novalidate @submit.prevent="speichern">
-      <h2>{{ bearbeitetId ? 'Präparat bearbeiten' : 'Neues Präparat' }}</h2>
+    <!-- Formular: @submit.prevent = beim Absenden nicht neu laden, sondern speichern() aufrufen -->
+    <form class="karte" @submit.prevent="speichern">
+      <h2>{{ bearbeiteId ? 'Präparat ändern' : 'Neues Präparat' }}</h2>
 
-      <FormFeld v-model="form.name" label="Name" pflicht platzhalter="z. B. Vitamin D3 Tropfen von dm" :fehler="feldFehler.name" />
+      <!-- v-model verbindet das Eingabefeld mit dem Formular-Objekt (in beide Richtungen) -->
+      <label>Name
+        <input v-model="formular.name" placeholder="z. B. Vitamin D3 von dm">
+      </label>
 
-      <div class="feld" :class="{ hat_fehler: feldFehler.wirkstoffId }">
-        <label for="wirkstoff">Wirkstoff <span aria-hidden="true">*</span></label>
-        <select id="wirkstoff" v-model="form.wirkstoffId" required :aria-invalid="!!feldFehler.wirkstoffId">
+      <label>Wirkstoff
+        <select v-model="formular.wirkstoffId">
           <option value="" disabled>Bitte wählen …</option>
-          <optgroup label="Nahrungsergänzungsmittel">
-            <option v-for="w in nem" :key="w.id" :value="w.id">{{ w.name }}</option>
-          </optgroup>
-          <optgroup label="Medikamente">
-            <option v-for="w in medikamente" :key="w.id" :value="w.id">{{ w.name }}</option>
-          </optgroup>
+          <option v-for="w in wirkstoffe" :key="w.id" :value="w.id">
+            {{ w.name }}{{ w.kategorie === 'medikament' ? ' (Medikament)' : '' }}
+          </option>
         </select>
-        <p v-if="feldFehler.wirkstoffId" class="meldung fehler">{{ feldFehler.wirkstoffId }}</p>
-        <p v-if="katalogFehler" class="meldung fehler">{{ katalogFehler }}</p>
-        <div v-if="gewaehlterWirkstoff" class="wirkstoff-info">
-          <ul>
-            <li v-for="h in gewaehlterWirkstoff.hinweise" :key="h">{{ h }}</li>
-          </ul>
-          <RouterLink :to="{ path: '/wirkstoffe', hash: `#${gewaehlterWirkstoff.id}` }">Regeln und Quellen ansehen</RouterLink>
-        </div>
-      </div>
+      </label>
+      <ul v-if="gewaehlt" class="hinweise">
+        <li v-for="h in gewaehlt.hinweise" :key="h">{{ h }}</li>
+      </ul>
 
       <div class="reihe">
-        <FormFeld v-model="form.menge" label="Menge pro Einnahme" typ="number" pflicht :fehler="feldFehler.menge" />
-        <div class="feld">
-          <label for="einheit">Einheit</label>
-          <select id="einheit" v-model="form.einheit">
-            <option v-for="e in EINHEITEN" :key="e" :value="e">{{ e }}</option>
-          </select>
-        </div>
-        <div class="feld" :class="{ hat_fehler: feldFehler.proTag }">
-          <label for="protag">Wie oft am Tag?</label>
-          <select id="protag" v-model.number="form.proTag">
+        <label>Dosis
+          <input v-model="formular.dosis" placeholder="z. B. 1 Tablette">
+        </label>
+        <label>Wie oft am Tag?
+          <select v-model.number="formular.proTag">
             <option :value="1">1-mal</option>
             <option :value="2">2-mal</option>
             <option :value="3">3-mal</option>
           </select>
-          <p v-if="feldFehler.proTag" class="meldung fehler">{{ feldFehler.proTag }}</p>
-        </div>
+        </label>
+        <label>Vorrat (Stück, optional)
+          <input v-model.number="formular.vorrat" type="number" min="0" placeholder="leer = nicht zählen">
+        </label>
       </div>
 
-      <div class="reihe zwei">
-        <FormFeld v-model="form.staerke" label="Stärke (optional)" platzhalter="z. B. 1000 IE" :fehler="feldFehler.staerke" />
-        <FormFeld
-          v-model="form.vorrat"
-          label="Vorrat (optional)"
-          typ="number"
-          platzhalter="leer = nicht zählen"
-          hinweis="In der gewählten Einheit, z. B. 60 Tabletten"
-          :fehler="feldFehler.vorrat"
-        />
-      </div>
+      <p v-if="fehler" class="fehler">{{ fehler }}</p>
 
-      <FormFeld v-model="form.notiz" label="Notiz (optional)" typ="textarea" :fehler="feldFehler.notiz" />
-
-      <p class="klein">Menge und Häufigkeit bitte aus der Packungsbeilage oder nach ärztlicher Vorgabe übernehmen.</p>
-
-      <p v-if="allgemeinerFehler" class="meldung fehler" role="alert">
-        {{ allgemeinerFehler }} {{ feldFehler.allgemein }}
-      </p>
-
-      <div class="aktionen">
-        <button type="submit" class="knopf primaer" :disabled="speichert">
-          {{ speichert ? 'Speichert …' : 'Speichern' }}
-        </button>
-        <button type="button" class="knopf" @click="abbrechen">Abbrechen</button>
-      </div>
+      <button type="submit" class="haupt">Speichern</button>
+      <button v-if="bearbeiteId" type="button" @click="abbrechen">Abbrechen</button>
     </form>
 
-    <!-- Liste -->
-    <p v-if="laedt" class="zustand">Lade Präparate …</p>
-    <p v-else-if="ladeFehler" class="zustand fehler" role="alert">{{ ladeFehler }}</p>
-    <p v-else-if="liste.length === 0 && !formularOffen" class="zustand">
-      Noch keine Präparate. Leg mit „Hinzufügen“ dein erstes an.
-    </p>
-
-    <ul v-else class="liste">
-      <li v-for="p in liste" :key="p.id" class="karte praeparat">
-        <div class="info">
-          <div class="titel">
-            <h3>{{ p.name }}</h3>
-            <span v-if="p.kategorie === 'medikament'" class="etikett medikament">Medikament</span>
-            <span v-if="p.nachkaufen" class="etikett warnung">Nachkaufen</span>
-          </div>
-          <p class="klein">
-            {{ p.wirkstoffName }}{{ p.staerke ? ` · ${p.staerke}` : '' }} ·
-            {{ String(p.menge).replace('.', ',') }} {{ p.einheit }}, {{ p.proTag }}-mal täglich
-          </p>
-          <p class="klein">{{ vorratText(p) }}</p>
-          <p v-if="p.notiz" class="notiz">{{ p.notiz }}</p>
-        </div>
-        <div class="knoepfe">
-          <button class="knopf" @click="bearbeiten(p)">Bearbeiten</button>
-          <button
-            class="knopf gefahr"
-            :class="{ bestaetigen: loeschenBestaetigen === p.id }"
-            @click="loeschen(p)"
-            @blur="loeschenBestaetigen = null"
-          >
-            {{ loeschenBestaetigen === p.id ? 'Wirklich löschen?' : 'Löschen' }}
-          </button>
-        </div>
-      </li>
-    </ul>
+    <!-- Liste aller Präparate -->
+    <div v-for="p in praeparate" :key="p.id" class="karte zeile">
+      <div>
+        <strong>{{ p.name }}</strong><br>
+        <span class="klein">
+          {{ wirkstoffName(p.wirkstoffId) }} · {{ p.dosis }}, {{ p.proTag }}-mal täglich
+          · {{ p.vorrat === null ? 'Vorrat wird nicht gezählt' : `noch ${p.vorrat} Stück` }}
+        </span>
+      </div>
+      <div class="knoepfe">
+        <button @click="bearbeiten(p)">Ändern</button>
+        <button @click="loeschen(p)">Löschen</button>
+      </div>
+    </div>
   </main>
 </template>
 
 <style scoped>
-.kopfzeile { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
-
-.formular { display: grid; gap: 1rem; margin-bottom: 2rem; }
-.formular h2 { font-size: 1.3rem; }
-
+h2 { font-size: 1.2rem; margin-bottom: 1rem; }
 .reihe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-.reihe.zwei { grid-template-columns: repeat(2, 1fr); }
+.hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
+form button { margin-right: 0.5rem; }
+.zeile { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.knoepfe { display: flex; gap: 0.5rem; }
 
-/* Auswahlfelder sehen aus wie die Eingabefelder in FormFeld.vue */
-.feld { display: grid; gap: 0.3rem; align-content: start; }
-.feld label { font-size: 0.85rem; font-weight: 500; color: var(--text-leise); }
-select {
-  width: 100%;
-  padding: 0.65rem 0.8rem;
-  border: 1px solid var(--rand);
-  border-radius: 10px;
-  background: #fff;
-}
-select:focus { outline: none; border-color: var(--akzent); box-shadow: 0 0 0 3px var(--akzent-hell); }
-.hat_fehler select { border-color: var(--fehler); }
-.meldung { margin: 0; font-size: 0.8rem; }
-.meldung.fehler { color: var(--fehler); }
-
-.wirkstoff-info {
-  margin-top: 0.3rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: 10px;
-  background: var(--akzent-hell);
-  font-size: 0.85rem;
-}
-.wirkstoff-info ul { margin: 0 0 0.3rem; padding-left: 1.1rem; }
-
-.aktionen { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-.liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
-.praeparat { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.info { display: grid; gap: 0.15rem; flex: 1 1 260px; }
-.info p { margin: 0; }
-.titel { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.titel h3 { font-size: 1.1rem; }
-.notiz { font-size: 0.85rem; font-style: italic; }
-.knoepfe { display: flex; gap: 0.5rem; align-items: flex-start; }
-
-@media (max-width: 560px) {
-  .reihe, .reihe.zwei { grid-template-columns: 1fr; }
+@media (max-width: 520px) {
+  .reihe { grid-template-columns: 1fr; gap: 0; }
 }
 </style>

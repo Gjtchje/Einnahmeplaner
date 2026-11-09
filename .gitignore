@@ -19,3 +19,6 @@ Thumbs.db
 # Reste vom Einrichten (nicht Teil des Projekts)
 einnahmeplaner.tgz
 /daten/
+
+# Alte Version (liegt auch auf GitHub als "erste Version")
+_alte-version/

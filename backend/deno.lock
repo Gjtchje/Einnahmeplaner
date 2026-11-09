@@ -1,20 +1,12 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@hono/zod-validator@0.7": "0.7.6_hono@4.13.14_zod@4.6.7",
-    "npm:hono@4": "4.13.14",
+    "npm:hono@4": "4.13.16",
     "npm:zod@4": "4.6.7"
   },
   "npm": {
-    "@hono/zod-validator@0.7.6_hono@4.13.14_zod@4.6.7": {
-      "integrity": "sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==",
-      "dependencies": [
-        "hono",
-        "zod"
-      ]
-    },
-    "hono@4.13.14": {
-      "integrity": "sha512-yhRLQ21U6qa9Hsu2N7Qcbh8tE+WKEcoErjIo56LeSGiGXGp9sA7UpE86Ui9uexb61KakiGwuHMn2QdV7w6i6kQ=="
+    "hono@4.13.16": {
+      "integrity": "sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A=="
     },
     "zod@4.6.7": {
       "integrity": "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg=="
@@ -22,7 +14,6 @@
   },
   "workspace": {
     "dependencies": [
-      "npm:@hono/zod-validator@0.7",
       "npm:hono@4",
       "npm:zod@4"
     ]

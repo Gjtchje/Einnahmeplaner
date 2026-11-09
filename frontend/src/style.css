@@ -1,0 +1,79 @@
+/* style.css – Aussehen der ganzen App. Farben stehen oben als Variablen. */
+:root {
+  --text: #1f2a26;
+  --leise: #5f6b66;
+  --hintergrund: #f6f3ec;
+  --karte: #fffdf8;
+  --rand: #e3ddd0;
+  --gruen: #2f5d50;
+  --gruen-hell: #e4ede8;
+  --orange: #e0a458;
+  --orange-hell: #fbefdc;
+  --rot: #b3261e;
+
+  font-family: 'Inter', Arial, sans-serif;
+  color: var(--text);
+  background: var(--hintergrund);
+  line-height: 1.5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+h1, h2 { font-family: 'Fraunces', Georgia, serif; margin: 0; }
+button, input, select { font: inherit; }
+
+/* ---- Kopfzeile mit Navigation ---- */
+.kopf {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--hintergrund);
+  border-bottom: 1px solid var(--rand);
+}
+.marke { display: flex; align-items: center; gap: 0.5rem; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 1.15rem; }
+nav { display: flex; gap: 0.25rem; }
+nav a { padding: 0.4rem 0.8rem; border-radius: 999px; color: var(--leise); text-decoration: none; font-weight: 500; }
+/* Diese Klasse setzt Vue automatisch auf den Link der aktuellen Seite */
+nav a.router-link-exact-active { background: var(--gruen); color: white; }
+
+/* ---- Seiteninhalt ---- */
+main { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+main > h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+.unterzeile { color: var(--leise); margin: 0 0 1.5rem; }
+
+.karte {
+  background: var(--karte);
+  border: 1px solid var(--rand);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+.klein { font-size: 0.85rem; color: var(--leise); }
+.fehler { color: var(--rot); }
+
+/* ---- Knöpfe ---- */
+button {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rand);
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+}
+button:hover { border-color: var(--gruen); }
+button.haupt { background: var(--gruen); border-color: var(--gruen); color: white; }
+
+/* ---- Formulare ---- */
+label { display: grid; gap: 0.25rem; font-size: 0.85rem; color: var(--leise); margin-bottom: 0.75rem; }
+input, select { padding: 0.6rem; border: 1px solid var(--rand); border-radius: 10px; background: white; color: var(--text); }
+.etikett { font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--orange-hell); color: #7a4f00; }
+
+.fuss { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; border-top: 1px solid var(--rand); font-size: 0.8rem; color: var(--leise); text-align: center; }
+
+@media (max-width: 520px) {
+  nav { width: 100%; justify-content: space-between; }
+}

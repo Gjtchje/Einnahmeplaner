@@ -1,11 +1,10 @@
 {
   "tasks": {
     "dev": "deno run --watch --allow-net --allow-read --allow-write --unstable-kv main.ts",
-    "test": "deno test --unstable-kv"
+    "test": "deno test"
   },
   "imports": {
     "hono": "npm:hono@^4",
-    "zod": "npm:zod@^4",
-    "@hono/zod-validator": "npm:@hono/zod-validator@^0.7"
+    "zod": "npm:zod@^4"
   }
 }
