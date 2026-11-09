@@ -85,3 +85,18 @@ export const einnahmeSchema = z.object({
 });
 
 export type Einnahme = z.infer<typeof einnahmeSchema>;
+
+// ---------------------------------------------------------------------------
+// 5. Laborwert = ein Eintrag im Laborwerte-Tagebuch, z. B. Vitamin D 32 ng/ml
+//    Die App speichert und zeigt die Werte nur an – sie bewertet sie nicht.
+// ---------------------------------------------------------------------------
+
+export const laborwertSchema = z.object({
+  name: z.string().trim().min(2, "Bitte angeben, was gemessen wurde, z. B. Vitamin D"),
+  wert: z.number("Der Wert muss eine Zahl sein"),
+  einheit: z.string().trim().min(1, "Bitte eine Einheit angeben, z. B. ng/ml").max(15),
+  datum: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Bitte ein Datum angeben"),
+  referenz: z.string().trim().max(30).default(""), // Referenzbereich vom Laborbericht, z. B. "30–100"
+});
+
+export type Laborwert = z.infer<typeof laborwertSchema> & { id: string };

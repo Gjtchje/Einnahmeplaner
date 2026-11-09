@@ -4,8 +4,9 @@
 //   ["praeparate", id]                    -> ein Präparat
 //   ["tagesablauf"]                       -> die Uhrzeiten
 //   ["einnahmen", datum, praeparatId, slot] -> ein Haken auf der Heute-Seite
+//   ["laborwerte", id]                    -> ein Eintrag im Laborwerte-Tagebuch
 
-import { type Einnahme, KATALOG, type Praeparat, type Tagesablauf } from "./modell.ts";
+import { type Einnahme, KATALOG, type Laborwert, type Praeparat, type Tagesablauf } from "./modell.ts";
 
 await Deno.mkdir("./data", { recursive: true });
 // "v2", weil die vereinfachte Version andere Felder hat als die erste.
@@ -79,6 +80,24 @@ export async function nimmZurueck(e: Einnahme, p: Praeparat) {
 export async function istAbgehakt(e: Einnahme): Promise<boolean> {
   const eintrag = await kv.get(["einnahmen", e.datum, e.praeparatId, e.slot]);
   return eintrag.value !== null;
+}
+
+// ---- Laborwerte-Tagebuch ----
+
+export async function alleLaborwerte(): Promise<Laborwert[]> {
+  const liste: Laborwert[] = [];
+  for await (const eintrag of kv.list<Laborwert>({ prefix: ["laborwerte"] })) {
+    liste.push(eintrag.value);
+  }
+  return liste;
+}
+
+export async function speichereLaborwert(l: Laborwert) {
+  await kv.set(["laborwerte", l.id], l);
+}
+
+export async function loescheLaborwert(id: string) {
+  await kv.delete(["laborwerte", id]);
 }
 
 // ---- Beispieldaten nur beim allerersten Start ----

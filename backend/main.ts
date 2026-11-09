@@ -8,10 +8,11 @@
 
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
-import { einnahmeSchema, KATALOG, praeparatSchema, tagesablaufSchema } from "./modell.ts";
+import { einnahmeSchema, KATALOG, laborwertSchema, praeparatSchema, tagesablaufSchema } from "./modell.ts";
 import { planeTag, praeparateAm } from "./planer.ts";
 import * as db from "./datenbank.ts";
 import { BEISPIELDATEN } from "./beispieldaten.ts";
+import { sucheProdukt } from "./produktsuche.ts";
 
 const app = new Hono();
 
@@ -139,6 +140,44 @@ app.post("/api/einnahmen/umschalten", async (c) => {
   } else {
     await db.hakeAb(einnahme, praeparat);
     return c.json({ abgehakt: true });
+  }
+});
+
+// ---- Laborwerte-Tagebuch: nur speichern und anzeigen, keine Bewertung ----
+
+app.get("/api/laborwerte", async (c) => {
+  const liste = await db.alleLaborwerte();
+  // sortiert nach Name, innerhalb eines Namens nach Datum (alt -> neu)
+  liste.sort((a, b) => a.name.localeCompare(b.name) || a.datum.localeCompare(b.datum));
+  return c.json(liste);
+});
+
+app.post("/api/laborwerte", async (c) => {
+  const pruefung = laborwertSchema.safeParse(await c.req.json());
+  if (!pruefung.success) {
+    return c.json({ fehler: pruefung.error.issues[0].message }, 400);
+  }
+  const laborwert = { ...pruefung.data, id: crypto.randomUUID() };
+  await db.speichereLaborwert(laborwert);
+  return c.json(laborwert, 201);
+});
+
+app.delete("/api/laborwerte/:id", async (c) => {
+  await db.loescheLaborwert(c.req.param("id"));
+  return c.body(null, 204);
+});
+
+// ---- Produktsuche über Open Food Facts (externer Dienst) ----
+// z. B. /api/produktsuche?q=magnesium  oder  /api/produktsuche?q=4058172309563 (Barcode-Nummer)
+
+app.get("/api/produktsuche", async (c) => {
+  const suche = (c.req.query("q") ?? "").trim();
+  if (suche.length < 2) return c.json({ fehler: "Bitte mindestens 2 Zeichen eingeben" }, 400);
+  try {
+    return c.json(await sucheProdukt(suche));
+  } catch {
+    // Der fremde Dienst ist nicht erreichbar – unsere App läuft trotzdem weiter.
+    return c.json({ fehler: "Die Produktdatenbank (Open Food Facts) ist gerade nicht erreichbar." }, 502);
   }
 });
 

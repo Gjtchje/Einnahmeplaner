@@ -110,3 +110,31 @@ export const ladeEinnahmen = (datum: string): Promise<Einnahme[]> => anfrage(`/a
 export const umschalten = (e: Einnahme) => anfrage('/api/einnahmen/umschalten', 'POST', e)
 export const ladeStatistik = (von: string, bis: string): Promise<Statistik> =>
   anfrage(`/api/statistik?von=${von}&bis=${bis}`)
+
+// ---- Laborwerte-Tagebuch ----
+
+export interface Laborwert {
+  id: string
+  name: string // z. B. "Vitamin D (25-OH)"
+  wert: number
+  einheit: string // z. B. "ng/ml"
+  datum: string
+  referenz: string // Referenzbereich vom Laborbericht, z. B. "30–100" (darf leer sein)
+}
+
+export const ladeLaborwerte = (): Promise<Laborwert[]> => anfrage('/api/laborwerte')
+export const erstelleLaborwert = (l: Omit<Laborwert, 'id'>) => anfrage('/api/laborwerte', 'POST', l)
+export const loescheLaborwert = (id: string) => anfrage(`/api/laborwerte/${id}`, 'DELETE')
+
+// ---- Produktsuche (Open Food Facts) ----
+
+export interface Treffer {
+  name: string
+  marke: string
+  code: string
+  wirkstoffId: string | null // vom Backend geraten
+}
+
+export const sucheProdukt = (suche: string): Promise<Treffer[]> =>
+  anfrage(`/api/produktsuche?q=${encodeURIComponent(suche)}`)
+

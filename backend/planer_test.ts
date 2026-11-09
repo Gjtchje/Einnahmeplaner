@@ -89,4 +89,3 @@ Deno.test("ASS 100 und Ibuprofen werden 2 Stunden getrennt, ASS zuerst", () => {
   gleich(slotsVon(plan, "ass-100"), ["fruehstueck"]);
   gleich(slotsVon(plan, "ibuprofen"), ["mittag"]);
 });
-

@@ -4,6 +4,7 @@ import HeuteView from './views/HeuteView.vue'
 import PraeparateView from './views/PraeparateView.vue'
 import TagesablaufView from './views/TagesablaufView.vue'
 import WirkstoffeView from './views/WirkstoffeView.vue'
+import LaborwerteView from './views/LaborwerteView.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -12,5 +13,6 @@ export default createRouter({
     { path: '/praeparate', component: PraeparateView },
     { path: '/tagesablauf', component: TagesablaufView },
     { path: '/wirkstoffe', component: WirkstoffeView },
+    { path: '/laborwerte', component: LaborwerteView },
   ],
 })

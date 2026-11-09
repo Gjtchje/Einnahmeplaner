@@ -67,6 +67,30 @@ async function loeschen(p: api.Praeparat) {
   }
 }
 
+// ---- Produktsuche (Open Food Facts) ----
+const suche = ref('')
+const treffer = ref<api.Treffer[]>([])
+const sucheMeldung = ref('')
+
+async function suchen() {
+  sucheMeldung.value = 'Suche …'
+  treffer.value = []
+  try {
+    treffer.value = await api.sucheProdukt(suche.value)
+    sucheMeldung.value = treffer.value.length === 0 ? 'Nichts gefunden – trag das Produkt einfach selbst ein.' : ''
+  } catch (err) {
+    sucheMeldung.value = (err as Error).message
+  }
+}
+
+// Treffer ins Formular übernehmen: Name und – wenn erkannt – Wirkstoff
+function uebernehmen(t: api.Treffer) {
+  formular.value.name = `${t.marke} ${t.name}`.trim()
+  if (t.wirkstoffId) formular.value.wirkstoffId = t.wirkstoffId
+  treffer.value = []
+  sucheMeldung.value = 'Übernommen – bitte Wirkstoff, Dosis und Stärke prüfen.'
+}
+
 function wirkstoffName(id: string): string {
   return wirkstoffe.value.find((w) => w.id === id)?.name ?? id
 }
@@ -82,6 +106,24 @@ onMounted(laden)
     <!-- Formular: @submit.prevent = beim Absenden nicht neu laden, sondern speichern() aufrufen -->
     <form class="karte" @submit.prevent="speichern">
       <h2>{{ bearbeiteId ? 'Präparat ändern' : 'Neues Präparat' }}</h2>
+
+      <!-- Produktsuche: Name oder Barcode-Nummer eintippen, Treffer übernehmen -->
+      <div class="suche">
+        <label>Produkt suchen (Name oder Barcode-Nummer)
+          <input v-model="suche" placeholder="z. B. Magnesium 400 oder 4058172309563" @keydown.enter.prevent="suchen">
+        </label>
+        <button type="button" @click="suchen">Suchen</button>
+      </div>
+      <ul v-if="treffer.length > 0" class="treffer">
+        <li v-for="t in treffer" :key="t.code">
+          <span><strong>{{ t.marke }}</strong> {{ t.name }}
+            <span v-if="t.wirkstoffId" class="klein">· erkannt: {{ wirkstoffName(t.wirkstoffId) }}</span>
+          </span>
+          <button type="button" @click="uebernehmen(t)">Übernehmen</button>
+        </li>
+      </ul>
+      <p v-if="sucheMeldung" class="klein">{{ sucheMeldung }}</p>
+      <p class="klein quelle">Produktdaten von Open Food Facts (offene Datenbank, kann unvollständig sein).</p>
 
       <!-- v-model verbindet das Eingabefeld mit dem Formular-Objekt (in beide Richtungen) -->
       <label>Name
@@ -150,6 +192,12 @@ h2 { font-size: 1.2rem; margin-bottom: 1rem; }
 .reihe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
 .hinweise { margin: -0.25rem 0 1rem; padding: 0.6rem 0.6rem 0.6rem 1.6rem; border-radius: 10px; background: var(--gruen-hell); font-size: 0.85rem; }
 form button { margin-right: 0.5rem; }
+.suche { display: flex; gap: 0.5rem; align-items: flex-end; }
+.suche label { flex: 1; }
+.suche button { margin-bottom: 0.75rem; }
+.treffer { list-style: none; padding: 0; margin: 0 0 0.5rem; }
+.treffer li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid var(--rand); font-size: 0.9rem; }
+.quelle { margin: 0 0 1rem; font-size: 0.75rem; }
 .tage { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border: none; padding: 0; margin: 0 0 1rem; }
 .tage legend { font-size: 0.85rem; color: var(--leise); margin-bottom: 0.25rem; }
 .tage label { display: flex; align-items: center; gap: 0.3rem; margin: 0; font-size: 1rem; color: var(--text); }

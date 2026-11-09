@@ -7,6 +7,7 @@
       <RouterLink to="/praeparate">Präparate</RouterLink>
       <RouterLink to="/tagesablauf">Tagesablauf</RouterLink>
       <RouterLink to="/wirkstoffe">Wirkstoffe</RouterLink>
+      <RouterLink to="/laborwerte">Laborwerte</RouterLink>
     </nav>
   </header>
 
