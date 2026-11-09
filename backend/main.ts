@@ -104,7 +104,8 @@ app.get("/api/statistik", async (c) => {
     soll += planeTag(praeparateAm(alle, datum), zeiten).eintraege.length;
     ist += (await db.einnahmenAm(datum)).length;
   }
-  const prozent = soll === 0 ? 0 : Math.round((ist / soll) * 100);
+  // höchstens 100 % (z. B. falls ein Präparat inzwischen gelöscht wurde)
+  const prozent = soll === 0 ? 0 : Math.min(100, Math.round((ist / soll) * 100));
   return c.json({ soll, ist, prozent });
 });
 
