@@ -148,7 +148,7 @@ input[type="checkbox"] {
     background: var(--karte);
     border-top: 1px solid var(--rand);
   }
-  nav.menue a { padding: 0.45rem 0.1rem; font-size: 0.78rem; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+  nav.menue a { padding: 0.45rem 0; font-size: 0.72rem; text-align: center; overflow: hidden; text-overflow: ellipsis; }
   body { padding-bottom: 4rem; } /* Platz für die Leiste unten */
   .zeile { grid-template-columns: 1fr; }
   .felder, .felder.drei { grid-template-columns: repeat(2, 1fr); }
