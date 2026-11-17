@@ -8,22 +8,20 @@ import ZeitfensterKarte from '../components/ZeitfensterKarte.vue'
 const katalog = ref<api.Katalog | null>(null)
 const zeiten = ref<api.Tagesablauf>({})
 const plan = ref<api.Plan | null>(null)
-const abgehakt = ref<string[]>([]) // z. b. "id|fruehstueck"
+const abgehakt = ref<string[]>([])
 const fehler = ref('')
 
-// datum als text, z. b. "2026-11-17"
 function alsText(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 const heute = alsText(new Date())
 
-// welcher tag gerade angezeigt wird (am anfang heute)
 const gewaehlt = ref(heute)
 
 // die 7 tage dieser woche für die knöpfe mo bis so
 const woche = computed(() => {
   const montag = new Date()
-  montag.setDate(montag.getDate() - ((montag.getDay() + 6) % 7)) // zurück bis montag
+  montag.setDate(montag.getDate() - ((montag.getDay() + 6) % 7))
   return api.WOCHENTAGE.map((tag, i) => {
     const d = new Date(montag)
     d.setDate(montag.getDate() + i)
@@ -41,7 +39,7 @@ const ueberschrift = computed(() => {
 async function laden() {
   fehler.value = ''
   try {
-    const [k, t, p, e] = await Promise.all([ // promise.all = alles gleichzeitig laden
+    const [k, t, p, e] = await Promise.all([
       api.ladeKatalog(), api.ladeTagesablauf(), api.ladePlan(gewaehlt.value), api.ladeEinnahmen(gewaehlt.value),
     ])
     katalog.value = k
@@ -53,7 +51,6 @@ async function laden() {
   }
 }
 
-// anderen tag anzeigen
 function zeigeTag(datum: string) {
   gewaehlt.value = datum
   laden()
@@ -69,7 +66,6 @@ function istAbgehakt(praeparatId: string, slot: string): boolean {
   return abgehakt.value.includes(`${praeparatId}|${slot}`)
 }
 
-// ids, die in diesem zeitfenster schon abgehakt sind
 function abgehaktIn(slot: string): string[] {
   return abgehakt.value.filter((k) => k.endsWith(`|${slot}`)).map((k) => k.split('|')[0]!)
 }
@@ -97,14 +93,14 @@ const erledigt = computed(() =>
 // vorrat reicht keine 7 tage mehr
 const nachkaufen = computed(() => {
   const alle = plan.value?.eintraege.map((e) => e.praeparat) ?? []
-  const einzeln = alle.filter((p, i) => alle.findIndex((x) => x.id === p.id) === i) // ohne doppelte
+  const einzeln = alle.filter((p, i) => alle.findIndex((x) => x.id === p.id) === i)
   return einzeln.filter((p) => p.vorrat !== null && p.vorrat < 7 * p.proTag)
 })
 
 // erinnerungen: alle 30 sek prüfen, ob ein zeitfenster dran ist (nur wenn die app offen ist)
 const unterstuetzt = typeof Notification !== 'undefined'
-const erlaubnis = ref(unterstuetzt ? Notification.permission : 'denied') // "default", "granted" oder "denied"
-const gemeldet: string[] = [] // schon gemeldete zeitfenster
+const erlaubnis = ref(unterstuetzt ? Notification.permission : 'denied')
+const gemeldet: string[] = []
 
 async function erinnerungEinschalten() {
   erlaubnis.value = await Notification.requestPermission()
@@ -146,9 +142,9 @@ let timer: number
 onMounted(async () => {
   await laden()
   erinnerungPruefen()
-  timer = setInterval(erinnerungPruefen, 30_000) // alle 30 sek ausführen
+  timer = setInterval(erinnerungPruefen, 30_000)
 })
-onUnmounted(() => clearInterval(timer)) // beim verlassen der seite timer stoppen
+onUnmounted(() => clearInterval(timer))
 </script>
 
 <template>
@@ -156,7 +152,7 @@ onUnmounted(() => clearInterval(timer)) // beim verlassen der seite timer stoppe
     <h1>{{ ueberschrift }}</h1>
     <p class="unterzeile">{{ erledigt }} von {{ anzahl }} erledigt</p>
 
-    <!-- knöpfe mo bis so, :class = farbe für heute/ausgewählt, @click = tag zeigen -->
+    <!-- knöpfe mo bis so -->
     <nav class="woche" aria-label="Tag auswählen">
       <button
         v-for="tag in woche"
@@ -175,7 +171,7 @@ onUnmounted(() => clearInterval(timer)) // beim verlassen der seite timer stoppe
       <RouterLink to="/praeparate">Präparate</RouterLink> an.
     </p>
 
-    <!-- ein kasten pro zeitfenster: :name usw. = props rein, @haken = emit raus -->
+    <!-- ein kasten pro zeitfenster: :name, :zeit … = props rein, @haken = emit raus -->
     <ZeitfensterKarte
       v-for="fenster in zeitfenster"
       :key="fenster.id"
@@ -194,7 +190,7 @@ onUnmounted(() => clearInterval(timer)) // beim verlassen der seite timer stoppe
       </p>
     </section>
 
-    <!-- vorrat (v-if = nur anzeigen, wenn was knapp ist) -->
+    <!-- vorrat -->
     <section v-if="nachkaufen.length > 0">
       <h2>Bald nachkaufen</h2>
       <div v-for="p in nachkaufen" :key="p.id" class="karte zeile fest">

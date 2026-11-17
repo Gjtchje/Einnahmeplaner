@@ -4,4 +4,4 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app') // in <div id="app"> aus index.html anzeigen
+createApp(App).use(router).mount('#app')

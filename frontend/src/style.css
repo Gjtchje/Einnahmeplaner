@@ -11,7 +11,7 @@
   --orange-hell: #fbefdc;
   --rot: #b3261e;
 
-  --abstand: 1rem; /* grundabstand */
+  --abstand: 1rem;
   --rundung: 14px;
 
   font-family: 'Inter', Arial, sans-serif;
@@ -24,13 +24,11 @@
 body { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 
-/* überschriften */
 h1, h2 { font-family: 'Fraunces', Georgia, serif; margin: 0; line-height: 1.2; }
 h1 { font-size: 2rem; }
 h2 { font-size: 1.2rem; margin: calc(var(--abstand) * 1.75) 0 calc(var(--abstand) * 0.75); }
 .karte > h2:first-child { margin-top: 0; }
 
-/* kopfzeile + navigation */
 .kopf {
   position: sticky;
   top: 0;
@@ -46,10 +44,8 @@ h2 { font-size: 1.2rem; margin: calc(var(--abstand) * 1.75) 0 calc(var(--abstand
 .marke { display: flex; align-items: center; gap: 0.5rem; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 1.15rem; }
 nav.menue { display: flex; gap: 0.25rem; }
 nav.menue a { padding: 0.4rem 0.8rem; border-radius: 999px; color: var(--leise); text-decoration: none; font-weight: 500; white-space: nowrap; }
-/* vue setzt das auf den aktiven link */
 nav.menue a.router-link-exact-active { background: var(--gruen); color: white; }
 
-/* seiteninhalt */
 main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var(--abstand) calc(var(--abstand) * 3); }
 .unterzeile { color: var(--leise); margin: 0.25rem 0 calc(var(--abstand) * 1.5); }
 
@@ -62,7 +58,6 @@ main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var
   margin: 0 0 calc(var(--abstand) * 0.75);
 }
 
-/* grün = tipp, orange = warnung */
 .hinweis { background: var(--gruen-hell); border-color: transparent; }
 .hinweis.warnung { background: var(--orange-hell); }
 
@@ -70,7 +65,6 @@ main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var
 .fehler { color: var(--rot); margin: 0 0 var(--abstand); }
 .etikett { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.55rem; border-radius: 999px; background: var(--orange-hell); color: #7a4f00; white-space: nowrap; }
 
-/* knöpfe */
 button {
   padding: 0.55rem 1.1rem;
   border: 1px solid var(--rand);
@@ -84,12 +78,11 @@ button.haupt { background: var(--gruen); border-color: var(--gruen); color: whit
 button.klein-knopf { padding: 0.3rem 0.75rem; font-size: 0.85rem; }
 .knoepfe { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
 
-/* formulare */
 label { display: grid; gap: 0.3rem; font-size: 0.85rem; color: var(--leise); }
 input, select {
   width: 100%;
   min-width: 0;
-  height: 2.6rem; /* alle gleich hoch */
+  height: 2.6rem;
   padding: 0 0.7rem;
   border: 1px solid var(--rand);
   border-radius: 10px;
@@ -100,31 +93,28 @@ input:focus, select:focus { outline: 2px solid var(--gruen-hell); border-color: 
 input[type="checkbox"] {
   width: 1.2rem;
   height: 1.2rem;
-  flex-shrink: 0; /* bleiben gleich groß */
+  flex-shrink: 0;
   margin: 0;
   padding: 0;
   accent-color: var(--gruen);
 }
 
-/* felder nebeneinander (handy: 2 spalten) */
 .felder { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--abstand); margin-bottom: var(--abstand); }
 .felder.drei { grid-template-columns: repeat(3, 1fr); }
 .felder.zwei { grid-template-columns: repeat(2, 1fr); }
 .felder.breit { grid-template-columns: 1fr; }
 
-/* mo di mi …: checkbox, die wie ein knopf aussieht */
 .chips { display: grid; grid-template-columns: repeat(7, minmax(0, 3.2rem)); gap: 0.4rem; border: none; padding: 0; margin: 0 0 var(--abstand); }
 .chips legend { font-size: 0.85rem; color: var(--leise); margin-bottom: 0.4rem; padding: 0; }
 .chip { display: block; cursor: pointer; }
-.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; } /* echte checkbox versteckt */
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chip span { display: block; padding: 0.4rem 0; text-align: center; border: 1px solid var(--rand); border-radius: 999px; background: white; color: var(--text); font-size: 0.9rem; }
 .chip input:checked + span { background: var(--gruen); border-color: var(--gruen); color: white; }
 .chip input:focus-visible + span { outline: 2px solid var(--gruen); outline-offset: 2px; }
 
-/* listenzeile: text links, knöpfe rechts */
 .zeile { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem var(--abstand); align-items: center; }
 .zeile p { margin: 0.15rem 0 0; }
-.zeile.fest { grid-template-columns: 1fr auto !important; } /* auch auf dem handy nebeneinander */
+.zeile.fest { grid-template-columns: 1fr auto !important; }
 
 .fuss { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var(--abstand); border-top: 1px solid var(--rand); font-size: 0.8rem; color: var(--leise); text-align: center; }
 
@@ -146,7 +136,7 @@ input[type="checkbox"] {
     border-top: 1px solid var(--rand);
   }
   nav.menue a { padding: 0.45rem 0; font-size: 0.72rem; text-align: center; overflow: hidden; text-overflow: ellipsis; }
-  body { padding-bottom: 4rem; } /* platz für die leiste */
+  body { padding-bottom: 4rem; }
   .zeile { grid-template-columns: 1fr; }
   .felder, .felder.drei { grid-template-columns: repeat(2, 1fr); }
   .chips { grid-template-columns: repeat(7, 1fr); }

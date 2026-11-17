@@ -20,7 +20,7 @@ app.get("/api/katalog", (c) => {
 // ---- präparate ----
 
 // holt alle präparate, sortiert alphabetisch, schickt sie ans frontend
-app.get("/api/praeparate", async (c) => { // async = hier drin wird mit await gewartet, c = anfrage + antwort
+app.get("/api/praeparate", async (c) => {
   const liste = await db.allePraeparate(); // await = warten bis die db fertig ist
   liste.sort((a, b) => a.name.localeCompare(b.name));
   return c.json(liste);
@@ -28,18 +28,18 @@ app.get("/api/praeparate", async (c) => { // async = hier drin wird mit await ge
 
 // neues präparat: prüfen, id geben, speichern, 201 = angelegt
 app.post("/api/praeparate", async (c) => {
-  const pruefung = praeparatSchema.safeParse(await c.req.json()); // c.req.json = daten vom browser, safeParse = zod prüft (success true/false)
-  if (!pruefung.success) { // ! = nicht
+  const pruefung = praeparatSchema.safeParse(await c.req.json()); // safeParse = zod prüft die daten vom browser (success true/false)
+  if (!pruefung.success) {
     return c.json({ fehler: pruefung.error.issues[0].message }, 400);
   }
-  const praeparat = { ...pruefung.data, id: crypto.randomUUID() }; // ... = daten kopieren, randomUUID = zufällige id
+  const praeparat = { ...pruefung.data, id: crypto.randomUUID() };
   await db.speicherePraeparat(praeparat);
   return c.json(praeparat, 201);
 });
 
 // präparat ändern: gibt es das überhaupt? (sonst 404), dann prüfen und speichern
 app.put("/api/praeparate/:id", async (c) => {
-  const id = c.req.param("id"); // id aus der adresse holen
+  const id = c.req.param("id");
   if (!(await db.holePraeparat(id))) return c.json({ fehler: "Nicht gefunden" }, 404);
 
   const pruefung = praeparatSchema.safeParse(await c.req.json());
@@ -78,7 +78,7 @@ app.put("/api/tagesablauf", async (c) => {
 
 // prüft datum, holt präparate und tagesablauf, berechnet plan, schickt ihn ans frontend (wird nicht gespeichert)
 app.get("/api/plan", async (c) => {
-  const datum = c.req.query("datum") ?? ""; // wert nach dem ? in der adresse, ?? = falls leer nimm ""
+  const datum = c.req.query("datum") ?? "";
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return c.json({ fehler: "Datum fehlt" }, 400);
 
   const praeparate = praeparateAm(await db.allePraeparate(), datum);

@@ -6,18 +6,18 @@ import katalog from "./daten/wirkstoffe.json" with { type: "json" };
 // katalog (fest, aus wirkstoffe.json)
 
 export interface Wirkstoff {
-  id: string; // z. b. "eisen"
+  id: string;
   name: string;
-  kategorie: string; // "nem" oder "medikament"
-  slots: string[]; // empfohlene zeitfenster, bestes zuerst
+  kategorie: string;
+  slots: string[];
   hinweise: string[];
 }
 
 export interface Regel {
-  a: string; // wirkstoff-ids
+  a: string;
   b: string;
-  typ: string; // "abstand", "zusammen" oder "warnung"
-  stunden?: number; // nur bei abstand
+  typ: string;
+  stunden?: number;
   grund: string;
 }
 
@@ -28,19 +28,18 @@ export const KATALOG = katalog as {
   quellen: { id: string; titel: string; url: string }[];
 };
 
-// die 6 zeitfenster in tagesreihenfolge
 export const SLOT_IDS = KATALOG.slots.map((s) => s.id);
 
 // präparat: zod prüft alles, was der browser schickt
 
-export const praeparatSchema = z.object({ // z.object = regeln für ein objekt
-  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"), // text, leerzeichen weg, mind. 2 zeichen
-  wirkstoffId: z.string().refine( // refine = eigene prüfung: gibt es den wirkstoff?
+export const praeparatSchema = z.object({
+  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"),
+  wirkstoffId: z.string().refine(
     (id) => KATALOG.wirkstoffe.some((w) => w.id === id),
     "Bitte einen Wirkstoff auswählen",
   ),
   dosis: z.string().trim().min(1, "Bitte eine Dosis angeben, z. B. 1 Tablette"),
-  staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""), // optional, z. b. "500 mg"
+  staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""),
   proTag: z.number().int().min(1, "Mindestens 1-mal").max(3, "Höchstens 3-mal"),
   vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = vorrat nicht zählen
   // wochentage: 0 = sonntag ... 6 = samstag

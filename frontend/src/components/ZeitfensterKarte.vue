@@ -4,10 +4,10 @@ import type { Plan } from '../api'
 
 // props: daten, die die seite reingibt
 defineProps<{
-  name: string // z. b. "frühstück"
-  zeit: string // z. b. "07:30"
-  eintraege: Plan['eintraege'] // präparate in diesem zeitfenster
-  abgehakt: string[] // ids, die schon abgehakt sind
+  name: string
+  zeit: string
+  eintraege: Plan['eintraege']
+  abgehakt: string[]
 }>()
 
 // emit: meldet der seite, welcher haken geklickt wurde
@@ -22,7 +22,6 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
     </div>
     <!-- eine zeile pro präparat, klick auf den haken meldet es per emit an die seite -->
     <ul class="eintraege">
-      <!-- :checked = haken zeigen wenn abgehakt, @change = beim klicken, :class durch = durchstreichen -->
       <li v-for="e in eintraege" :key="e.praeparat.id">
         <label class="eintrag">
           <input
@@ -53,7 +52,6 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
 .durch { text-decoration: line-through; color: var(--leise); }
 .tipp { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--gruen); }
 
-/* handy: uhrzeit und name nebeneinander */
 @media (max-width: 600px) {
   .zeitfenster { grid-template-columns: 1fr; gap: 0.75rem; }
   .zeit { display: flex; align-items: baseline; gap: 0.6rem; }

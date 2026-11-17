@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import * as api from '../api'
 
 // daten der seite, vue aktualisiert die anzeige automatisch
-const slots = ref<api.Katalog['slots']>([]) // ref<typ>(startwert)
+const slots = ref<api.Katalog['slots']>([])
 const zeiten = ref<api.Tagesablauf>({})
 const meldung = ref('')
 
@@ -19,7 +19,7 @@ async function speichern() {
   try {
     await api.speichereTagesablauf(zeiten.value)
     meldung.value = 'Gespeichert – dein Plan ist aktualisiert.'
-  } catch (err) { // try/catch = fehler abfangen statt absturz
+  } catch (err) {
     meldung.value = (err as Error).message
   }
 }
@@ -48,7 +48,7 @@ async function speichern() {
 <style scoped>
 .uhrzeit-zeile {
   display: grid;
-  grid-template-columns: 1fr 8.5rem; /* rechts immer gleich breit */
+  grid-template-columns: 1fr 8.5rem;
   align-items: center;
   gap: var(--abstand);
   padding: 0.6rem 0;

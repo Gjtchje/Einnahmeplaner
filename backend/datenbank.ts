@@ -4,30 +4,29 @@
 import { type Einnahme, KATALOG, type Praeparat, type Tagesablauf } from "./modell.ts";
 
 await Deno.mkdir("./data", { recursive: true });
-// datenbank-datei öffnen
 const kv = await Deno.openKv("./data/einnahmeplaner-v2.db");
 
 // präparate
 
 export async function allePraeparate(): Promise<Praeparat[]> {
   const liste: Praeparat[] = [];
-  for await (const eintrag of kv.list<Praeparat>({ prefix: ["praeparate"] })) { // list = alle einträge, die so anfangen
+  for await (const eintrag of kv.list<Praeparat>({ prefix: ["praeparate"] })) {
     liste.push(eintrag.value);
   }
   return liste;
 }
 
 export async function holePraeparat(id: string): Promise<Praeparat | null> {
-  const eintrag = await kv.get<Praeparat>(["praeparate", id]); // get = einen eintrag holen
+  const eintrag = await kv.get<Praeparat>(["praeparate", id]);
   return eintrag.value;
 }
 
 export async function speicherePraeparat(p: Praeparat) {
-  await kv.set(["praeparate", p.id], p); // set = speichern
+  await kv.set(["praeparate", p.id], p);
 }
 
 export async function loeschePraeparat(id: string) {
-  await kv.delete(["praeparate", id]); // delete = löschen
+  await kv.delete(["praeparate", id]);
 }
 
 // tagesablauf
@@ -35,7 +34,6 @@ export async function loeschePraeparat(id: string) {
 export async function holeTagesablauf(): Promise<Tagesablauf> {
   const eintrag = await kv.get<Tagesablauf>(["tagesablauf"]);
   if (eintrag.value) return eintrag.value;
-  // noch nichts gespeichert -> standardzeiten
   return Object.fromEntries(KATALOG.slots.map((s) => [s.id, s.standardZeit]));
 }
 
@@ -59,7 +57,7 @@ export async function hakeAb(e: Einnahme, p: Praeparat) {
   await kv.atomic()
     .set(["einnahmen", e.datum, e.praeparatId, e.slot], e)
     .set(["praeparate", p.id], { ...p, vorrat: neuerVorrat })
-    .commit(); // erst hier wird alles zusammen gespeichert
+    .commit(); // atomic: erst hier wird alles zusammen gespeichert (oder gar nichts)
 }
 
 // haken weg + vorrat +1
@@ -76,7 +74,6 @@ export async function istAbgehakt(e: Einnahme): Promise<boolean> {
   return eintrag.value !== null;
 }
 
-// true beim allerersten start (für die beispieldaten)
 
 export async function ersterStart(): Promise<boolean> {
   const eintrag = await kv.get(["schonGestartet"]);

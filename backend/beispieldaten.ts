@@ -1,7 +1,7 @@
 // startdaten beim ersten start, mit typischen konflikten (l-thyroxin, eisen, calcium)
 // zink nur mo, mi, fr
 
-const TAEGLICH = [0, 1, 2, 3, 4, 5, 6]; // so bis sa
+const TAEGLICH = [0, 1, 2, 3, 4, 5, 6];
 
 export const BEISPIELDATEN = [
   { name: "L-Thyroxin 50", wirkstoffId: "l-thyroxin", dosis: "1 Tablette", staerke: "50 µg", proTag: 1, vorrat: 84, tage: TAEGLICH },

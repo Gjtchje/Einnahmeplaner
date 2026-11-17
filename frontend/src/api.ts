@@ -5,7 +5,7 @@
 export interface Wirkstoff {
   id: string
   name: string
-  kategorie: string // "nem" oder "medikament"
+  kategorie: string
   slots: string[]
   hinweise: string[]
 }
@@ -20,14 +20,13 @@ export interface Praeparat {
   id: string
   name: string
   wirkstoffId: string
-  dosis: string // z. b. "1 tablette"
-  staerke: string // z. b. "500 mg", darf leer sein
+  dosis: string
+  staerke: string
   proTag: number
   vorrat: number | null
-  tage: number[] // 0 = sonntag ... 6 = samstag
+  tage: number[]
 }
 
-// wochentage für die knöpfe mo bis so
 export const WOCHENTAGE = [
   { nr: 1, kurz: 'Mo', lang: 'Montag' },
   { nr: 2, kurz: 'Di', lang: 'Dienstag' },
@@ -41,7 +40,7 @@ export const WOCHENTAGE = [
 // präparat ohne id, die vergibt der server
 export type NeuesPraeparat = Omit<Praeparat, 'id'>
 
-export type Tagesablauf = Record<string, string> // z. b. { fruehstueck: "07:30" }
+export type Tagesablauf = Record<string, string>
 
 // plan vom server: einträge + hinweise
 export interface Plan {
@@ -64,15 +63,13 @@ async function anfrage(url: string, methode = 'GET', daten?: unknown) {
     antwort = await fetch(url, { // fetch = anfrage an den server schicken
       method: methode,
       headers: { 'Content-Type': 'application/json' },
-      body: daten ? JSON.stringify(daten) : undefined, // daten in json-text umwandeln
+      body: daten ? JSON.stringify(daten) : undefined,
     })
   } catch {
-    // throw = fehler weitergeben, die seite zeigt ihn an
     throw new Error('Server nicht erreichbar – läuft das Backend?')
   }
-  // 204 = ok, aber ohne inhalt (z. b. nach dem löschen)
   const ergebnis = antwort.status === 204 ? null : await antwort.json()
-  if (!antwort.ok) { // ok = status 200 bis 299
+  if (!antwort.ok) {
     throw new Error(ergebnis?.fehler ?? `Fehler ${antwort.status}`)
   }
   return ergebnis

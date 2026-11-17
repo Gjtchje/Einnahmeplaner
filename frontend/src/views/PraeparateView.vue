@@ -12,10 +12,9 @@ const fehler = ref('')
 const leer: api.NeuesPraeparat = {
   name: '', wirkstoffId: '', dosis: '1 Tablette', staerke: '', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
 }
-const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] }) // kopie, damit leer gleich bleibt
+const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] })
 const bearbeiteId = ref<string | null>(null)
 
-// hinweise zum gewählten wirkstoff
 const gewaehlt = computed(() => wirkstoffe.value.find((w) => w.id === formular.value.wirkstoffId))
 
 // präparate und wirkstoffe vom backend laden
@@ -39,7 +38,7 @@ async function speichern() {
     } else {
       await api.erstellePraeparat(formular.value)
     }
-    abbrechen() // formular leeren
+    abbrechen()
     await laden()
   } catch (err) {
     // z. b. fehlermeldung von zod aus dem backend
@@ -47,26 +46,22 @@ async function speichern() {
   }
 }
 
-// präparat ins formular laden zum ändern
 function bearbeiten(p: api.Praeparat) {
   bearbeiteId.value = p.id
   formular.value = {
     name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, staerke: p.staerke ?? '', proTag: p.proTag, vorrat: p.vorrat,
-    tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6], // alte präparate ohne tage = täglich
+    tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6],
   }
   window.scrollTo({ top: 0 })
 }
 
-// formular leeren
 function abbrechen() {
   bearbeiteId.value = null
   formular.value = { ...leer, tage: [...leer.tage] }
   fehler.value = ''
 }
 
-// nach rückfrage löschen
 async function loeschen(p: api.Praeparat) {
-  // confirm = ja/nein-fenster im browser
   if (confirm(`„${p.name}“ wirklich löschen?`)) {
     await api.loeschePraeparat(p.id)
     await laden()
@@ -77,7 +72,7 @@ function wirkstoffName(id: string): string {
   return wirkstoffe.value.find((w) => w.id === id)?.name ?? id
 }
 
-onMounted(laden) // beim öffnen laden
+onMounted(laden)
 </script>
 
 <template>
@@ -107,7 +102,6 @@ onMounted(laden) // beim öffnen laden
         <li v-for="h in gewaehlt.hinweise" :key="h">{{ h }}</li>
       </ul>
 
-      <!-- v-model.number = als zahl speichern -->
       <div class="felder">
         <label>Dosis
           <input v-model="formular.dosis" placeholder="z. B. 1 Tablette">

@@ -4,7 +4,6 @@ import { deepStrictEqual as gleich, ok as stimmt } from "node:assert/strict";
 import { type Plan, planeTag, praeparateAm } from "./planer.ts";
 import type { Praeparat } from "./modell.ts";
 
-// normaler tagesablauf
 const ZEITEN = {
   nuechtern: "07:00",
   fruehstueck: "07:30",
@@ -77,8 +76,8 @@ Deno.test("Warnung bei Vitamin K2 und Marcumar", () => {
 
 Deno.test("Wochentage: Zink nur montags – am Montag dabei, am Dienstag nicht", () => {
   const zink = { ...praeparat("zink"), tage: [1] }; // 1 = montag
-  gleich(praeparateAm([zink], "2026-11-09").length, 1); // montag
-  gleich(praeparateAm([zink], "2026-11-10").length, 0); // dienstag
+  gleich(praeparateAm([zink], "2026-11-09").length, 1);
+  gleich(praeparateAm([zink], "2026-11-10").length, 0);
 });
 
 Deno.test("ASS 100 und Ibuprofen werden 2 Stunden getrennt, ASS zuerst", () => {
