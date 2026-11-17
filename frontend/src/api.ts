@@ -61,17 +61,18 @@ export interface Einnahme {
 async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   let antwort: Response
   try {
-    antwort = await fetch(url, {
+    antwort = await fetch(url, { // fetch = anfrage an den server schicken
       method: methode,
       headers: { 'Content-Type': 'application/json' },
-      body: daten ? JSON.stringify(daten) : undefined,
+      body: daten ? JSON.stringify(daten) : undefined, // daten in json-text umwandeln
     })
   } catch {
+    // throw = fehler weitergeben, die seite zeigt ihn an
     throw new Error('Server nicht erreichbar – läuft das Backend?')
   }
   // 204 = ok, aber ohne inhalt (z. b. nach dem löschen)
   const ergebnis = antwort.status === 204 ? null : await antwort.json()
-  if (!antwort.ok) {
+  if (!antwort.ok) { // ok = status 200 bis 299
     throw new Error(ergebnis?.fehler ?? `Fehler ${antwort.status}`)
   }
   return ergebnis

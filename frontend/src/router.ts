@@ -5,7 +5,7 @@ import PraeparateView from './views/PraeparateView.vue'
 import TagesablaufView from './views/TagesablaufView.vue'
 
 export default createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(), // normale adressen wie /praeparate
   routes: [
     { path: '/', component: HeuteView },
     { path: '/praeparate', component: PraeparateView },

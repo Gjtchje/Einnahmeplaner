@@ -24,22 +24,23 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
   const hinweise: string[] = [];
 
   // schritt 1: sortieren
-  const sortiert = [...praeparate].sort((p1, p2) => {
+  const sortiert = [...praeparate].sort((p1, p2) => { // kopie der liste sortieren
     const w1 = findeWirkstoff(p1.wirkstoffId);
     const w2 = findeWirkstoff(p2.wirkstoffId);
     if (w1.kategorie !== w2.kategorie) {
-      return w1.kategorie === "medikament" ? -1 : 1; // medikamente zuerst
+      return w1.kategorie === "medikament" ? -1 : 1; // medikamente zuerst (? : = kurzes if/else)
     }
     return w1.slots.length - w2.slots.length || p1.name.localeCompare(p2.name);
   });
 
   // schritt 2: zeitfenster vergeben
-  for (const praeparat of sortiert) {
+  for (const praeparat of sortiert) { // für jedes präparat
     const wirkstoff = findeWirkstoff(praeparat.wirkstoffId);
 
     // so oft wie pro tag genommen (2-mal = 2 zeitfenster)
     for (let i = 0; i < praeparat.proTag; i++) {
       // empfohlene zeitfenster, wo es noch nicht liegt (sonst alle anderen)
+      // filter = nur passende behalten, map = umwandeln
       const schonBelegt = eintraege.filter((e) => e.praeparat.id === praeparat.id).map((e) => e.slot);
       let moeglich = wirkstoff.slots.filter((s) => !schonBelegt.includes(s));
       if (moeglich.length === 0) {
@@ -47,6 +48,7 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
       }
 
       // erstes zeitfenster ohne konflikt
+      // find = das erste, das passt
       let slot = moeglich.find((s) => findeKonflikt(wirkstoff, s, eintraege, zeiten) === null);
 
       // keins frei -> bestes nehmen + konflikt-hinweis
@@ -59,7 +61,7 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
         );
       }
 
-      eintraege.push({ praeparat, wirkstoff, slot });
+      eintraege.push({ praeparat, wirkstoff, slot }); // push = hinten an die liste hängen
     }
   }
 
@@ -67,14 +69,14 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
   const vorhandeneIds = eintraege.map((e) => e.wirkstoff.id);
   for (const regel of KATALOG.regeln) {
     const beideDa = vorhandeneIds.includes(regel.a) && vorhandeneIds.includes(regel.b);
-    if (!beideDa) continue; // regel betrifft heute nicht
+    if (!beideDa) continue; // regel betrifft heute nicht -> continue = nächste regel
 
     const namen = `${findeWirkstoff(regel.a).name} + ${findeWirkstoff(regel.b).name}`;
     if (regel.typ === "zusammen") hinweise.push(`Tipp (${namen}): ${regel.grund}`);
     if (regel.typ === "warnung") hinweise.push(`Warnung (${namen}): ${regel.grund}`);
   }
 
-  return { eintraege, hinweise };
+  return { eintraege, hinweise }; // fertigen plan zurückgeben
 }
 
 // zu wenig abstand zu einem schon verplanten mittel? -> konflikt, sonst null

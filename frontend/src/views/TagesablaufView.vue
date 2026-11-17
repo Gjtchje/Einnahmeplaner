@@ -4,13 +4,13 @@ import { onMounted, ref } from 'vue'
 import * as api from '../api'
 
 // daten der seite, vue aktualisiert die anzeige automatisch
-const slots = ref<api.Katalog['slots']>([])
+const slots = ref<api.Katalog['slots']>([]) // ref<typ>(startwert)
 const zeiten = ref<api.Tagesablauf>({})
 const meldung = ref('')
 
 // beim öffnen: zeitfenster und uhrzeiten laden
 onMounted(async () => {
-  slots.value = (await api.ladeKatalog()).slots
+  slots.value = (await api.ladeKatalog()).slots // .value = inhalt von einem ref
   zeiten.value = await api.ladeTagesablauf()
 })
 
@@ -19,7 +19,7 @@ async function speichern() {
   try {
     await api.speichereTagesablauf(zeiten.value)
     meldung.value = 'Gespeichert – dein Plan ist aktualisiert.'
-  } catch (err) {
+  } catch (err) { // try/catch = fehler abfangen statt absturz
     meldung.value = (err as Error).message
   }
 }

@@ -34,7 +34,7 @@ async function speichern() {
   // leeres vorrat-feld = null (nicht zählen)
   if (String(formular.value.vorrat) === '') formular.value.vorrat = null
   try {
-    if (bearbeiteId.value) {
+    if (bearbeiteId.value) { // id da = ändern (put), sonst neu (post)
       await api.aenderePraeparat(bearbeiteId.value, formular.value)
     } else {
       await api.erstellePraeparat(formular.value)
@@ -66,6 +66,7 @@ function abbrechen() {
 
 // nach rückfrage löschen
 async function loeschen(p: api.Praeparat) {
+  // confirm = ja/nein-fenster im browser
   if (confirm(`„${p.name}“ wirklich löschen?`)) {
     await api.loeschePraeparat(p.id)
     await laden()
@@ -76,7 +77,7 @@ function wirkstoffName(id: string): string {
   return wirkstoffe.value.find((w) => w.id === id)?.name ?? id
 }
 
-onMounted(laden)
+onMounted(laden) // beim öffnen laden
 </script>
 
 <template>
@@ -106,6 +107,7 @@ onMounted(laden)
         <li v-for="h in gewaehlt.hinweise" :key="h">{{ h }}</li>
       </ul>
 
+      <!-- v-model.number = als zahl speichern -->
       <div class="felder">
         <label>Dosis
           <input v-model="formular.dosis" placeholder="z. B. 1 Tablette">

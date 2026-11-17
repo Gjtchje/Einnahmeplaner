@@ -41,7 +41,7 @@ const ueberschrift = computed(() => {
 async function laden() {
   fehler.value = ''
   try {
-    const [k, t, p, e] = await Promise.all([
+    const [k, t, p, e] = await Promise.all([ // promise.all = alles gleichzeitig laden
       api.ladeKatalog(), api.ladeTagesablauf(), api.ladePlan(gewaehlt.value), api.ladeEinnahmen(gewaehlt.value),
     ])
     katalog.value = k
@@ -146,9 +146,9 @@ let timer: number
 onMounted(async () => {
   await laden()
   erinnerungPruefen()
-  timer = setInterval(erinnerungPruefen, 30_000)
+  timer = setInterval(erinnerungPruefen, 30_000) // alle 30 sek ausführen
 })
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => clearInterval(timer)) // beim verlassen der seite timer stoppen
 </script>
 
 <template>
@@ -156,7 +156,7 @@ onUnmounted(() => clearInterval(timer))
     <h1>{{ ueberschrift }}</h1>
     <p class="unterzeile">{{ erledigt }} von {{ anzahl }} erledigt</p>
 
-    <!-- knöpfe mo bis so -->
+    <!-- knöpfe mo bis so, :class = farbe für heute/ausgewählt, @click = tag zeigen -->
     <nav class="woche" aria-label="Tag auswählen">
       <button
         v-for="tag in woche"
@@ -175,7 +175,7 @@ onUnmounted(() => clearInterval(timer))
       <RouterLink to="/praeparate">Präparate</RouterLink> an.
     </p>
 
-    <!-- ein kasten pro zeitfenster -->
+    <!-- ein kasten pro zeitfenster: :name usw. = props rein, @haken = emit raus -->
     <ZeitfensterKarte
       v-for="fenster in zeitfenster"
       :key="fenster.id"
@@ -194,7 +194,7 @@ onUnmounted(() => clearInterval(timer))
       </p>
     </section>
 
-    <!-- vorrat -->
+    <!-- vorrat (v-if = nur anzeigen, wenn was knapp ist) -->
     <section v-if="nachkaufen.length > 0">
       <h2>Bald nachkaufen</h2>
       <div v-for="p in nachkaufen" :key="p.id" class="karte zeile fest">

@@ -11,23 +11,23 @@ const kv = await Deno.openKv("./data/einnahmeplaner-v2.db");
 
 export async function allePraeparate(): Promise<Praeparat[]> {
   const liste: Praeparat[] = [];
-  for await (const eintrag of kv.list<Praeparat>({ prefix: ["praeparate"] })) {
+  for await (const eintrag of kv.list<Praeparat>({ prefix: ["praeparate"] })) { // list = alle einträge, die so anfangen
     liste.push(eintrag.value);
   }
   return liste;
 }
 
 export async function holePraeparat(id: string): Promise<Praeparat | null> {
-  const eintrag = await kv.get<Praeparat>(["praeparate", id]);
+  const eintrag = await kv.get<Praeparat>(["praeparate", id]); // get = einen eintrag holen
   return eintrag.value;
 }
 
 export async function speicherePraeparat(p: Praeparat) {
-  await kv.set(["praeparate", p.id], p);
+  await kv.set(["praeparate", p.id], p); // set = speichern
 }
 
 export async function loeschePraeparat(id: string) {
-  await kv.delete(["praeparate", id]);
+  await kv.delete(["praeparate", id]); // delete = löschen
 }
 
 // tagesablauf
@@ -59,7 +59,7 @@ export async function hakeAb(e: Einnahme, p: Praeparat) {
   await kv.atomic()
     .set(["einnahmen", e.datum, e.praeparatId, e.slot], e)
     .set(["praeparate", p.id], { ...p, vorrat: neuerVorrat })
-    .commit();
+    .commit(); // erst hier wird alles zusammen gespeichert
 }
 
 // haken weg + vorrat +1

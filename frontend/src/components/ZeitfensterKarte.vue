@@ -22,6 +22,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
     </div>
     <!-- eine zeile pro präparat, klick auf den haken meldet es per emit an die seite -->
     <ul class="eintraege">
+      <!-- :checked = haken zeigen wenn abgehakt, @change = beim klicken, :class durch = durchstreichen -->
       <li v-for="e in eintraege" :key="e.praeparat.id">
         <label class="eintrag">
           <input

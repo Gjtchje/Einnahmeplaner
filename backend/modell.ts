@@ -33,9 +33,9 @@ export const SLOT_IDS = KATALOG.slots.map((s) => s.id);
 
 // präparat: zod prüft alles, was der browser schickt
 
-export const praeparatSchema = z.object({
-  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"),
-  wirkstoffId: z.string().refine(
+export const praeparatSchema = z.object({ // z.object = regeln für ein objekt
+  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"), // text, leerzeichen weg, mind. 2 zeichen
+  wirkstoffId: z.string().refine( // refine = eigene prüfung: gibt es den wirkstoff?
     (id) => KATALOG.wirkstoffe.some((w) => w.id === id),
     "Bitte einen Wirkstoff auswählen",
   ),
