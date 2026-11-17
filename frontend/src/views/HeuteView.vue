@@ -1,29 +1,29 @@
-<!-- HeuteView.vue – Startseite: der Plan für heute zum Abhaken. -->
+<!-- startseite: plan für einen tag zum abhaken -->
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import * as api from '../api'
 import ZeitfensterKarte from '../components/ZeitfensterKarte.vue'
 
-// ---- Daten (ref = Vue zeigt Änderungen automatisch an) ----
+// daten der seite (ref = vue aktualisiert die anzeige automatisch)
 const katalog = ref<api.Katalog | null>(null)
 const zeiten = ref<api.Tagesablauf>({})
 const plan = ref<api.Plan | null>(null)
-const abgehakt = ref<string[]>([]) // z. B. ["<praeparatId>|fruehstueck", ...]
+const abgehakt = ref<string[]>([]) // z. b. "id|fruehstueck"
 const fehler = ref('')
 
-// Datum als Text, z. B. "2026-11-09" (im Browser bestimmt = richtige Zeitzone)
+// datum als text, z. b. "2026-11-17"
 function alsText(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 const heute = alsText(new Date())
 
-// Welcher Tag wird gerade angezeigt? Am Anfang: heute
+// welcher tag gerade angezeigt wird (am anfang heute)
 const gewaehlt = ref(heute)
 
-// Die 7 Tage dieser Woche, Montag bis Sonntag – für die Tages-Knöpfe oben
+// die 7 tage dieser woche für die knöpfe mo bis so
 const woche = computed(() => {
   const montag = new Date()
-  montag.setDate(montag.getDate() - ((montag.getDay() + 6) % 7)) // zurück bis Montag
+  montag.setDate(montag.getDate() - ((montag.getDay() + 6) % 7)) // zurück bis montag
   return api.WOCHENTAGE.map((tag, i) => {
     const d = new Date(montag)
     d.setDate(montag.getDate() + i)
@@ -37,7 +37,7 @@ const ueberschrift = computed(() => {
   return `Dein Plan für ${tag?.lang ?? gewaehlt.value}`
 })
 
-// Alles vom Backend laden – gleichzeitig, damit es schneller geht
+// alles vom backend laden (gleichzeitig = schneller)
 async function laden() {
   fehler.value = ''
   try {
@@ -53,13 +53,13 @@ async function laden() {
   }
 }
 
-// Anderen Tag anzeigen
+// anderen tag anzeigen
 function zeigeTag(datum: string) {
   gewaehlt.value = datum
   laden()
 }
 
-// Haken setzen oder entfernen, danach neu laden (der Vorrat hat sich geändert)
+// haken an/aus, danach neu laden (vorrat hat sich geändert)
 async function haken(praeparatId: string, slot: string) {
   await api.umschalten({ datum: gewaehlt.value, praeparatId, slot })
   await laden()
@@ -69,14 +69,14 @@ function istAbgehakt(praeparatId: string, slot: string): boolean {
   return abgehakt.value.includes(`${praeparatId}|${slot}`)
 }
 
-// IDs der Präparate, die in einem Zeitfenster schon abgehakt sind
+// ids, die in diesem zeitfenster schon abgehakt sind
 function abgehaktIn(slot: string): string[] {
   return abgehakt.value.filter((k) => k.endsWith(`|${slot}`)).map((k) => k.split('|')[0]!)
 }
 
-// ---- Berechnete Werte (computed = wird automatisch neu berechnet) ----
+// computed = rechnet sich automatisch neu
 
-// Die Zeitfenster mit Uhrzeit und den Präparaten darin – leere weglassen
+// zeitfenster mit uhrzeit und präparaten, leere weg
 const zeitfenster = computed(() => {
   if (!katalog.value || !plan.value) return []
   return katalog.value.slots
@@ -94,20 +94,17 @@ const erledigt = computed(() =>
   plan.value?.eintraege.filter((e) => istAbgehakt(e.praeparat.id, e.slot)).length ?? 0,
 )
 
-// Präparate, deren Vorrat weniger als 7 Tage reicht
+// vorrat reicht keine 7 tage mehr
 const nachkaufen = computed(() => {
   const alle = plan.value?.eintraege.map((e) => e.praeparat) ?? []
-  const einzeln = alle.filter((p, i) => alle.findIndex((x) => x.id === p.id) === i) // ohne Doppelte
+  const einzeln = alle.filter((p, i) => alle.findIndex((x) => x.id === p.id) === i) // ohne doppelte
   return einzeln.filter((p) => p.vorrat !== null && p.vorrat < 7 * p.proTag)
 })
 
-// ---- Erinnerungen per Browser-Benachrichtigung ----
-// Solange die App offen ist, wird alle 30 Sekunden geprüft: Ist heute ein
-// Zeitfenster dran (Uhrzeit erreicht, höchstens 30 Minuten her) und ist darin
-// noch etwas offen? Dann kommt eine Benachrichtigung – pro Zeitfenster nur einmal.
+// erinnerungen: alle 30 sek prüfen, ob ein zeitfenster dran ist (nur wenn die app offen ist)
 const unterstuetzt = typeof Notification !== 'undefined'
 const erlaubnis = ref(unterstuetzt ? Notification.permission : 'denied') // "default", "granted" oder "denied"
-const gemeldet: string[] = [] // z. B. ["2026-11-09|fruehstueck"]
+const gemeldet: string[] = [] // schon gemeldete zeitfenster
 
 async function erinnerungEinschalten() {
   erlaubnis.value = await Notification.requestPermission()
@@ -126,7 +123,7 @@ async function erinnerungPruefen() {
   if (erlaubnis.value !== 'granted') return
   const jetzt = new Date()
   const minutenJetzt = jetzt.getHours() * 60 + jetzt.getMinutes()
-  // Immer den Plan von HEUTE prüfen – egal, welcher Tag gerade angezeigt wird
+  // immer heute prüfen, egal welcher tag angezeigt wird
   const [planHeute, einnahmen] = await Promise.all([api.ladePlan(heute), api.ladeEinnahmen(heute)])
   const abgehaktHeute = einnahmen.map((e) => `${e.praeparatId}|${e.slot}`)
 
@@ -145,6 +142,7 @@ async function erinnerungPruefen() {
 }
 
 let timer: number
+// beim öffnen laden, dann alle 30 sek erinnerung prüfen
 onMounted(async () => {
   await laden()
   erinnerungPruefen()
@@ -158,7 +156,7 @@ onUnmounted(() => clearInterval(timer))
     <h1>{{ ueberschrift }}</h1>
     <p class="unterzeile">{{ erledigt }} von {{ anzahl }} erledigt</p>
 
-    <!-- Tages-Knöpfe: Montag bis Sonntag dieser Woche -->
+    <!-- knöpfe mo bis so -->
     <nav class="woche" aria-label="Tag auswählen">
       <button
         v-for="tag in woche"
@@ -177,7 +175,7 @@ onUnmounted(() => clearInterval(timer))
       <RouterLink to="/praeparate">Präparate</RouterLink> an.
     </p>
 
-    <!-- Ein Kasten pro Zeitfenster (eigene Komponente, siehe components/ZeitfensterKarte.vue) -->
+    <!-- ein kasten pro zeitfenster -->
     <ZeitfensterKarte
       v-for="fenster in zeitfenster"
       :key="fenster.id"
@@ -188,7 +186,7 @@ onUnmounted(() => clearInterval(timer))
       @haken="(praeparatId) => haken(praeparatId, fenster.id)"
     />
 
-    <!-- Hinweise des Planers -->
+    <!-- hinweise vom planer -->
     <section v-if="plan && plan.hinweise.length > 0">
       <h2>Hinweise</h2>
       <p v-for="h in plan.hinweise" :key="h" class="karte hinweis" :class="{ warnung: !h.startsWith('Tipp') }">
@@ -196,7 +194,7 @@ onUnmounted(() => clearInterval(timer))
       </p>
     </section>
 
-    <!-- Vorrat -->
+    <!-- vorrat -->
     <section v-if="nachkaufen.length > 0">
       <h2>Bald nachkaufen</h2>
       <div v-for="p in nachkaufen" :key="p.id" class="karte zeile fest">
@@ -205,7 +203,7 @@ onUnmounted(() => clearInterval(timer))
       </div>
     </section>
 
-    <!-- Erinnerungen -->
+    <!-- erinnerungen -->
     <h2>Erinnerungen</h2>
     <section class="karte erinnerung">
       <span v-if="!unterstuetzt">Dieser Browser kann keine Benachrichtigungen anzeigen.</span>

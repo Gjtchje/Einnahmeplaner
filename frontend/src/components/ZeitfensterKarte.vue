@@ -1,18 +1,16 @@
-<!-- ZeitfensterKarte.vue – Ein Kasten auf der Heute-Seite, z. B. "07:30 Frühstück".
-     Bekommt seine Daten von außen (props) und meldet Klicks nach außen (emit).
-     Die Komponente selbst spricht nicht mit dem Backend – das macht die Seite. -->
+<!-- ein kasten auf der heute-seite, z. b. 07:30 frühstück. redet nicht selbst mit dem backend -->
 <script setup lang="ts">
 import type { Plan } from '../api'
 
-// props = Daten, die die Seite an die Komponente gibt
+// props: daten, die die seite reingibt
 defineProps<{
-  name: string // z. B. "Frühstück"
-  zeit: string // z. B. "07:30"
-  eintraege: Plan['eintraege'] // die Präparate in diesem Zeitfenster
-  abgehakt: string[] // IDs der Präparate, die hier schon abgehakt sind
+  name: string // z. b. "frühstück"
+  zeit: string // z. b. "07:30"
+  eintraege: Plan['eintraege'] // präparate in diesem zeitfenster
+  abgehakt: string[] // ids, die schon abgehakt sind
 }>()
 
-// emit = Nachricht an die Seite: "Präparat mit dieser ID wurde angeklickt"
+// emit: meldet der seite, welcher haken geklickt wurde
 const emit = defineEmits<{ haken: [praeparatId: string] }>()
 </script>
 
@@ -22,6 +20,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
       <strong>{{ zeit }}</strong>
       <span class="klein">{{ name }}</span>
     </div>
+    <!-- eine zeile pro präparat, klick auf den haken meldet es per emit an die seite -->
     <ul class="eintraege">
       <li v-for="e in eintraege" :key="e.praeparat.id">
         <label class="eintrag">
@@ -53,7 +52,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
 .durch { text-decoration: line-through; color: var(--leise); }
 .tipp { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--gruen); }
 
-/* Handy: Uhrzeit und Name nebeneinander als Kopfzeile */
+/* handy: uhrzeit und name nebeneinander */
 @media (max-width: 600px) {
   .zeitfenster { grid-template-columns: 1fr; gap: 0.75rem; }
   .zeit { display: flex; align-items: baseline; gap: 0.6rem; }

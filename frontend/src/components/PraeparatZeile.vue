@@ -1,5 +1,4 @@
-<!-- PraeparatZeile.vue – Eine Zeile in der Präparate-Liste mit "Ändern" und "Löschen".
-     Bekommt das Präparat von außen (props) und meldet Klicks nach außen (emit). -->
+<!-- eine zeile in der präparate-liste. props = daten rein, emit = klick raus -->
 <script setup lang="ts">
 import { type Praeparat, WOCHENTAGE } from '../api'
 
@@ -10,7 +9,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ aendern: [], loeschen: [] }>()
 
-// "täglich" oder z. B. "Mo, Mi, Fr" (ältere Präparate ohne Wochentage gelten als täglich)
+// "täglich" oder z. b. "mo, mi, fr"
 function tageText(): string {
   const tage = props.praeparat.tage ?? []
   if (tage.length === 0 || tage.length === 7) return 'täglich'

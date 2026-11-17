@@ -1,24 +1,19 @@
-// planer.ts – Das Herzstück: verteilt alle Präparate auf die Zeitfenster.
-//
-// So funktioniert es:
-//   1. Sortieren: Medikamente zuerst, dann wer die wenigsten Zeitfenster hat.
-//   2. Für jedes Präparat: Nimm das erste empfohlene Zeitfenster, in dem es
-//      mit keinem schon verplanten Mittel einen Konflikt gibt.
-//      Gibt es keins, nimm das beste und schreib eine Warnung dazu.
-//   3. Hinweise sammeln (gute Paare und Warnungen aus dem Katalog).
-//
-// Die Funktion benutzt keine Datenbank. Gleiche Eingabe = gleicher Plan.
-// Deshalb lässt sie sich einfach testen (siehe planer_test.ts).
+// planer: verteilt die präparate auf die zeitfenster
+// 1. sortieren: medikamente und unflexible mittel zuerst
+// 2. jedes mittel ins erste zeitfenster ohne konflikt (z. b. eisen + calcium 2 std abstand)
+// 3. hinweise sammeln (tipps + warnungen aus dem katalog)
+// keine datenbank -> gleiche eingabe = gleicher plan, gut testbar
 
 import { KATALOG, type Praeparat, SLOT_IDS, type Tagesablauf, type Wirkstoff } from "./modell.ts";
 
-// Eine verplante Einnahme: welches Präparat in welchem Zeitfenster
+// ein präparat in einem zeitfenster
 export interface Eintrag {
   praeparat: Praeparat;
   wirkstoff: Wirkstoff;
   slot: string;
 }
 
+// fertiger plan: einträge + hinweise
 export interface Plan {
   eintraege: Eintrag[];
   hinweise: string[];
@@ -28,35 +23,33 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
   const eintraege: Eintrag[] = [];
   const hinweise: string[] = [];
 
-  // ---- Schritt 1: Sortieren ----
+  // schritt 1: sortieren
   const sortiert = [...praeparate].sort((p1, p2) => {
     const w1 = findeWirkstoff(p1.wirkstoffId);
     const w2 = findeWirkstoff(p2.wirkstoffId);
     if (w1.kategorie !== w2.kategorie) {
-      return w1.kategorie === "medikament" ? -1 : 1; // Medikamente zuerst
+      return w1.kategorie === "medikament" ? -1 : 1; // medikamente zuerst
     }
     return w1.slots.length - w2.slots.length || p1.name.localeCompare(p2.name);
   });
 
-  // ---- Schritt 2: Zeitfenster vergeben ----
+  // schritt 2: zeitfenster vergeben
   for (const praeparat of sortiert) {
     const wirkstoff = findeWirkstoff(praeparat.wirkstoffId);
 
-    // Ein Präparat "2-mal täglich" braucht zwei verschiedene Zeitfenster.
+    // so oft wie pro tag genommen (2-mal = 2 zeitfenster)
     for (let i = 0; i < praeparat.proTag; i++) {
-      // Empfohlene Zeitfenster, in denen dieses Präparat noch nicht liegt.
-      // Sind alle belegt (z. B. 3-mal täglich, aber nur 2 empfohlen),
-      // kommen die übrigen Zeitfenster des Tages dazu.
+      // empfohlene zeitfenster, wo es noch nicht liegt (sonst alle anderen)
       const schonBelegt = eintraege.filter((e) => e.praeparat.id === praeparat.id).map((e) => e.slot);
       let moeglich = wirkstoff.slots.filter((s) => !schonBelegt.includes(s));
       if (moeglich.length === 0) {
         moeglich = SLOT_IDS.filter((s) => !schonBelegt.includes(s));
       }
 
-      // Das erste Zeitfenster ohne Konflikt gewinnt.
+      // erstes zeitfenster ohne konflikt
       let slot = moeglich.find((s) => findeKonflikt(wirkstoff, s, eintraege, zeiten) === null);
 
-      // Kein konfliktfreies Zeitfenster? Dann das beste nehmen und warnen.
+      // keins frei -> bestes nehmen + konflikt-hinweis
       if (slot === undefined) {
         slot = moeglich[0];
         const konflikt = findeKonflikt(wirkstoff, slot, eintraege, zeiten)!;
@@ -70,11 +63,11 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
     }
   }
 
-  // ---- Schritt 3: Hinweise aus dem Katalog ("zusammen" und "warnung") ----
+  // schritt 3: tipps und warnungen sammeln
   const vorhandeneIds = eintraege.map((e) => e.wirkstoff.id);
   for (const regel of KATALOG.regeln) {
     const beideDa = vorhandeneIds.includes(regel.a) && vorhandeneIds.includes(regel.b);
-    if (!beideDa) continue; // Regel betrifft diesen Tag nicht
+    if (!beideDa) continue; // regel betrifft heute nicht
 
     const namen = `${findeWirkstoff(regel.a).name} + ${findeWirkstoff(regel.b).name}`;
     if (regel.typ === "zusammen") hinweise.push(`Tipp (${namen}): ${regel.grund}`);
@@ -84,8 +77,7 @@ export function planeTag(praeparate: Praeparat[], zeiten: Tagesablauf): Plan {
   return { eintraege, hinweise };
 }
 
-// Prüft: Gibt es eine Abstandsregel zu einem schon verplanten Mittel, die in
-// diesem Zeitfenster verletzt wäre? Gibt den Konflikt zurück oder null.
+// zu wenig abstand zu einem schon verplanten mittel? -> konflikt, sonst null
 export function findeKonflikt(wirkstoff: Wirkstoff, slot: string, eintraege: Eintrag[], zeiten: Tagesablauf) {
   for (const anderer of eintraege) {
     for (const regel of KATALOG.regeln) {
@@ -102,18 +94,18 @@ export function findeKonflikt(wirkstoff: Wirkstoff, slot: string, eintraege: Ein
   return null;
 }
 
-// Welche Präparate werden an diesem Tag genommen? datum z. B. "2026-11-09"
-// Präparate aus älteren Versionen ohne "tage" gelten als täglich.
+// nur präparate, die an diesem wochentag dran sind
 export function praeparateAm(praeparate: Praeparat[], datum: string): Praeparat[] {
-  const wochentag = new Date(datum + "T12:00:00").getDay(); // 0 = Sonntag ... 6 = Samstag
+  const wochentag = new Date(datum + "T12:00:00").getDay(); // 0 = sonntag ... 6 = samstag
   return praeparate.filter((p) => (p.tage ?? [0, 1, 2, 3, 4, 5, 6]).includes(wochentag));
 }
 
+// wirkstoff im katalog suchen
 export function findeWirkstoff(id: string): Wirkstoff {
   return KATALOG.wirkstoffe.find((w) => w.id === id)!;
 }
 
-// "07:30" -> 450 Minuten seit Mitternacht
+// "07:30" -> 450 minuten
 function inMinuten(zeit: string): number {
   const [stunden, minuten] = zeit.split(":").map(Number);
   return stunden * 60 + minuten;

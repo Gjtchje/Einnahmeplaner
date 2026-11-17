@@ -1,4 +1,4 @@
-<!-- App.vue – Der Rahmen um alle Seiten: oben die Navigation, darunter die aktuelle Seite. -->
+<!-- rahmen um alle seiten: navigation oben, seite darunter -->
 <template>
   <header class="kopf">
     <span class="marke"><img src="/favicon.svg" alt="" width="26" height="26"> Einnahmeplaner</span>
@@ -9,7 +9,7 @@
     </nav>
   </header>
 
-  <!-- Hier setzt der Router die passende Seite ein -->
+  <!-- hier kommt die aktuelle seite rein -->
   <RouterView />
 
   <footer class="fuss">

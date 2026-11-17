@@ -1,13 +1,10 @@
-// planer_test.ts – Tests für den Planer. Starten mit: test-backend.bat
-//
-// Jeder Test legt ein paar Präparate an, lässt planeTag() rechnen
-// und prüft, in welchem Zeitfenster sie gelandet sind.
+// tests für den planer, starten mit test-backend.bat
 
 import { deepStrictEqual as gleich, ok as stimmt } from "node:assert/strict";
 import { type Plan, planeTag, praeparateAm } from "./planer.ts";
 import type { Praeparat } from "./modell.ts";
 
-// Standard-Tagesablauf
+// normaler tagesablauf
 const ZEITEN = {
   nuechtern: "07:00",
   fruehstueck: "07:30",
@@ -17,7 +14,7 @@ const ZEITEN = {
   schlafen: "22:00",
 };
 
-// Hilfsfunktion: ein Präparat zum Testen erzeugen
+// hilfsfunktion: test-präparat bauen
 function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
   return {
     id: wirkstoffId,
@@ -31,7 +28,7 @@ function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
   };
 }
 
-// Hilfsfunktion: In welchen Zeitfenstern liegt ein Präparat?
+// hilfsfunktion: in welchen zeitfenstern liegt es?
 function slotsVon(plan: Plan, name: string): string[] {
   return plan.eintraege.filter((e) => e.praeparat.name === name).map((e) => e.slot);
 }
@@ -59,7 +56,7 @@ Deno.test("3-mal täglich: drei verschiedene Zeitfenster", () => {
 });
 
 Deno.test("Kein Platz: Mittel wird trotzdem eingeplant, aber mit Konflikt-Hinweis", () => {
-  // Alle Zeitfenster innerhalb von 75 Minuten – zu eng für 2 Stunden Abstand
+  // alles innerhalb 75 min -> zu eng für 2 std abstand
   const eng = {
     nuechtern: "07:00",
     fruehstueck: "07:15",
@@ -79,9 +76,9 @@ Deno.test("Warnung bei Vitamin K2 und Marcumar", () => {
 });
 
 Deno.test("Wochentage: Zink nur montags – am Montag dabei, am Dienstag nicht", () => {
-  const zink = { ...praeparat("zink"), tage: [1] }; // 1 = Montag
-  gleich(praeparateAm([zink], "2026-11-09").length, 1); // 09.11.2026 ist ein Montag
-  gleich(praeparateAm([zink], "2026-11-10").length, 0); // Dienstag
+  const zink = { ...praeparat("zink"), tage: [1] }; // 1 = montag
+  gleich(praeparateAm([zink], "2026-11-09").length, 1); // montag
+  gleich(praeparateAm([zink], "2026-11-10").length, 0); // dienstag
 });
 
 Deno.test("ASS 100 und Ibuprofen werden 2 Stunden getrennt, ASS zuerst", () => {

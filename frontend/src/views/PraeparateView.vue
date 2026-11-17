@@ -1,4 +1,4 @@
-<!-- PraeparateView.vue – Präparate anlegen, ändern und löschen. -->
+<!-- präparate anlegen, ändern, löschen (crud) -->
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import * as api from '../api'
@@ -8,16 +8,17 @@ const praeparate = ref<api.Praeparat[]>([])
 const wirkstoffe = ref<api.Wirkstoff[]>([])
 const fehler = ref('')
 
-// Das Formular. bearbeiteId = null heißt: neues Präparat anlegen.
+// formular. bearbeiteId = null -> neues präparat
 const leer: api.NeuesPraeparat = {
   name: '', wirkstoffId: '', dosis: '1 Tablette', staerke: '', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
 }
-const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] }) // Kopie, damit leer unverändert bleibt
+const formular = ref<api.NeuesPraeparat>({ ...leer, tage: [...leer.tage] }) // kopie, damit leer gleich bleibt
 const bearbeiteId = ref<string | null>(null)
 
-// Hinweise zum gewählten Wirkstoff, die unter dem Auswahlfeld erscheinen
+// hinweise zum gewählten wirkstoff
 const gewaehlt = computed(() => wirkstoffe.value.find((w) => w.id === formular.value.wirkstoffId))
 
+// präparate und wirkstoffe vom backend laden
 async function laden() {
   try {
     praeparate.value = await api.ladePraeparate()
@@ -27,9 +28,10 @@ async function laden() {
   }
 }
 
+// neu anlegen oder ändern, danach liste neu laden
 async function speichern() {
   fehler.value = ''
-  // Leeres Vorrat-Feld liefert "" – das bedeutet "Vorrat nicht zählen" = null
+  // leeres vorrat-feld = null (nicht zählen)
   if (String(formular.value.vorrat) === '') formular.value.vorrat = null
   try {
     if (bearbeiteId.value) {
@@ -37,29 +39,32 @@ async function speichern() {
     } else {
       await api.erstellePraeparat(formular.value)
     }
-    abbrechen() // Formular leeren
+    abbrechen() // formular leeren
     await laden()
   } catch (err) {
-    // Hier landen z. B. die Meldungen von Zod aus dem Backend
+    // z. b. fehlermeldung von zod aus dem backend
     fehler.value = (err as Error).message
   }
 }
 
+// präparat ins formular laden zum ändern
 function bearbeiten(p: api.Praeparat) {
   bearbeiteId.value = p.id
   formular.value = {
     name: p.name, wirkstoffId: p.wirkstoffId, dosis: p.dosis, staerke: p.staerke ?? '', proTag: p.proTag, vorrat: p.vorrat,
-    tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6], // ältere Präparate ohne Wochentage = täglich
+    tage: p.tage ?? [0, 1, 2, 3, 4, 5, 6], // alte präparate ohne tage = täglich
   }
   window.scrollTo({ top: 0 })
 }
 
+// formular leeren
 function abbrechen() {
   bearbeiteId.value = null
   formular.value = { ...leer, tage: [...leer.tage] }
   fehler.value = ''
 }
 
+// nach rückfrage löschen
 async function loeschen(p: api.Praeparat) {
   if (confirm(`„${p.name}“ wirklich löschen?`)) {
     await api.loeschePraeparat(p.id)
@@ -79,11 +84,11 @@ onMounted(laden)
     <h1>Präparate</h1>
     <p class="unterzeile">Alles, was du regelmäßig nimmst. Der Plan richtet sich automatisch danach.</p>
 
-    <!-- Formular: @submit.prevent = beim Absenden nicht neu laden, sondern speichern() aufrufen -->
+    <!-- @submit.prevent: seite nicht neu laden, sondern speichern() aufrufen -->
     <form class="karte" @submit.prevent="speichern">
       <h2>{{ bearbeiteId ? 'Präparat ändern' : 'Neues Präparat' }}</h2>
 
-      <!-- v-model verbindet das Eingabefeld mit dem Formular-Objekt (in beide Richtungen) -->
+      <!-- v-model: feld ist mit dem formular verbunden -->
       <div class="felder breit">
         <label>Name
           <input v-model="formular.name" placeholder="z. B. Vitamin D3 von dm">
@@ -120,7 +125,7 @@ onMounted(laden)
         </label>
       </div>
 
-      <!-- Wochentage: v-model mit einer Liste – angeklickte Tage landen in formular.tage -->
+      <!-- wochentage: angeklickte tage landen in formular.tage -->
       <fieldset class="chips">
         <legend>An welchen Tagen?</legend>
         <label v-for="t in api.WOCHENTAGE" :key="t.nr" class="chip">
@@ -138,7 +143,7 @@ onMounted(laden)
     </form>
 
     <h2>Deine Präparate</h2>
-    <!-- Liste aller Präparate (eigene Komponente, siehe components/PraeparatZeile.vue) -->
+    <!-- liste aller präparate -->
     <PraeparatZeile
       v-for="p in praeparate"
       :key="p.id"

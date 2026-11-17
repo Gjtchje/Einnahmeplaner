@@ -1,4 +1,4 @@
-// main.ts – Startpunkt des Frontends: Vue-App erzeugen, Router einbauen, anzeigen.
+// startpunkt: vue-app erstellen, router dazu, anzeigen
 import './style.css'
 import { createApp } from 'vue'
 import App from './App.vue'

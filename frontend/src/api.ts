@@ -1,8 +1,6 @@
-// api.ts – Alle Anfragen an das Backend.
-// Die Seiten (Views) rufen nur diese Funktionen auf und müssen nichts über
-// URLs oder HTTP wissen.
+// api: alle anfragen ans backend, die seiten rufen nur diese funktionen auf
 
-// ---- Typen: so sehen die Daten aus, die das Backend schickt ----
+// typen: so sehen die daten vom backend aus
 
 export interface Wirkstoff {
   id: string
@@ -22,14 +20,14 @@ export interface Praeparat {
   id: string
   name: string
   wirkstoffId: string
-  dosis: string // z. B. "1 Tablette"
-  staerke: string // z. B. "500 mg" (darf leer sein)
+  dosis: string // z. b. "1 tablette"
+  staerke: string // z. b. "500 mg", darf leer sein
   proTag: number
   vorrat: number | null
-  tage: number[] // Wochentage: 0 = Sonntag, 1 = Montag, ... 6 = Samstag
+  tage: number[] // 0 = sonntag ... 6 = samstag
 }
 
-// Wochentage in der Reihenfolge Montag bis Sonntag (für Anzeige und Formular)
+// wochentage für die knöpfe mo bis so
 export const WOCHENTAGE = [
   { nr: 1, kurz: 'Mo', lang: 'Montag' },
   { nr: 2, kurz: 'Di', lang: 'Dienstag' },
@@ -40,23 +38,25 @@ export const WOCHENTAGE = [
   { nr: 0, kurz: 'So', lang: 'Sonntag' },
 ]
 
-// Beim Anlegen gibt es noch keine id – die vergibt der Server
+// präparat ohne id, die vergibt der server
 export type NeuesPraeparat = Omit<Praeparat, 'id'>
 
-export type Tagesablauf = Record<string, string> // z. B. { fruehstueck: "07:30" }
+export type Tagesablauf = Record<string, string> // z. b. { fruehstueck: "07:30" }
 
+// plan vom server: einträge + hinweise
 export interface Plan {
   eintraege: { praeparat: Praeparat, wirkstoff: Wirkstoff, slot: string }[]
   hinweise: string[]
 }
 
+// ein haken: datum, präparat, zeitfenster
 export interface Einnahme {
   datum: string
   praeparatId: string
   slot: string
 }
 
-// ---- Gemeinsame Hilfsfunktion für alle Anfragen ----
+// schickt anfrage ans backend, prüft antwort, wirft fehler oder gibt json zurück
 
 async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   let antwort: Response
@@ -69,7 +69,7 @@ async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   } catch {
     throw new Error('Server nicht erreichbar – läuft das Backend?')
   }
-  // 204 = "erfolgreich, aber ohne Inhalt" (z. B. nach dem Löschen)
+  // 204 = ok, aber ohne inhalt (z. b. nach dem löschen)
   const ergebnis = antwort.status === 204 ? null : await antwort.json()
   if (!antwort.ok) {
     throw new Error(ergebnis?.fehler ?? `Fehler ${antwort.status}`)
@@ -77,7 +77,7 @@ async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   return ergebnis
 }
 
-// ---- Die einzelnen Anfragen ----
+// eine funktion pro api-adresse
 
 export const ladeKatalog = (): Promise<Katalog> => anfrage('/api/katalog')
 

@@ -1,9 +1,7 @@
-// beispieldaten.ts – Werden beim allerersten Start angelegt, damit man sofort
-// einen Plan sieht. Die Auswahl zeigt typische Konflikte:
-// L-Thyroxin, Eisen und Calcium wollen alle morgens, brauchen aber Abstand.
-// Zink gibt es nur montags, mittwochs und freitags.
+// startdaten beim ersten start, mit typischen konflikten (l-thyroxin, eisen, calcium)
+// zink nur mo, mi, fr
 
-const TAEGLICH = [0, 1, 2, 3, 4, 5, 6]; // So, Mo, Di, Mi, Do, Fr, Sa
+const TAEGLICH = [0, 1, 2, 3, 4, 5, 6]; // so bis sa
 
 export const BEISPIELDATEN = [
   { name: "L-Thyroxin 50", wirkstoffId: "l-thyroxin", dosis: "1 Tablette", staerke: "50 µg", proTag: 1, vorrat: 84, tage: TAEGLICH },

@@ -1,28 +1,23 @@
-// modell.ts – Wie sehen unsere Daten aus?
-//
-// 1. Der Katalog: Wirkstoffe, Zeitfenster und Regeln aus daten/wirkstoffe.json
-// 2. Die Zod-Schemas: Damit prüft der Server alles, was der Browser schickt.
+// modell: wie die daten aussehen + zod-prüfregeln
 
 import { z } from "zod";
 import katalog from "./daten/wirkstoffe.json" with { type: "json" };
 
-// ---------------------------------------------------------------------------
-// 1. Katalog (fest, wird nie vom Nutzer geändert)
-// ---------------------------------------------------------------------------
+// katalog (fest, aus wirkstoffe.json)
 
 export interface Wirkstoff {
-  id: string; // z. B. "eisen"
-  name: string; // z. B. "Eisen"
+  id: string; // z. b. "eisen"
+  name: string;
   kategorie: string; // "nem" oder "medikament"
-  slots: string[]; // empfohlene Zeitfenster, das beste zuerst
+  slots: string[]; // empfohlene zeitfenster, bestes zuerst
   hinweise: string[];
 }
 
 export interface Regel {
-  a: string; // Wirkstoff-ID
-  b: string; // Wirkstoff-ID
+  a: string; // wirkstoff-ids
+  b: string;
   typ: string; // "abstand", "zusammen" oder "warnung"
-  stunden?: number; // nur bei "abstand"
+  stunden?: number; // nur bei abstand
   grund: string;
 }
 
@@ -33,12 +28,10 @@ export const KATALOG = katalog as {
   quellen: { id: string; titel: string; url: string }[];
 };
 
-// Die sechs Zeitfenster in der Reihenfolge des Tages
+// die 6 zeitfenster in tagesreihenfolge
 export const SLOT_IDS = KATALOG.slots.map((s) => s.id);
 
-// ---------------------------------------------------------------------------
-// 2. Präparat = ein Mittel, das der Nutzer einnimmt
-// ---------------------------------------------------------------------------
+// präparat: zod prüft alles, was der browser schickt
 
 export const praeparatSchema = z.object({
   name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"),
@@ -47,19 +40,17 @@ export const praeparatSchema = z.object({
     "Bitte einen Wirkstoff auswählen",
   ),
   dosis: z.string().trim().min(1, "Bitte eine Dosis angeben, z. B. 1 Tablette"),
-  staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""), // z. B. "500 mg" (optional)
+  staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""), // optional, z. b. "500 mg"
   proTag: z.number().int().min(1, "Mindestens 1-mal").max(3, "Höchstens 3-mal"),
-  vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = nicht zählen
-  // An welchen Wochentagen? Wie in JavaScript: 0 = Sonntag, 1 = Montag, ... 6 = Samstag
+  vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = vorrat nicht zählen
+  // wochentage: 0 = sonntag ... 6 = samstag
   tage: z.array(z.number().int().min(0).max(6)).min(1, "Bitte mindestens einen Wochentag wählen"),
 });
 
-// Aus dem Schema macht TypeScript automatisch einen Typ. Der Server ergänzt die id.
+// typ aus dem schema, die id kommt vom server
 export type Praeparat = z.infer<typeof praeparatSchema> & { id: string };
 
-// ---------------------------------------------------------------------------
-// 3. Tagesablauf = Uhrzeit für jedes Zeitfenster, z. B. { fruehstueck: "07:30", ... }
-// ---------------------------------------------------------------------------
+// tagesablauf: uhrzeit pro zeitfenster
 
 const uhrzeit = z.string().regex(/^\d\d:\d\d$/, "Uhrzeit im Format HH:MM");
 
@@ -74,9 +65,7 @@ export const tagesablaufSchema = z.object({
 
 export type Tagesablauf = Record<string, string>;
 
-// ---------------------------------------------------------------------------
-// 4. Einnahme = "Präparat X wurde am Tag Y im Zeitfenster Z abgehakt"
-// ---------------------------------------------------------------------------
+// einnahme = ein haken (datum, präparat, zeitfenster)
 
 export const einnahmeSchema = z.object({
   datum: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

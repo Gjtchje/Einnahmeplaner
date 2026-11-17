@@ -1,17 +1,20 @@
-<!-- TagesablaufView.vue – Uhrzeiten der sechs Zeitfenster einstellen. -->
+<!-- uhrzeiten der 6 zeitfenster einstellen -->
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import * as api from '../api'
 
+// daten der seite, vue aktualisiert die anzeige automatisch
 const slots = ref<api.Katalog['slots']>([])
 const zeiten = ref<api.Tagesablauf>({})
 const meldung = ref('')
 
+// beim öffnen: zeitfenster und uhrzeiten laden
 onMounted(async () => {
   slots.value = (await api.ladeKatalog()).slots
   zeiten.value = await api.ladeTagesablauf()
 })
 
+// uhrzeiten ans backend schicken, erfolg oder fehler anzeigen
 async function speichern() {
   try {
     await api.speichereTagesablauf(zeiten.value)
@@ -27,8 +30,9 @@ async function speichern() {
     <h1>Tagesablauf</h1>
     <p class="unterzeile">Wann isst du, wann gehst du schlafen? Daraus berechnet der Plan die Abstände.</p>
 
+    <!-- @submit.prevent: seite nicht neu laden, sondern speichern() aufrufen -->
     <form class="karte" @submit.prevent="speichern">
-      <!-- Jede Zeile: Name links, Uhrzeit rechts – alle Uhrzeit-Felder gleich breit -->
+      <!-- eine zeile pro zeitfenster, v-model verbindet feld mit zeiten -->
       <label v-for="s in slots" :key="s.id" class="uhrzeit-zeile">
         <span>{{ s.name }}</span>
         <input v-model="zeiten[s.id]" type="time">
@@ -44,7 +48,7 @@ async function speichern() {
 <style scoped>
 .uhrzeit-zeile {
   display: grid;
-  grid-template-columns: 1fr 8.5rem; /* rechts immer dieselbe Breite -> alles steht untereinander */
+  grid-template-columns: 1fr 8.5rem; /* rechts immer gleich breit */
   align-items: center;
   gap: var(--abstand);
   padding: 0.6rem 0;

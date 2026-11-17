@@ -1,34 +1,32 @@
-// main.ts – Der Server: alle Adressen (Routen) der REST-API.
-//
-// Jede Route funktioniert nach dem gleichen Muster:
-//   1. Daten vom Browser lesen
-//   2. mit Zod prüfen – bei Fehlern Status 400 zurück
-//   3. Datenbank lesen oder schreiben
-//   4. Antwort als JSON zurückschicken
+// main.ts: der server mit allen api-adressen
+// jede route: daten lesen -> mit zod prüfen (sonst 400) -> datenbank -> antwort als json
 
-import { Hono } from "hono";
-import { serveStatic } from "hono/deno";
-import { einnahmeSchema, KATALOG, praeparatSchema, tagesablaufSchema } from "./modell.ts";
-import { planeTag, praeparateAm } from "./planer.ts";
-import * as db from "./datenbank.ts";
-import { BEISPIELDATEN } from "./beispieldaten.ts";
+import { Hono } from "hono"; // server-framework
+import { serveStatic } from "hono/deno"; // liefert die fertige vue-app aus
+import { einnahmeSchema, KATALOG, praeparatSchema, tagesablaufSchema } from "./modell.ts"; // katalog und zod-prüfregeln
+import { planeTag, praeparateAm } from "./planer.ts"; // berechnet den plan
+import * as db from "./datenbank.ts"; // speichert und lädt daten
+import { BEISPIELDATEN } from "./beispieldaten.ts"; // startdaten beim ersten start
 
-const app = new Hono();
+const app = new Hono(); // erstellt den server
 
-// ---- Katalog: alle Wirkstoffe, Zeitfenster, Regeln, Quellen ----
+// ---- katalog ----
 
+// schickt den katalog ans frontend (zeitfenster, wirkstoffe, regeln, quellen)
 app.get("/api/katalog", (c) => {
   return c.json(KATALOG);
 });
 
-// ---- Präparate ----
+// ---- präparate ----
 
+// holt alle präparate, sortiert alphabetisch, schickt sie ans frontend
 app.get("/api/praeparate", async (c) => {
   const liste = await db.allePraeparate();
-  liste.sort((a, b) => a.name.localeCompare(b.name)); // alphabetisch
+  liste.sort((a, b) => a.name.localeCompare(b.name));
   return c.json(liste);
 });
 
+// neues präparat: prüfen, id geben, speichern, 201 = angelegt
 app.post("/api/praeparate", async (c) => {
   const pruefung = praeparatSchema.safeParse(await c.req.json());
   if (!pruefung.success) {
@@ -39,6 +37,7 @@ app.post("/api/praeparate", async (c) => {
   return c.json(praeparat, 201);
 });
 
+// präparat ändern: gibt es das überhaupt? (sonst 404), dann prüfen und speichern
 app.put("/api/praeparate/:id", async (c) => {
   const id = c.req.param("id");
   if (!(await db.holePraeparat(id))) return c.json({ fehler: "Nicht gefunden" }, 404);
@@ -52,17 +51,20 @@ app.put("/api/praeparate/:id", async (c) => {
   return c.json(praeparat);
 });
 
+// präparat löschen, 204 = erledigt ohne inhalt
 app.delete("/api/praeparate/:id", async (c) => {
   await db.loeschePraeparat(c.req.param("id"));
   return c.body(null, 204);
 });
 
-// ---- Tagesablauf ----
+// ---- tagesablauf ----
 
+// holt den tagesablauf aus der db und schickt ihn ans frontend
 app.get("/api/tagesablauf", async (c) => {
   return c.json(await db.holeTagesablauf());
 });
 
+// tagesablauf ändern: prüfen, speichern
 app.put("/api/tagesablauf", async (c) => {
   const pruefung = tagesablaufSchema.safeParse(await c.req.json());
   if (!pruefung.success) {
@@ -72,9 +74,9 @@ app.put("/api/tagesablauf", async (c) => {
   return c.json(pruefung.data);
 });
 
-// ---- Plan für einen Tag: wird jedes Mal neu berechnet ----
-// z. B. /api/plan?datum=2026-11-09 – nur Präparate, die an diesem Wochentag dran sind
+// ---- plan ----
 
+// prüft datum, holt präparate und tagesablauf, berechnet plan, schickt ihn ans frontend (wird nicht gespeichert)
 app.get("/api/plan", async (c) => {
   const datum = c.req.query("datum") ?? "";
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return c.json({ fehler: "Datum fehlt" }, 400);
@@ -84,15 +86,15 @@ app.get("/api/plan", async (c) => {
   return c.json(plan);
 });
 
-// ---- Einnahmen: Abhaken auf der Heute-Seite ----
+// ---- einnahmen (abhaken) ----
 
-// Welche Haken sind an einem Tag gesetzt? z. B. /api/einnahmen?datum=2026-11-07
+// holt alle haken von diesem tag und schickt sie ans frontend
 app.get("/api/einnahmen", async (c) => {
   const datum = c.req.query("datum") ?? "";
   return c.json(await db.einnahmenAm(datum));
 });
 
-// Haken setzen (wenn noch keiner da ist) oder entfernen (wenn schon einer da ist)
+// haken an/aus: prüfen, präparat holen, haken setzen oder entfernen, vorrat anpassen
 app.post("/api/einnahmen/umschalten", async (c) => {
   const pruefung = einnahmeSchema.safeParse(await c.req.json());
   if (!pruefung.success) return c.json({ fehler: "Ungültige Einnahme" }, 400);
@@ -110,29 +112,27 @@ app.post("/api/einnahmen/umschalten", async (c) => {
   }
 });
 
-// ---- Fehlerbehandlung ----
+// ---- fehler ----
 
-// Unbekannte API-Adresse, z. B. /api/gibtsnicht -> 404 als JSON
+// unbekannte api-adresse -> 404
 app.all("/api/*", (c) => c.json({ fehler: "Diese Adresse gibt es nicht" }, 404));
 
-// Unerwarteter Fehler irgendwo im Server -> nicht abstürzen, sondern antworten.
-// Kaputtes JSON vom Browser ist ein Fehler des Browsers (400), alles andere ein
-// Fehler des Servers (500). Details nur ins Server-Fenster, nicht an den Browser.
+// fängt fehler ab: kaputtes json -> 400, unerwarteter fehler im server -> 500
 app.onError((fehler, c) => {
   if (fehler instanceof SyntaxError) return c.json({ fehler: "Ungültiges JSON" }, 400);
   console.error(fehler);
   return c.json({ fehler: "Interner Serverfehler" }, 500);
 });
 
-// ---- Frontend ausliefern (für den Ein-Klick-Start) ----
-// Alles, was keine /api-Adresse ist, kommt aus dem fertig gebauten Frontend
-// (Ordner frontend/dist). Unbekannte Adressen bekommen die index.html,
-// damit der Vue-Router z. B. /praeparate selbst anzeigen kann.
+// ---- frontend ----
+
+// liefert die vue-app aus, wenn keine api-adresse getroffen wurde
 app.use("/*", serveStatic({ root: "../frontend/dist" }));
 app.get("/*", serveStatic({ path: "../frontend/dist/index.html" }));
 
-// ---- Start ----
+// ---- start ----
 
+// erster start: beispieldaten anlegen
 if (await db.ersterStart()) {
   for (const beispiel of BEISPIELDATEN) {
     await db.speicherePraeparat({ ...beispiel, id: crypto.randomUUID() });
@@ -140,4 +140,4 @@ if (await db.ersterStart()) {
   console.log("Beispieldaten angelegt.");
 }
 
-Deno.serve({ port: 8000 }, app.fetch);
+Deno.serve({ port: 8000 }, app.fetch); // server starten auf port 8000
