@@ -47,6 +47,33 @@ Fehler kommen als `{ "fehler": "…" }` mit Status 400 (falsche Eingabe), 404 (n
 
 Eine ausführliche Erklärung steht in **ERKLAERUNG.md**, die Architekturbeschreibung (Steckbrief + ADRs) in **ARCHITEKTUR.md**.
 
+## Quellen
+
+Die Einnahmeregeln und Hinweise im Katalog (`backend/daten/wirkstoffe.json`) stammen aus diesen frei zugänglichen Quellen. In der JSON-Datei steht bei jeder Regel, auf welche Quelle sie sich bezieht. Stand: 2026-11-18.
+
+- [Verbraucherzentrale – Wechselwirkungen, Nebenwirkungen, Gegenanzeigen von Nahrungsergänzungen](https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/wechselwirkungen-nebenwirkungen-gegenanzeigen-von-nahrungsergaenzungen-50991)
+- [Apotheken Umschau – Eisen richtig einnehmen](https://www.apotheken-umschau.de/medikamente/basiswissen/eisen-richtig-einnehmen-719457.html)
+- [Apotheken Umschau – Blutgerinnungshemmer: warum bei manchen Lebensmitteln mit Vitamin K Vorsicht geboten ist](https://www.apotheken-umschau.de/medikamente/blutgerinnungshemmer-bei-manche-lebensmitteln-mit-vitamin-k-ist-vorsicht-geboten-1226265.html)
+- [APOTHEKE ADHOC – Fünf Tipps zur Magnesium-Einnahme](https://www.apotheke-adhoc.de/nachrichten/detail/pta-live/fuenf-tipps-zur-magnesium-einnahme-mineralstoffe/)
+- [PTAheute – Muss L-Thyroxin immer morgens nüchtern eingenommen werden?](https://www.ptaheute.de/aktuelles/2018/04/03/muss-l-thyroxin-immer-morgens-nuechtern-eingenommen-werden)
+- [PTAheute – Antibiotikatherapie: Wann sind Probiotika indiziert?](https://www.ptaheute.de/wissen-am-hv/darmgesundheit/antibiotikatherapie-wann-sind-probiotika-indiziert)
+- [aponet.de – So entfalten Antibiotika ihre volle Wirkung: die wichtigsten Tipps](https://www.aponet.de/artikel/so-entfalten-antibiotika-ihre-volle-wirkung-die-wichtigsten-tipps-32438)
+- [Apotheken Umschau – Beipackzettel Alendronsäure dura 70 mg Tabletten](https://www.apotheken-umschau.de/medikamente/beipackzettel/alendronsaeure-dura-70-mg-tabletten-735345.html)
+- [DocCheck Flexikon – Pantoprazol](https://flexikon.doccheck.com/de/Pantoprazol)
+- [Verbraucherzentrale – Nahrungsergänzungsmittel richtig verwenden](https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/nahrungsergaenzungsmittel-richtig-verwenden-27747)
+- [Verbraucherzentrale – Whey-Protein: Was sollten Sie über Molkenprotein wissen?](https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/wheyprotein-was-sollten-sie-ueber-molkenprotein-wissen-80650)
+- [Verbraucherzentrale – Kreatin: Wirkung, Risiken und was beim Kauf wichtig ist](https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/kreatin-wirkung-risiken-und-was-beim-kauf-wichtig-ist-8089)
+- [Verbraucherzentrale – Melatonin zum Einschlafen](https://www.verbraucherzentrale.de/wissen/lebensmittel/melatonin-zum-einschlafen-wie-sinnvoll-sind-produkte-wie-sprays-118307)
+- [APOTHEKE ADHOC – Kein Coenzym Q10 mit Marcumar](https://www.apotheke-adhoc.de/nachrichten/detail/pta-live/kein-coenzym-q10-mit-marcumar/)
+- [Verbraucherzentrale – Kurkuma: Fakten und Mythen](https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/kurkuma-fakten-und-mythen-13696)
+- [Deutsches Apothekenportal – Beratungswissen Jod](https://www.deutschesapothekenportal.de/download/public/beratungsleitfaeden/dap_beratungswissen_jod.pdf)
+- [Apotheken Umschau – Ibuprofen: Wie es wirkt, Wechselwirkungen, Tipps](https://www.apotheken-umschau.de/medikamente/wirkstoffe/ibuprofen-wie-es-wirkt-wechselwirkungen-tipps-718699.html)
+- [PTAheute – ASS 100 mg und Ibuprofen: eine häufige Interaktion](https://www.ptaheute.de/serien/haeufige-interaktionen/ass-100-mg-und-ibuprofen-eine-haeufige-interaktion)
+- [Apotheken Umschau – Metformin: Wirkung, Nebenwirkungen](https://www.apotheken-umschau.de/medikamente/wirkstoffe/metformin-wie-es-wirkt-was-sie-wissen-muessen-850953.html)
+- [Apotheken Umschau – Simvastatin: Wirkung, Nebenwirkungen, Anwendungshinweise](https://www.apotheken-umschau.de/medikamente/wirkstoffe/simvastatin-wirkung-nebenwirkungen-anwendungshinweise-877911.html)
+
+Die App gibt nur allgemeine Hinweise und ersetzt keine ärztliche oder pharmazeutische Beratung.
+
 ## Einsatz von KI
 
 Bei der Entwicklung habe ich Claude (Anthropic) als Hilfsmittel benutzt:
@@ -56,4 +83,3 @@ Bei der Entwicklung habe ich Claude (Anthropic) als Hilfsmittel benutzt:
 - **Erklärungen und Doku:** Hilfe beim Verstehen der Konzepte (REST, Zod, Deno KV, Vue) und beim Schreiben von `ERKLAERUNG.md` und `ARCHITEKTUR.md`.
 
 Entscheidungen wie „keine Dosis-Empfehlung“, „kein Login“ und „Plan wird berechnet statt gespeichert“ habe ich bewusst getroffen (siehe ADRs in `ARCHITEKTUR.md`).
-
