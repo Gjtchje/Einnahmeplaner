@@ -1,9 +1,9 @@
-// modell: wie die daten aussehen + zod-prüfregeln
+// datenmodell und prüfregeln (zod)
 
 import { z } from "zod";
 import katalog from "./daten/wirkstoffe.json" with { type: "json" };
 
-// katalog (fest, aus wirkstoffe.json)
+// katalog aus wirkstoffe.json, wird nur gelesen
 
 export interface Wirkstoff {
   id: string;
@@ -30,7 +30,7 @@ export const KATALOG = katalog as {
 
 export const SLOT_IDS = KATALOG.slots.map((s) => s.id);
 
-// präparat: zod prüft alles, was der browser schickt
+// regeln für ein präparat
 
 export const praeparatSchema = z.object({
   name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"),
@@ -41,15 +41,14 @@ export const praeparatSchema = z.object({
   dosis: z.string().trim().min(1, "Bitte eine Dosis angeben, z. B. 1 Tablette"),
   staerke: z.string().trim().max(30, "Stärke höchstens 30 Zeichen").default(""),
   proTag: z.number().int().min(1, "Mindestens 1-mal").max(3, "Höchstens 3-mal"),
-  vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null = vorrat nicht zählen
-  // wochentage: 0 = sonntag ... 6 = samstag
+  vorrat: z.number().int().min(0, "Vorrat darf nicht negativ sein").nullable(), // null heißt: vorrat wird nicht gezählt
+  // 0 = sonntag, 6 = samstag
   tage: z.array(z.number().int().min(0).max(6)).min(1, "Bitte mindestens einen Wochentag wählen"),
 });
 
-// typ aus dem schema, die id kommt vom server
 export type Praeparat = z.infer<typeof praeparatSchema> & { id: string };
 
-// tagesablauf: uhrzeit pro zeitfenster
+// eine uhrzeit pro zeitfenster
 
 const uhrzeit = z.string().regex(/^\d\d:\d\d$/, "Uhrzeit im Format HH:MM");
 
@@ -64,7 +63,7 @@ export const tagesablaufSchema = z.object({
 
 export type Tagesablauf = Record<string, string>;
 
-// einnahme = ein haken (datum, präparat, zeitfenster)
+// einnahme = ein haken
 
 export const einnahmeSchema = z.object({
   datum: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

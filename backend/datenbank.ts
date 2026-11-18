@@ -1,12 +1,10 @@
-// datenbank: alles speichern und laden mit deno kv
-// schlüssel sind listen: ["praeparate", id], ["tagesablauf"], ["einnahmen", datum, id, slot]
+// alles was mit der datenbank (deno kv) zu tun hat
+// Schlüssel z.B. ["praeparate", id] oder ["einnahmen", datum, id, slot]
 
 import { type Einnahme, KATALOG, type Praeparat, type Tagesablauf } from "./modell.ts";
 
 await Deno.mkdir("./data", { recursive: true });
 const kv = await Deno.openKv("./data/einnahmeplaner-v2.db");
-
-// präparate
 
 export async function allePraeparate(): Promise<Praeparat[]> {
   const liste: Praeparat[] = [];
@@ -29,8 +27,6 @@ export async function loeschePraeparat(id: string) {
   await kv.delete(["praeparate", id]);
 }
 
-// tagesablauf
-
 export async function holeTagesablauf(): Promise<Tagesablauf> {
   const eintrag = await kv.get<Tagesablauf>(["tagesablauf"]);
   if (eintrag.value) return eintrag.value;
@@ -41,8 +37,6 @@ export async function speichereTagesablauf(t: Tagesablauf) {
   await kv.set(["tagesablauf"], t);
 }
 
-// einnahmen (haken)
-
 export async function einnahmenAm(datum: string): Promise<Einnahme[]> {
   const liste: Einnahme[] = [];
   for await (const eintrag of kv.list<Einnahme>({ prefix: ["einnahmen", datum] })) {
@@ -51,16 +45,16 @@ export async function einnahmenAm(datum: string): Promise<Einnahme[]> {
   return liste;
 }
 
-// haken setzen + vorrat -1, atomic = beides oder nichts
+// haken setzen und vorrat -1. mit atomic passiert beides oder gar nichts
 export async function hakeAb(e: Einnahme, p: Praeparat) {
   const neuerVorrat = p.vorrat === null ? null : Math.max(0, p.vorrat - 1);
   await kv.atomic()
     .set(["einnahmen", e.datum, e.praeparatId, e.slot], e)
     .set(["praeparate", p.id], { ...p, vorrat: neuerVorrat })
-    .commit(); // atomic: erst hier wird alles zusammen gespeichert (oder gar nichts)
+    .commit();
 }
 
-// haken weg + vorrat +1
+// haken weg, vorrat wieder +1
 export async function nimmZurueck(e: Einnahme, p: Praeparat) {
   const neuerVorrat = p.vorrat === null ? null : p.vorrat + 1;
   await kv.atomic()
@@ -73,7 +67,6 @@ export async function istAbgehakt(e: Einnahme): Promise<boolean> {
   const eintrag = await kv.get(["einnahmen", e.datum, e.praeparatId, e.slot]);
   return eintrag.value !== null;
 }
-
 
 export async function ersterStart(): Promise<boolean> {
   const eintrag = await kv.get(["schonGestartet"]);

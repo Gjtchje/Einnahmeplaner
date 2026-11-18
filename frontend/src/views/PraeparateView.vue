@@ -1,4 +1,4 @@
-<!-- präparate anlegen, ändern, löschen (crud) -->
+<!-- präparate anlegen, ändern und löschen -->
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import * as api from '../api'
@@ -8,7 +8,7 @@ const praeparate = ref<api.Praeparat[]>([])
 const wirkstoffe = ref<api.Wirkstoff[]>([])
 const fehler = ref('')
 
-// formular. bearbeiteId = null -> neues präparat
+// wenn bearbeiteid null ist, wird ein neues präparat angelegt
 const leer: api.NeuesPraeparat = {
   name: '', wirkstoffId: '', dosis: '1 Tablette', staerke: '', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
 }
@@ -17,7 +17,6 @@ const bearbeiteId = ref<string | null>(null)
 
 const gewaehlt = computed(() => wirkstoffe.value.find((w) => w.id === formular.value.wirkstoffId))
 
-// präparate und wirkstoffe vom backend laden
 async function laden() {
   try {
     praeparate.value = await api.ladePraeparate()
@@ -27,13 +26,12 @@ async function laden() {
   }
 }
 
-// neu anlegen oder ändern, danach liste neu laden
 async function speichern() {
   fehler.value = ''
-  // leeres vorrat-feld = null (nicht zählen)
+  // leeres feld heißt: vorrat nicht zählen
   if (String(formular.value.vorrat) === '') formular.value.vorrat = null
   try {
-    if (bearbeiteId.value) { // id da = ändern (put), sonst neu (post)
+    if (bearbeiteId.value) { // ändern (put), sonst neu anlegen (post)
       await api.aenderePraeparat(bearbeiteId.value, formular.value)
     } else {
       await api.erstellePraeparat(formular.value)
@@ -41,7 +39,7 @@ async function speichern() {
     abbrechen()
     await laden()
   } catch (err) {
-    // z. b. fehlermeldung von zod aus dem backend
+    // z.b. die fehlermeldung von zod
     fehler.value = (err as Error).message
   }
 }
@@ -80,11 +78,10 @@ onMounted(laden)
     <h1>Präparate</h1>
     <p class="unterzeile">Alles, was du regelmäßig nimmst. Der Plan richtet sich automatisch danach.</p>
 
-    <!-- @submit.prevent: seite nicht neu laden, sondern speichern() aufrufen -->
+    <!-- .prevent, damit die seite beim absenden nicht neu lädt -->
     <form class="karte" @submit.prevent="speichern">
       <h2>{{ bearbeiteId ? 'Präparat ändern' : 'Neues Präparat' }}</h2>
 
-      <!-- v-model: feld ist mit dem formular verbunden -->
       <div class="felder breit">
         <label>Name
           <input v-model="formular.name" placeholder="z. B. Vitamin D3 von dm">
@@ -121,7 +118,6 @@ onMounted(laden)
         </label>
       </div>
 
-      <!-- wochentage: angeklickte tage landen in formular.tage -->
       <fieldset class="chips">
         <legend>An welchen Tagen?</legend>
         <label v-for="t in api.WOCHENTAGE" :key="t.nr" class="chip">
@@ -139,7 +135,6 @@ onMounted(laden)
     </form>
 
     <h2>Deine Präparate</h2>
-    <!-- liste aller präparate -->
     <PraeparatZeile
       v-for="p in praeparate"
       :key="p.id"

@@ -1,4 +1,3 @@
-<!-- rahmen um alle seiten: navigation oben, seite darunter -->
 <template>
   <header class="kopf">
     <span class="marke"><img src="/favicon.svg" alt="" width="40" height="40"> Einnahmeplaner</span>
@@ -9,7 +8,7 @@
     </nav>
   </header>
 
-  <!-- hier kommt die aktuelle seite rein -->
+  <!-- hier wird die aktuelle seite angezeigt -->
   <RouterView />
 
   <footer class="fuss">

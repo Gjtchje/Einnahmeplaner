@@ -1,4 +1,4 @@
-<!-- eine zeile in der präparate-liste. props = daten rein, emit = klick raus -->
+<!-- eine zeile in der präparate-liste -->
 <script setup lang="ts">
 import { type Praeparat, WOCHENTAGE } from '../api'
 
@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ aendern: [], loeschen: [] }>()
 
-// "täglich" oder z. b. "mo, mi, fr"
+// z.B. "täglich" oder "Mo, Mi, Fr"
 function tageText(): string {
   const tage = props.praeparat.tage ?? []
   if (tage.length === 0 || tage.length === 7) return 'täglich'

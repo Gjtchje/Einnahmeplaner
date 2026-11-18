@@ -1,5 +1,4 @@
-// startdaten beim ersten start, mit typischen konflikten (l-thyroxin, eisen, calcium)
-// zink nur mo, mi, fr
+// beispieldaten für den ersten start, extra mit ein paar konflikten drin
 
 const TAEGLICH = [0, 1, 2, 3, 4, 5, 6];
 

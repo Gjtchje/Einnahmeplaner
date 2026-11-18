@@ -1,4 +1,4 @@
-// welche adresse zeigt welche seite
+// welche adresse welche seite zeigt
 import { createRouter, createWebHistory } from 'vue-router'
 import HeuteView from './views/HeuteView.vue'
 import PraeparateView from './views/PraeparateView.vue'

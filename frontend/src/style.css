@@ -1,4 +1,4 @@
-/* aussehen der ganzen app: farben + abstände oben, darunter gemeinsame bausteine */
+/* farben oben als variablen, damit man sie leicht ändern kann */
 :root {
   --text: #222;
   --leise: #666;
@@ -49,7 +49,6 @@ nav.menue a.router-link-exact-active { background: white; color: var(--lila); }
 main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var(--abstand) calc(var(--abstand) * 3); }
 .unterzeile { color: var(--leise); margin: 0.25rem 0 calc(var(--abstand) * 1.5); }
 
-/* karte = grundbaustein jeder seite */
 .karte {
   background: var(--karte);
   border: 1px solid var(--rand);
@@ -118,7 +117,7 @@ input[type="checkbox"] {
 
 .fuss { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var(--abstand); border-top: 1px solid var(--rand); font-size: 0.8rem; color: var(--leise); text-align: center; }
 
-/* handy: navigation unten */
+/* handy: menü nach unten */
 @media (max-width: 600px) {
   h1 { font-size: 1.5rem; }
   .karte { padding: var(--abstand); }

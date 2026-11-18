@@ -1,4 +1,4 @@
-// tests für den planer, starten mit test-backend.bat
+// tests für den planer (test-backend.bat)
 
 import { deepStrictEqual as gleich, ok as stimmt } from "node:assert/strict";
 import { type Plan, planeTag, praeparateAm } from "./planer.ts";
@@ -13,7 +13,6 @@ const ZEITEN = {
   schlafen: "22:00",
 };
 
-// hilfsfunktion: test-präparat bauen
 function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
   return {
     id: wirkstoffId,
@@ -27,7 +26,6 @@ function praeparat(wirkstoffId: string, proTag = 1): Praeparat {
   };
 }
 
-// hilfsfunktion: in welchen zeitfenstern liegt es?
 function slotsVon(plan: Plan, name: string): string[] {
   return plan.eintraege.filter((e) => e.praeparat.name === name).map((e) => e.slot);
 }
@@ -55,7 +53,7 @@ Deno.test("3-mal täglich: drei verschiedene Zeitfenster", () => {
 });
 
 Deno.test("Kein Platz: Mittel wird trotzdem eingeplant, aber mit Konflikt-Hinweis", () => {
-  // alles innerhalb 75 min -> zu eng für 2 std abstand
+  // alles innerhalb von 75 minuten, da passen 2h abstand nicht
   const eng = {
     nuechtern: "07:00",
     fruehstueck: "07:15",
@@ -75,7 +73,7 @@ Deno.test("Warnung bei Vitamin K2 und Marcumar", () => {
 });
 
 Deno.test("Wochentage: Zink nur montags – am Montag dabei, am Dienstag nicht", () => {
-  const zink = { ...praeparat("zink"), tage: [1] }; // 1 = montag
+  const zink = { ...praeparat("zink"), tage: [1] }; // nur montags
   gleich(praeparateAm([zink], "2026-11-09").length, 1);
   gleich(praeparateAm([zink], "2026-11-10").length, 0);
 });

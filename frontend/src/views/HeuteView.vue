@@ -1,10 +1,10 @@
-<!-- startseite: plan für einen tag zum abhaken -->
+<!-- startseite mit dem plan zum abhaken -->
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import * as api from '../api'
 import ZeitfensterKarte from '../components/ZeitfensterKarte.vue'
 
-// daten der seite (ref = vue aktualisiert die anzeige automatisch)
+// ref: wenn sich der wert ändert, aktualisiert vue die anzeige
 const katalog = ref<api.Katalog | null>(null)
 const zeiten = ref<api.Tagesablauf>({})
 const plan = ref<api.Plan | null>(null)
@@ -18,7 +18,7 @@ const heute = alsText(new Date())
 
 const gewaehlt = ref(heute)
 
-// die 7 tage dieser woche für die knöpfe mo bis so
+// tage dieser woche für die knöpfe oben
 const woche = computed(() => {
   const montag = new Date()
   montag.setDate(montag.getDate() - ((montag.getDay() + 6) % 7))
@@ -35,7 +35,7 @@ const ueberschrift = computed(() => {
   return `Dein Plan für ${tag?.lang ?? gewaehlt.value}`
 })
 
-// alles vom backend laden (gleichzeitig = schneller)
+// alles gleichzeitig laden
 async function laden() {
   fehler.value = ''
   try {
@@ -56,7 +56,7 @@ function zeigeTag(datum: string) {
   laden()
 }
 
-// haken an/aus, danach neu laden (vorrat hat sich geändert)
+// danach neu laden, weil sich der vorrat geändert hat
 async function haken(praeparatId: string, slot: string) {
   await api.umschalten({ datum: gewaehlt.value, praeparatId, slot })
   await laden()
@@ -70,9 +70,8 @@ function abgehaktIn(slot: string): string[] {
   return abgehakt.value.filter((k) => k.endsWith(`|${slot}`)).map((k) => k.split('|')[0]!)
 }
 
-// computed = rechnet sich automatisch neu
+// computed wird automatisch neu berechnet
 
-// zeitfenster mit uhrzeit und präparaten, leere weg
 const zeitfenster = computed(() => {
   if (!katalog.value || !plan.value) return []
   return katalog.value.slots
@@ -90,14 +89,14 @@ const erledigt = computed(() =>
   plan.value?.eintraege.filter((e) => istAbgehakt(e.praeparat.id, e.slot)).length ?? 0,
 )
 
-// vorrat reicht keine 7 tage mehr
+// vorrat reicht keine woche mehr
 const nachkaufen = computed(() => {
   const alle = plan.value?.eintraege.map((e) => e.praeparat) ?? []
   const einzeln = alle.filter((p, i) => alle.findIndex((x) => x.id === p.id) === i)
   return einzeln.filter((p) => p.vorrat !== null && p.vorrat < 7 * p.proTag)
 })
 
-// erinnerungen: alle 30 sek prüfen, ob ein zeitfenster dran ist (nur wenn die app offen ist)
+// erinnerungen: alle 30 sekunden schauen ob was dran ist (geht nur bei offener app)
 const unterstuetzt = typeof Notification !== 'undefined'
 const erlaubnis = ref(unterstuetzt ? Notification.permission : 'denied')
 const gemeldet: string[] = []
@@ -119,7 +118,6 @@ async function erinnerungPruefen() {
   if (erlaubnis.value !== 'granted') return
   const jetzt = new Date()
   const minutenJetzt = jetzt.getHours() * 60 + jetzt.getMinutes()
-  // immer heute prüfen, egal welcher tag angezeigt wird
   const [planHeute, einnahmen] = await Promise.all([api.ladePlan(heute), api.ladeEinnahmen(heute)])
   const abgehaktHeute = einnahmen.map((e) => `${e.praeparatId}|${e.slot}`)
 
@@ -138,7 +136,6 @@ async function erinnerungPruefen() {
 }
 
 let timer: number
-// beim öffnen laden, dann alle 30 sek erinnerung prüfen
 onMounted(async () => {
   await laden()
   erinnerungPruefen()
@@ -152,7 +149,6 @@ onUnmounted(() => clearInterval(timer))
     <h1>{{ ueberschrift }}</h1>
     <p class="unterzeile">{{ erledigt }} von {{ anzahl }} erledigt</p>
 
-    <!-- knöpfe mo bis so -->
     <nav class="woche" aria-label="Tag auswählen">
       <button
         v-for="tag in woche"
@@ -171,7 +167,7 @@ onUnmounted(() => clearInterval(timer))
       <RouterLink to="/praeparate">Präparate</RouterLink> an.
     </p>
 
-    <!-- ein kasten pro zeitfenster: :name, :zeit … = props rein, @haken = emit raus -->
+    <!-- ein kasten pro zeitfenster (props rein, @haken kommt per emit zurück) -->
     <ZeitfensterKarte
       v-for="fenster in zeitfenster"
       :key="fenster.id"
@@ -182,7 +178,6 @@ onUnmounted(() => clearInterval(timer))
       @haken="(praeparatId) => haken(praeparatId, fenster.id)"
     />
 
-    <!-- hinweise vom planer -->
     <section v-if="plan && plan.hinweise.length > 0">
       <h2>Hinweise</h2>
       <p v-for="h in plan.hinweise" :key="h" class="karte hinweis" :class="{ warnung: !h.startsWith('Tipp') }">
@@ -190,7 +185,6 @@ onUnmounted(() => clearInterval(timer))
       </p>
     </section>
 
-    <!-- vorrat -->
     <section v-if="nachkaufen.length > 0">
       <h2>Bald nachkaufen</h2>
       <div v-for="p in nachkaufen" :key="p.id" class="karte zeile fest">
@@ -199,7 +193,6 @@ onUnmounted(() => clearInterval(timer))
       </div>
     </section>
 
-    <!-- erinnerungen -->
     <h2>Erinnerungen</h2>
     <section class="karte erinnerung">
       <span v-if="!unterstuetzt">Dieser Browser kann keine Benachrichtigungen anzeigen.</span>

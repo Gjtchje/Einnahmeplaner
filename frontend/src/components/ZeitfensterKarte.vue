@@ -1,8 +1,8 @@
-<!-- ein kasten auf der heute-seite, z. b. 07:30 frühstück. redet nicht selbst mit dem backend -->
+<!-- kasten für ein zeitfenster auf der heute-seite -->
 <script setup lang="ts">
 import type { Plan } from '../api'
 
-// props: daten, die die seite reingibt
+// props: kommen von der seite
 defineProps<{
   name: string
   zeit: string
@@ -10,7 +10,7 @@ defineProps<{
   abgehakt: string[]
 }>()
 
-// emit: meldet der seite, welcher haken geklickt wurde
+// emit: sagt der seite, welcher haken geklickt wurde
 const emit = defineEmits<{ haken: [praeparatId: string] }>()
 </script>
 
@@ -20,7 +20,6 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
       <strong>{{ zeit }}</strong>
       <span class="klein">{{ name }}</span>
     </div>
-    <!-- eine zeile pro präparat, klick auf den haken meldet es per emit an die seite -->
     <ul class="eintraege">
       <li v-for="e in eintraege" :key="e.praeparat.id">
         <label class="eintrag">

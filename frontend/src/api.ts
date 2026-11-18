@@ -1,6 +1,6 @@
-// api: alle anfragen ans backend, die seiten rufen nur diese funktionen auf
+//alle anfragen an das backend laufen über diese datei, die seiten (views) müssen nichts über urls oder http wissen
 
-// typen: so sehen die daten vom backend aus
+//typen: so sehen die daten aus, die das backend schickt
 
 export interface Wirkstoff {
   id: string
@@ -24,9 +24,10 @@ export interface Praeparat {
   staerke: string
   proTag: number
   vorrat: number | null
-  tage: number[]
+  tage: number[] // 0 = sonntag, 6 = samstag
 }
 
+// für die knöpfe mo bis so
 export const WOCHENTAGE = [
   { nr: 1, kurz: 'Mo', lang: 'Montag' },
   { nr: 2, kurz: 'Di', lang: 'Dienstag' },
@@ -37,30 +38,26 @@ export const WOCHENTAGE = [
   { nr: 0, kurz: 'So', lang: 'Sonntag' },
 ]
 
-// präparat ohne id, die vergibt der server
+// ohne id, die macht der server
 export type NeuesPraeparat = Omit<Praeparat, 'id'>
 
 export type Tagesablauf = Record<string, string>
 
-// plan vom server: einträge + hinweise
 export interface Plan {
   eintraege: { praeparat: Praeparat, wirkstoff: Wirkstoff, slot: string }[]
   hinweise: string[]
 }
 
-// ein haken: datum, präparat, zeitfenster
 export interface Einnahme {
   datum: string
   praeparatId: string
   slot: string
-}
-
-// schickt anfrage ans backend, prüft antwort, wirft fehler oder gibt json zurück
+}                               //plan für einen tag: präparat, wirkstoff, slot
 
 async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   let antwort: Response
   try {
-    antwort = await fetch(url, { // fetch = anfrage an den server schicken
+    antwort = await fetch(url, {
       method: methode,
       headers: { 'Content-Type': 'application/json' },
       body: daten ? JSON.stringify(daten) : undefined,
@@ -68,14 +65,15 @@ async function anfrage(url: string, methode = 'GET', daten?: unknown) {
   } catch {
     throw new Error('Server nicht erreichbar – läuft das Backend?')
   }
+  // 204 = ok aber kein inhalt
   const ergebnis = antwort.status === 204 ? null : await antwort.json()
   if (!antwort.ok) {
     throw new Error(ergebnis?.fehler ?? `Fehler ${antwort.status}`)
   }
   return ergebnis
-}
+}                   //schickt anfrage an backend, prüft antwort, wirft fehler oder gibt json zurück
 
-// eine funktion pro api-adresse
+// die einzelnen anfragen
 
 export const ladeKatalog = (): Promise<Katalog> => anfrage('/api/katalog')
 
