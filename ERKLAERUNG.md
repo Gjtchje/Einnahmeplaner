@@ -239,7 +239,7 @@ Das Mittel wird trotzdem eingeplant, und der Plan zeigt eine Konflikt-Warnung. D
 Mehrere Speichervorgänge, die zusammen passieren oder gar nicht. Beim Abhaken: Haken speichern und Vorrat verringern.
 
 **Woher kommen die Daten?**
-Selbst recherchiert aus frei zugänglichen Quellen (Verbraucherzentrale, Apotheken Umschau, PTAheute, Apothekerkammer Nordrhein, Gelbe Liste …). Die Quellen stehen in `wirkstoffe.json`.
+Selbst recherchiert aus frei zugänglichen Quellen (Verbraucherzentrale, Apotheken Umschau, PTAheute, APOTHEKE ADHOC, aponet.de, DocCheck Flexikon …). Die Quellen stehen in `wirkstoffe.json`.
 
 **Was würdest du als Nächstes einbauen?**
 Eine PWA, damit Erinnerungen auch bei geschlossener App kommen, und danach Benutzerkonten.

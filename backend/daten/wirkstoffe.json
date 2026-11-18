@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "stand": "2026-11-09",
+  "stand": "2026-11-18",
   "hinweis": "Allgemeine Informationen aus frei zugänglichen Quellen. Ersetzt keine ärztliche oder pharmazeutische Beratung. Dosis und Häufigkeit gibt immer der Nutzer ein (Packungsbeilage / Arzt).",
   "slots": [
     {
@@ -54,7 +54,7 @@
         "Eher morgens/mittags; abends evtl. Einfluss auf den Schlaf."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -69,7 +69,7 @@
         "Fettlöslich – zur Mahlzeit, gern zusammen mit Vitamin D."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -84,7 +84,7 @@
         "Zeitpunkt ist weniger wichtig."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -99,7 +99,7 @@
         "Morgens zum Frühstück – abends kann es den Schlaf stören."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -116,7 +116,7 @@
         "Verbessert die Aufnahme von Eisen."
       ],
       "quellen": [
-        "wunderlichs",
+        "vz-nem-verwenden",
         "vz-wechselwirkungen"
       ]
     },
@@ -168,7 +168,7 @@
         "Zwei Stunden Abstand zu oxalsäure- und phytinsäurereichen Lebensmitteln (z. B. Spinat, Vollkorn)."
       ],
       "quellen": [
-        "wunderlichs",
+        "vz-nem-verwenden",
         "vz-wechselwirkungen"
       ]
     },
@@ -186,7 +186,7 @@
       ],
       "quellen": [
         "apotheke-adhoc-magnesium",
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -201,7 +201,7 @@
         "Abends zur Mahlzeit."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -217,7 +217,7 @@
         "Zur Hauptmahlzeit des Tages."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -232,7 +232,7 @@
         "Nüchtern oder ca. 30 Minuten vor dem Essen."
       ],
       "quellen": [
-        "wunderlichs"
+        "vz-nem-verwenden"
       ]
     },
     {
@@ -349,7 +349,7 @@
         "Bei Schilddrüsenerkrankungen mit dem Arzt abstimmen."
       ],
       "quellen": [
-        "schilddruesenzentrum"
+        "dap-jod"
       ]
     },
     {
@@ -365,7 +365,7 @@
         "Bei Hashimoto oder Schilddrüsenüberfunktion kein zusätzliches Jod ohne ärztlichen Rat."
       ],
       "quellen": [
-        "schilddruesenzentrum"
+        "dap-jod"
       ]
     },
     {
@@ -399,7 +399,7 @@
         "Wird oft nur einmal pro Woche eingenommen."
       ],
       "quellen": [
-        "gelbe-liste-alendron"
+        "au-alendron"
       ]
     },
     {
@@ -415,7 +415,7 @@
         "Mindestens 3 Stunden vorher und nachher keine Milchprodukte."
       ],
       "quellen": [
-        "aknr-antibiotika"
+        "aponet-antibiotika"
       ]
     },
     {
@@ -431,7 +431,7 @@
         "Mindestens 3 Stunden vorher und nachher keine Milchprodukte."
       ],
       "quellen": [
-        "aknr-antibiotika"
+        "aponet-antibiotika"
       ]
     },
     {
@@ -497,7 +497,7 @@
         "Nicht ohne Rücksprache mit Ibuprofen kombinieren."
       ],
       "quellen": [
-        "kph-ass"
+        "ptaheute-ass"
       ]
     },
     {
@@ -582,7 +582,7 @@
       "typ": "abstand",
       "stunden": 2,
       "grund": "Calcium hemmt die Zinkaufnahme.",
-      "quelle": "wunderlichs"
+      "quelle": "vz-nem-verwenden"
     },
     {
       "a": "l-thyroxin",
@@ -638,7 +638,7 @@
       "typ": "abstand",
       "stunden": 2,
       "grund": "Mineralstoffe verringern die Aufnahme.",
-      "quelle": "gelbe-liste-alendron"
+      "quelle": "au-alendron"
     },
     {
       "a": "doxycyclin",
@@ -646,7 +646,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "doxycyclin",
@@ -654,7 +654,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "doxycyclin",
@@ -662,7 +662,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "doxycyclin",
@@ -670,7 +670,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "ciprofloxacin",
@@ -678,7 +678,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "ciprofloxacin",
@@ -686,7 +686,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "ciprofloxacin",
@@ -694,7 +694,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "ciprofloxacin",
@@ -702,7 +702,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Mineralstoffe binden das Antibiotikum – es wirkt schlechter.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "probiotika",
@@ -732,7 +732,7 @@
       "b": "vitamin-k2",
       "typ": "zusammen",
       "grund": "Werden oft gemeinsam eingenommen, beide fettlöslich.",
-      "quelle": "wunderlichs"
+      "quelle": "vz-nem-verwenden"
     },
     {
       "a": "vitamin-k2",
@@ -768,7 +768,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Whey ist ein Milchprodukt – Milchprodukte binden das Antibiotikum.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "protein",
@@ -776,7 +776,7 @@
       "typ": "abstand",
       "stunden": 3,
       "grund": "Whey ist ein Milchprodukt – Milchprodukte binden das Antibiotikum.",
-      "quelle": "aknr-antibiotika"
+      "quelle": "aponet-antibiotika"
     },
     {
       "a": "ass-100",
@@ -784,7 +784,7 @@
       "typ": "abstand",
       "stunden": 2,
       "grund": "Ibuprofen kann die Herzschutz-Wirkung von ASS aufheben – ASS mindestens 2 Stunden vor Ibuprofen nehmen.",
-      "quelle": "kph-ass"
+      "quelle": "ptaheute-ass"
     },
     {
       "a": "ibuprofen",
@@ -828,8 +828,8 @@
     },
     {
       "id": "apotheken-umschau-vitamin-k",
-      "titel": "Apotheken Umschau – Blutgerinnungshemmer: Vorsicht bei Vitamin K",
-      "url": "https://www.apotheken-umschau.de/medikamente/blutgerinnungshemmer-bei-manchen-lebensmitteln-mit-vitamin-k-ist-vorsicht-geboten-1226265.html"
+      "titel": "Apotheken Umschau – Blutgerinnungshemmer: warum bei manchen Lebensmitteln mit Vitamin K Vorsicht geboten ist",
+      "url": "https://www.apotheken-umschau.de/medikamente/blutgerinnungshemmer-bei-manche-lebensmitteln-mit-vitamin-k-ist-vorsicht-geboten-1226265.html"
     },
     {
       "id": "apotheke-adhoc-magnesium",
@@ -847,14 +847,14 @@
       "url": "https://www.ptaheute.de/wissen-am-hv/darmgesundheit/antibiotikatherapie-wann-sind-probiotika-indiziert"
     },
     {
-      "id": "aknr-antibiotika",
-      "titel": "Apothekerkammer Nordrhein – Antibiotika richtig einnehmen",
-      "url": "https://www.aknr.de/presse/pressemitteilungen/antibiotika-richtig-einnehmen"
+      "id": "aponet-antibiotika",
+      "titel": "aponet.de – So entfalten Antibiotika ihre volle Wirkung: die wichtigsten Tipps",
+      "url": "https://www.aponet.de/artikel/so-entfalten-antibiotika-ihre-volle-wirkung-die-wichtigsten-tipps-32438"
     },
     {
-      "id": "gelbe-liste-alendron",
-      "titel": "Gelbe Liste – Alendronsäure",
-      "url": "https://www.gelbe-liste.de/wirkstoffe/Alendronsaeure_26144"
+      "id": "au-alendron",
+      "titel": "Apotheken Umschau – Beipackzettel Alendronsäure dura 70 mg Tabletten",
+      "url": "https://www.apotheken-umschau.de/medikamente/beipackzettel/alendronsaeure-dura-70-mg-tabletten-735345.html"
     },
     {
       "id": "doccheck-pantoprazol",
@@ -862,9 +862,9 @@
       "url": "https://flexikon.doccheck.com/de/Pantoprazol"
     },
     {
-      "id": "wunderlichs",
-      "titel": "Wunderlichs Apotheke – Nahrungsergänzungsmittel richtig einnehmen: Der Timing-Guide",
-      "url": "https://wunderlichs-apotheke.de/ratgeber/nahrungsergaenzungsmittel-richtig-einnehmen/"
+      "id": "vz-nem-verwenden",
+      "titel": "Verbraucherzentrale – Nahrungsergänzungsmittel richtig verwenden",
+      "url": "https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/nahrungsergaenzungsmittel-richtig-verwenden-27747"
     },
     {
       "id": "vz-whey",
@@ -892,9 +892,9 @@
       "url": "https://www.verbraucherzentrale.de/wissen/lebensmittel/nahrungsergaenzungsmittel/kurkuma-fakten-und-mythen-13696"
     },
     {
-      "id": "schilddruesenzentrum",
-      "titel": "Deutsches Schilddrüsenzentrum – Jod, Selen, Vitamine und Ernährung",
-      "url": "https://www.deutsches-schilddruesenzentrum.de/wissenswertes/jod-selen-vitamine-und-ernaehrung/"
+      "id": "dap-jod",
+      "titel": "Deutsches Apothekenportal – Beratungswissen Jod",
+      "url": "https://www.deutschesapothekenportal.de/download/public/beratungsleitfaeden/dap_beratungswissen_jod.pdf"
     },
     {
       "id": "au-ibuprofen",
@@ -902,9 +902,9 @@
       "url": "https://www.apotheken-umschau.de/medikamente/wirkstoffe/ibuprofen-wie-es-wirkt-wechselwirkungen-tipps-718699.html"
     },
     {
-      "id": "kph-ass",
-      "titel": "Krankenhauspharmazie – Vorsicht bei Kombination aus ASS und Ibuprofen",
-      "url": "https://www.krankenhauspharmazie.de/Nebenwirkung-des-Monats/vorsicht-bei-kombination-aus-ass-und-ibuprofen-geboten.html"
+      "id": "ptaheute-ass",
+      "titel": "PTAheute – ASS 100 mg und Ibuprofen: eine häufige Interaktion",
+      "url": "https://www.ptaheute.de/serien/haeufige-interaktionen/ass-100-mg-und-ibuprofen-eine-haeufige-interaktion"
     },
     {
       "id": "au-metformin",
