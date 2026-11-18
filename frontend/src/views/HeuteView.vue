@@ -201,8 +201,8 @@ onUnmounted(() => clearInterval(timer))
         <button class="klein-knopf" @click="testBenachrichtigung">Test-Benachrichtigung</button>
       </template>
       <template v-else-if="erlaubnis === 'denied'">
-        <span>Benachrichtigungen sind blockiert. In Edge: Menü „…“ → Einstellungen → Cookies und Websiteberechtigungen
-        → Benachrichtigungen → localhost erlauben. Außerdem in Windows: Einstellungen → System → Benachrichtigungen → Microsoft Edge an.</span>
+        <span>Benachrichtigungen sind blockiert. Im Browser links neben der Adresse auf das Schloss-Symbol klicken
+        und Benachrichtigungen für localhost erlauben. Außerdem in Windows: Einstellungen → System → Benachrichtigungen → Browser an.</span>
       </template>
       <button v-else class="haupt" @click="erinnerungEinschalten">Erinnerungen einschalten</button>
     </section>

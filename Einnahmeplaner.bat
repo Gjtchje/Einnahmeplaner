@@ -17,5 +17,5 @@ echo Warte auf den Server ...
 timeout /t 1 >nul
 curl -s -o nul http://localhost:8000/api/katalog || goto warten
 
-rem 4. App in einem eigenen Fenster ohne Adressleiste oeffnen
-start msedge --app=http://localhost:8000
+rem 4. App in Firefox oeffnen
+start firefox http://localhost:8000

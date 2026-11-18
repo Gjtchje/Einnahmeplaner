@@ -48,7 +48,7 @@ Nach dem Architektur-Fragebogen von Dr. Mester: erst der **Steckbrief** (die App
 
 ### Infrastruktur
 - **Hosting:** lokal auf dem eigenen Rechner (`localhost:8000`)
-- **Deployment:** `Einnahmeplaner.bat` baut das Frontend, startet den Server und öffnet die App im eigenen Fenster
+- **Deployment:** `Einnahmeplaner.bat` baut das Frontend, startet den Server und öffnet die App in Firefox
 
 ### Betrieb
 - **Logging:** Server-Fenster (Fehler über `console.error`)
@@ -146,7 +146,7 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 ### ADR-009: Backend liefert das Frontend aus (Ein-Klick-Start)
 - **Status:** Accepted
 - **Kontext:** Zum Entwickeln laufen zwei Programme (Vite auf 5173, Deno auf 8000); zum Benutzen ist das umständlich.
-- **Entscheidung:** Das Frontend wird gebaut (`frontend/dist`) und vom Backend mit ausgeliefert; `Einnahmeplaner.bat` öffnet die App in einem Edge-Fenster ohne Adressleiste.
+- **Entscheidung:** Das Frontend wird gebaut (`frontend/dist`) und vom Backend mit ausgeliefert; `Einnahmeplaner.bat` öffnet die App in Firefox.
 - **Alternativen:** Online-Hosting (z. B. Deno Deploy); Desktop-App (Electron).
 - **Konsequenzen:** + ein Doppelklick, ein Programm · − läuft nur auf dem eigenen Rechner; Erinnerungen nur, solange das Fenster offen ist.
 
