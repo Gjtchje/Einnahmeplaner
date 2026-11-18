@@ -43,7 +43,7 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 | GET | `/api/einnahmen?datum=JJJJ-MM-TT` | abgehakte Einnahmen eines Tages |
 | POST | `/api/einnahmen/umschalten` | Haken setzen oder entfernen (Vorrat ±1) |
 
-Fehler kommen als `{ "fehler": "…" }` mit Status 400 oder 404.
+Fehler kommen als `{ "fehler": "…" }` mit Status 400 (falsche Eingabe), 404 (nicht gefunden) oder 500 (Fehler im Server).
 
 Eine ausführliche Erklärung steht in **ERKLAERUNG.md**, die Architekturbeschreibung (Steckbrief + ADRs) in **ARCHITEKTUR.md**.
 
