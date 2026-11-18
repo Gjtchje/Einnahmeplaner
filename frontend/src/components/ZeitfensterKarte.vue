@@ -50,7 +50,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
 .eintrag input { margin-top: 0.15rem; }
 .name { font-weight: 500; }
 .durch { text-decoration: line-through; color: var(--leise); }
-.tipp { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--gruen); }
+.tipp { display: block; margin-top: 0.15rem; font-size: 0.8rem; color: var(--lila); }
 
 @media (max-width: 600px) {
   .zeitfenster { grid-template-columns: 1fr; gap: 0.75rem; }

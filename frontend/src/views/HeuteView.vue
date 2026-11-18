@@ -220,7 +220,7 @@ onUnmounted(() => clearInterval(timer))
 .woche { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; margin-bottom: var(--abstand); }
 .woche button { border-radius: 12px; padding: 0.45rem 0; line-height: 1.3; }
 .woche button.heute { border-color: var(--orange); }
-.woche button.aktiv { background: var(--gruen); border-color: var(--gruen); color: white; }
+.woche button.aktiv { background: var(--lila); border-color: var(--lila); color: white; }
 
 .erinnerung { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; font-size: 0.9rem; }
 </style>
