@@ -43,7 +43,7 @@ const emit = defineEmits<{ haken: [praeparatId: string] }>()
 <style scoped>
 .zeitfenster { display: grid; grid-template-columns: 6.5rem 1fr; gap: var(--abstand); }
 .zeit { display: grid; align-content: start; gap: 0.1rem; }
-.zeit strong { font-family: 'Fraunces', Georgia, serif; font-size: 1.5rem; line-height: 1.1; }
+.zeit strong { font-size: 1.4rem; line-height: 1.1; }
 
 .eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .eintrag { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; align-items: start; color: var(--text); font-size: 1rem; cursor: pointer; }

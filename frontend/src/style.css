@@ -1,10 +1,10 @@
 /* aussehen der ganzen app: farben + abstände oben, darunter gemeinsame bausteine */
 :root {
-  --text: #1f2a26;
-  --leise: #5f6b66;
-  --hintergrund: #f6f3ec;
-  --karte: #fffdf8;
-  --rand: #e3ddd0;
+  --text: #222;
+  --leise: #666;
+  --hintergrund: #f2f2f5;
+  --karte: #fff;
+  --rand: #ddd;
   --lila: #5b3f8c;
   --lila-hell: #ece6f5;
   --orange: #e0a458;
@@ -12,9 +12,9 @@
   --rot: #b3261e;
 
   --abstand: 1rem;
-  --rundung: 14px;
+  --rundung: 6px;
 
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   color: var(--text);
   background: var(--hintergrund);
   line-height: 1.5;
@@ -24,8 +24,8 @@
 body { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 
-h1, h2 { font-family: 'Fraunces', Georgia, serif; margin: 0; line-height: 1.2; }
-h1 { font-size: 2rem; }
+h1, h2 { margin: 0; line-height: 1.2; }
+h1 { font-size: 1.7rem; }
 h2 { font-size: 1.2rem; margin: calc(var(--abstand) * 1.75) 0 calc(var(--abstand) * 0.75); }
 .karte > h2:first-child { margin-top: 0; }
 
@@ -38,13 +38,13 @@ h2 { font-size: 1.2rem; margin: calc(var(--abstand) * 1.75) 0 calc(var(--abstand
   align-items: center;
   gap: var(--abstand);
   padding: 0.75rem var(--abstand);
-  background: var(--hintergrund);
-  border-bottom: 1px solid var(--rand);
+  background: var(--lila);
+  color: white;
 }
-.marke { display: flex; align-items: center; gap: 0.5rem; font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 1.15rem; }
+.marke { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.15rem; }
 nav.menue { display: flex; gap: 0.25rem; }
-nav.menue a { padding: 0.4rem 0.8rem; border-radius: 999px; color: var(--leise); text-decoration: none; font-weight: 500; white-space: nowrap; }
-nav.menue a.router-link-exact-active { background: var(--lila); color: white; }
+nav.menue a { padding: 0.4rem 0.8rem; border-radius: var(--rundung); color: white; text-decoration: none; font-weight: 500; white-space: nowrap; }
+nav.menue a.router-link-exact-active { background: white; color: var(--lila); }
 
 main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var(--abstand) calc(var(--abstand) * 3); }
 .unterzeile { color: var(--leise); margin: 0.25rem 0 calc(var(--abstand) * 1.5); }
@@ -63,12 +63,12 @@ main { max-width: 720px; margin: 0 auto; padding: calc(var(--abstand) * 1.5) var
 
 .klein { font-size: 0.85rem; color: var(--leise); }
 .fehler { color: var(--rot); margin: 0 0 var(--abstand); }
-.etikett { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.55rem; border-radius: 999px; background: var(--orange-hell); color: #7a4f00; white-space: nowrap; }
+.etikett { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.55rem; border-radius: var(--rundung); background: var(--orange-hell); color: #7a4f00; white-space: nowrap; }
 
 button {
   padding: 0.55rem 1.1rem;
   border: 1px solid var(--rand);
-  border-radius: 999px;
+  border-radius: var(--rundung);
   background: white;
   cursor: pointer;
   white-space: nowrap;
@@ -85,7 +85,7 @@ input, select {
   height: 2.6rem;
   padding: 0 0.7rem;
   border: 1px solid var(--rand);
-  border-radius: 10px;
+  border-radius: var(--rundung);
   background: white;
   color: var(--text);
 }
@@ -108,7 +108,7 @@ input[type="checkbox"] {
 .chips legend { font-size: 0.85rem; color: var(--leise); margin-bottom: 0.4rem; padding: 0; }
 .chip { display: block; cursor: pointer; }
 .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.chip span { display: block; padding: 0.4rem 0; text-align: center; border: 1px solid var(--rand); border-radius: 999px; background: white; color: var(--text); font-size: 0.9rem; }
+.chip span { display: block; padding: 0.4rem 0; text-align: center; border: 1px solid var(--rand); border-radius: var(--rundung); background: white; color: var(--text); font-size: 0.9rem; }
 .chip input:checked + span { background: var(--lila); border-color: var(--lila); color: white; }
 .chip input:focus-visible + span { outline: 2px solid var(--lila); outline-offset: 2px; }
 
@@ -120,7 +120,7 @@ input[type="checkbox"] {
 
 /* handy: navigation unten */
 @media (max-width: 600px) {
-  h1 { font-size: 1.7rem; }
+  h1 { font-size: 1.5rem; }
   .karte { padding: var(--abstand); }
   nav.menue {
     position: fixed;
@@ -132,8 +132,7 @@ input[type="checkbox"] {
     grid-auto-columns: 1fr;
     gap: 0;
     padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom));
-    background: var(--karte);
-    border-top: 1px solid var(--rand);
+    background: var(--lila);
   }
   nav.menue a { padding: 0.45rem 0; font-size: 0.72rem; text-align: center; overflow: hidden; text-overflow: ellipsis; }
   body { padding-bottom: 4rem; }

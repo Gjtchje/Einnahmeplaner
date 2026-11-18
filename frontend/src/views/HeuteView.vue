@@ -204,21 +204,21 @@ onUnmounted(() => clearInterval(timer))
     <section class="karte erinnerung">
       <span v-if="!unterstuetzt">Dieser Browser kann keine Benachrichtigungen anzeigen.</span>
       <template v-else-if="erlaubnis === 'granted'">
-        <span>🔔 Erinnerungen sind an – solange die App geöffnet ist.</span>
+        <span>Erinnerungen sind an – solange die App geöffnet ist.</span>
         <button class="klein-knopf" @click="testBenachrichtigung">Test-Benachrichtigung</button>
       </template>
       <template v-else-if="erlaubnis === 'denied'">
-        <span>🔕 Benachrichtigungen sind blockiert. In Edge: Menü „…“ → Einstellungen → Cookies und Websiteberechtigungen
+        <span>Benachrichtigungen sind blockiert. In Edge: Menü „…“ → Einstellungen → Cookies und Websiteberechtigungen
         → Benachrichtigungen → localhost erlauben. Außerdem in Windows: Einstellungen → System → Benachrichtigungen → Microsoft Edge an.</span>
       </template>
-      <button v-else class="haupt" @click="erinnerungEinschalten">🔔 Erinnerungen einschalten</button>
+      <button v-else class="haupt" @click="erinnerungEinschalten">Erinnerungen einschalten</button>
     </section>
   </main>
 </template>
 
 <style scoped>
 .woche { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; margin-bottom: var(--abstand); }
-.woche button { border-radius: 12px; padding: 0.45rem 0; line-height: 1.3; }
+.woche button { border-radius: var(--rundung); padding: 0.45rem 0; line-height: 1.3; }
 .woche button.heute { border-color: var(--orange); }
 .woche button.aktiv { background: var(--lila); border-color: var(--lila); color: white; }
 
