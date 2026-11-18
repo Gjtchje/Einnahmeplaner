@@ -1,7 +1,7 @@
 <!-- rahmen um alle seiten: navigation oben, seite darunter -->
 <template>
   <header class="kopf">
-    <span class="marke"><img src="/favicon.svg" alt="" width="26" height="26"> Einnahmeplaner</span>
+    <span class="marke"><img src="/favicon.svg" alt="" width="40" height="40"> Einnahmeplaner</span>
     <nav class="menue">
       <RouterLink to="/">Heute</RouterLink>
       <RouterLink to="/praeparate">Präparate</RouterLink>
