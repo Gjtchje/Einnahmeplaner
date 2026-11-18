@@ -1,4 +1,4 @@
-// datenmodell und prüfregeln (zod)
+// datenmodell und validierung (zod-prüfregeln)
 
 import { z } from "zod";
 import katalog from "./daten/wirkstoffe.json" with { type: "json" };
@@ -33,7 +33,7 @@ export const SLOT_IDS = KATALOG.slots.map((s) => s.id);
 // regeln für ein präparat
 
 export const praeparatSchema = z.object({
-  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"),
+  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen haben"), // mindestens 2 zeichen, sonst 400
   wirkstoffId: z.string().refine(
     (id) => KATALOG.wirkstoffe.some((w) => w.id === id),
     "Bitte einen Wirkstoff auswählen",

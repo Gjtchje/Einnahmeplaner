@@ -1,5 +1,5 @@
-// alles was mit der datenbank (deno kv) zu tun hat
-// Schlüssel z.B. ["praeparate", id] oder ["einnahmen", datum, id, slot]
+// persistenz / datenbank: alles mit deno kv (entscheidung: deno kv statt postgresql, nichts zu installieren)
+// schlüssel z.b. ["praeparate", id] oder ["einnahmen", datum, id, slot]
 
 import { type Einnahme, KATALOG, type Praeparat, type Tagesablauf } from "./modell.ts";
 
@@ -20,7 +20,7 @@ export async function holePraeparat(id: string): Promise<Praeparat | null> {
 }
 
 export async function speicherePraeparat(p: Praeparat) {
-  await kv.set(["praeparate", p.id], p);
+  await kv.set(["praeparate", p.id], p); // speichern
 }
 
 export async function loeschePraeparat(id: string) {

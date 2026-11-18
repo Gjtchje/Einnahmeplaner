@@ -1,4 +1,4 @@
-/* farben oben als variablen, damit man sie leicht ändern kann */
+/* design / farben: oben als variablen, damit man sie leicht ändern kann */
 :root {
   --text: #222;
   --leise: #666;

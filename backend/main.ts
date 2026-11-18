@@ -1,4 +1,4 @@
-// hier läuft der server, alle api-routen stehen in dieser datei
+// server / api / rest: hier stehen alle routen
 // ablauf ist fast immer gleich: daten lesen, mit zod prüfen, in die db, json zurück
 
 import { Hono } from "hono";
@@ -9,22 +9,23 @@ import * as db from "./datenbank.ts";
 import { BEISPIELDATEN } from "./beispieldaten.ts";
 
 const app = new Hono();
+// login / session gibt es nicht (entscheidung: app läuft lokal für eine person). wäre eine route wie /api/login
 
-// katalog mit zeitfenstern, wirkstoffen und regeln
+// katalog: zeitfenster, wirkstoffe, regeln (entscheidung: eigener katalog statt externer api)
 app.get("/api/katalog", (c) => {
   return c.json(KATALOG);
 });
 
-// alle präparate, nach namen sortiert
+// crud read (get): alle präparate, nach namen sortiert
 app.get("/api/praeparate", async (c) => {
   const liste = await db.allePraeparate(); // await: wartet auf die db
   liste.sort((a, b) => a.name.localeCompare(b.name));
   return c.json(liste);
 });
 
-// neues präparat anlegen
+// crud create (post): neues präparat anlegen, antwort 201
 app.post("/api/praeparate", async (c) => {
-  const pruefung = praeparatSchema.safeParse(await c.req.json()); // zod prüft die eingabe
+  const pruefung = praeparatSchema.safeParse(await c.req.json()); // validierung mit zod (entscheidung: im backend prüfen), fehler = 400
   if (!pruefung.success) {
     return c.json({ fehler: pruefung.error.issues[0].message }, 400);
   }
@@ -33,7 +34,7 @@ app.post("/api/praeparate", async (c) => {
   return c.json(praeparat, 201);
 });
 
-// präparat ändern, vorher schauen ob es das überhaupt gibt
+// crud update (put): präparat ändern, gibt es das nicht kommt 404
 app.put("/api/praeparate/:id", async (c) => {
   const id = c.req.param("id");
   if (!(await db.holePraeparat(id))) return c.json({ fehler: "Nicht gefunden" }, 404);
@@ -47,7 +48,7 @@ app.put("/api/praeparate/:id", async (c) => {
   return c.json(praeparat);
 });
 
-// präparat löschen (204 = ok, ohne inhalt)
+// crud delete: präparat löschen, statuscode 204
 app.delete("/api/praeparate/:id", async (c) => {
   await db.loeschePraeparat(c.req.param("id"));
   return c.body(null, 204);
@@ -68,7 +69,7 @@ app.put("/api/tagesablauf", async (c) => {
   return c.json(pruefung.data);
 });
 
-// plan für ein datum. wird jedes mal neu berechnet und nicht gespeichert
+// geschäftslogik / planer aufrufen: plan wird jedes mal neu berechnet (entscheidung: nicht speichern)
 app.get("/api/plan", async (c) => {
   const datum = c.req.query("datum") ?? "";
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return c.json({ fehler: "Datum fehlt" }, 400);
@@ -84,7 +85,7 @@ app.get("/api/einnahmen", async (c) => {
   return c.json(await db.einnahmenAm(datum));
 });
 
-// haken setzen oder wegnehmen, der vorrat wird mit angepasst
+// abhaken: haken setzen oder wegnehmen, vorrat wird mit angepasst
 app.post("/api/einnahmen/umschalten", async (c) => {
   const pruefung = einnahmeSchema.safeParse(await c.req.json());
   if (!pruefung.success) return c.json({ fehler: "Ungültige Einnahme" }, 400);
@@ -102,17 +103,17 @@ app.post("/api/einnahmen/umschalten", async (c) => {
   }
 });
 
-// adresse gibt es nicht
+// statuscode 404: adresse gibt es nicht
 app.all("/api/*", (c) => c.json({ fehler: "Diese Adresse gibt es nicht" }, 404));
 
-// fehler abfangen: kaputtes json gibt 400, alles andere 500
+// fehlerbehandlung: kaputtes json gibt 400, alles andere 500
 app.onError((fehler, c) => {
   if (fehler instanceof SyntaxError) return c.json({ fehler: "Ungültiges JSON" }, 400);
   console.error(fehler);
   return c.json({ fehler: "Interner Serverfehler" }, 500);
 });
 
-// alles was nicht /api ist: die gebaute vue-app ausliefern
+// frontend ausliefern (ein-klick-start), deshalb kein cors nötig
 app.use("/*", serveStatic({ root: "../frontend/dist" }));
 app.get("/*", serveStatic({ path: "../frontend/dist/index.html" }));
 
@@ -124,4 +125,4 @@ if (await db.ersterStart()) {
   console.log("Beispieldaten angelegt.");
 }
 
-Deno.serve({ port: 8000 }, app.fetch);
+Deno.serve({ port: 8000 }, app.fetch); // server start, port 8000

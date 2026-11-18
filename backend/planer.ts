@@ -1,3 +1,4 @@
+// geschäftslogik / planer (entscheidung: keine db hier, deshalb gut testbar)
 //1sortieren medis und unflexible mittel zuerst
 //2jedes mittel ins erste empfohlene zeitfenster ohne konflikt zb. eisen und calcium 2 stunden abstand
 //3hinweise aus katalog: tipps oder warnung

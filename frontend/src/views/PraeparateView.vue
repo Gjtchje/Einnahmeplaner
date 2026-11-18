@@ -8,7 +8,7 @@ const praeparate = ref<api.Praeparat[]>([])
 const wirkstoffe = ref<api.Wirkstoff[]>([])
 const fehler = ref('')
 
-// wenn bearbeiteid null ist, wird ein neues präparat angelegt
+// formular: wenn bearbeiteId null ist, wird ein neues präparat angelegt
 const leer: api.NeuesPraeparat = {
   name: '', wirkstoffId: '', dosis: '1 Tablette', staerke: '', proTag: 1, vorrat: null, tage: [0, 1, 2, 3, 4, 5, 6],
 }

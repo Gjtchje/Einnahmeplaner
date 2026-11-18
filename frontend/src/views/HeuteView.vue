@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import * as api from '../api'
 import ZeitfensterKarte from '../components/ZeitfensterKarte.vue'
 
-// ref: wenn sich der wert ändert, aktualisiert vue die anzeige
+// zustand / ref: wenn sich der wert ändert, aktualisiert vue die anzeige
 const katalog = ref<api.Katalog | null>(null)
 const zeiten = ref<api.Tagesablauf>({})
 const plan = ref<api.Plan | null>(null)

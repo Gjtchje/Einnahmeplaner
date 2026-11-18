@@ -10,8 +10,8 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  // Entwicklungs-Proxy: Anfragen an /api leitet Vite an das Deno-Backend weiter.
-  // So spricht das Frontend nur mit "sich selbst" und es gibt keine CORS-Probleme.
+  // proxy: anfragen an /api leitet vite ans backend (port 8000) weiter
+  // dadurch braucht man kein cors
   server: {
     proxy: {
       '/api': 'http://localhost:8000',

@@ -1,3 +1,4 @@
+// fetch / http: verbindung zum backend
 //alle anfragen an das backend laufen über diese datei, die seiten (views) müssen nichts über urls oder http wissen
 
 //typen: so sehen die daten aus, die das backend schickt
