@@ -46,3 +46,14 @@ Beim ersten Start werden 7 Beispiel-Präparate angelegt. Die Datenbank liegt in 
 Fehler kommen als `{ "fehler": "…" }` mit Status 400 oder 404.
 
 Eine ausführliche Erklärung steht in **ERKLAERUNG.md**, die Architekturbeschreibung (Steckbrief + ADRs) in **ARCHITEKTUR.md**.
+
+## Einsatz von KI
+
+Bei der Entwicklung habe ich Claude (Anthropic) als Hilfsmittel benutzt:
+
+- **Recherche:** Wirkstoffe, Einnahmeregeln und passende Quellen für `wirkstoffe.json` (jede Regel hat eine Quellenangabe).
+- **Code:** Vorschläge für Backend und Frontend, die ich ausprobiert, angepasst und mir erklären lassen habe.
+- **Erklärungen und Doku:** Hilfe beim Verstehen der Konzepte (REST, Zod, Deno KV, Vue) und beim Schreiben von `ERKLAERUNG.md` und `ARCHITEKTUR.md`.
+
+Entscheidungen wie „keine Dosis-Empfehlung“, „kein Login“ und „Plan wird berechnet statt gespeichert“ habe ich bewusst getroffen (siehe ADRs in `ARCHITEKTUR.md`).
+

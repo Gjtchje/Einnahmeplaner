@@ -149,3 +149,102 @@ ADR-001 Architekturform · ADR-005 eigener Katalog · ADR-006 Planungsmodell · 
 - **Entscheidung:** Das Frontend wird gebaut (`frontend/dist`) und vom Backend mit ausgeliefert; `Einnahmeplaner.bat` öffnet die App in einem Edge-Fenster ohne Adressleiste.
 - **Alternativen:** Online-Hosting (z. B. Deno Deploy); Desktop-App (Electron).
 - **Konsequenzen:** + ein Doppelklick, ein Programm · − läuft nur auf dem eigenen Rechner; Erinnerungen nur, solange das Fenster offen ist.
+
+---
+
+## 4. Diagramme
+
+Die Diagramme sind in Mermaid geschrieben. GitHub und VS Code (Markdown-Vorschau mit Mermaid-Erweiterung) zeigen sie als Grafik an.
+
+### 4.1 Architekturdiagramm: Komponenten und Datenfluss
+
+```mermaid
+flowchart LR
+  subgraph Browser["Browser – Frontend (Vue 3, TypeScript)"]
+    V["Views<br/>HeuteView · PraeparateView · TagesablaufView"]
+    K["Komponenten<br/>ZeitfensterKarte · PraeparatZeile"]
+    A["api.ts<br/>fetch + Typen"]
+    V --> K
+    V --> A
+  end
+
+  subgraph Server["Server – Backend (Deno, Hono) · localhost:8000"]
+    M["main.ts<br/>REST-Routen, Fehlerbehandlung"]
+    Z["modell.ts<br/>Zod-Schemas + Katalog"]
+    P["planer.ts<br/>planeTag() – reine Funktion"]
+    D["datenbank.ts<br/>Zugriff auf Deno KV"]
+    M --> Z
+    M --> P
+    M --> D
+  end
+
+  KV[("Deno KV<br/>data/einnahmeplaner-v2.db")]
+  J["daten/wirkstoffe.json<br/>30 Wirkstoffe · 36 Regeln"]
+
+  A -- "HTTP + JSON<br/>/api/..." --> M
+  D --> KV
+  Z --> J
+```
+
+### 4.2 Sequenzdiagramm: Präparat speichern (zentraler Anwendungsfall)
+
+```mermaid
+sequenceDiagram
+  actor N as Nutzer
+  participant V as PraeparateView.vue
+  participant A as api.ts
+  participant M as main.ts (Hono)
+  participant Z as modell.ts (Zod)
+  participant D as datenbank.ts
+  participant KV as Deno KV
+
+  N->>V: Formular ausfüllen, „Speichern“
+  V->>A: erstellePraeparat(formular)
+  A->>M: POST /api/praeparate (JSON)
+  M->>Z: praeparatSchema.safeParse(body)
+  alt Eingabe ungültig (z. B. Name zu kurz)
+    Z-->>M: success: false
+    M-->>A: 400 { "fehler": "Name muss mindestens 2 Zeichen haben" }
+    A-->>V: throw Error(fehler)
+    V-->>N: rote Fehlermeldung unter dem Formular
+  else Eingabe gültig
+    Z-->>M: success: true, data
+    M->>M: id = crypto.randomUUID()
+    M->>D: speicherePraeparat(praeparat)
+    D->>KV: set(["praeparate", id], praeparat)
+    M-->>A: 201 Created + Präparat (JSON)
+    A-->>V: Präparat
+    V->>A: ladePraeparate()
+    A->>M: GET /api/praeparate
+    M->>D: allePraeparate()
+    D->>KV: list(prefix ["praeparate"])
+    M-->>A: 200 + Liste (JSON)
+    V-->>N: neues Präparat in der Liste
+  end
+```
+
+### 4.3 Sequenzdiagramm: Plan anzeigen und abhaken
+
+```mermaid
+sequenceDiagram
+  actor N as Nutzer
+  participant V as HeuteView.vue
+  participant M as main.ts (Hono)
+  participant P as planer.ts
+  participant D as datenbank.ts
+  participant KV as Deno KV
+
+  N->>V: Seite „Heute“ öffnen
+  V->>M: GET /api/plan?datum=2026-11-18
+  M->>D: allePraeparate(), holeTagesablauf()
+  D->>KV: list / get
+  M->>P: praeparateAm(...), planeTag(...)
+  P-->>M: { eintraege, hinweise }
+  M-->>V: 200 + Plan (JSON)
+  N->>V: Checkbox anklicken
+  V->>M: POST /api/einnahmen/umschalten { datum, praeparatId, slot }
+  M->>D: istAbgehakt? → hakeAb(...)
+  D->>KV: atomic: Haken setzen + Vorrat − 1
+  M-->>V: 200 { "abgehakt": true }
+  V->>M: Plan und Einnahmen neu laden
+```
