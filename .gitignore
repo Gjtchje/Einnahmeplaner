@@ -9,12 +9,14 @@ frontend/dist/
 
 # Lokale Datenbank des Backends (Deno KV)
 backend/data/
+backend/data*/
 
 # Editor / Betriebssystem
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Reste vom Einrichten (nicht Teil des Projekts)
 einnahmeplaner.tgz
